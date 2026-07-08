@@ -1,4 +1,4 @@
-# mujocolab/mjlab Release Roadmap
+# Release Roadmap
 
 - 仓库: `mujocolab/mjlab`
 - 统计窗口: 最近一年

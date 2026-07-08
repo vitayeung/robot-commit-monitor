@@ -1,4 +1,4 @@
-# RLinf/RLinf Release Roadmap
+# Release Roadmap
 
 - 仓库: `RLinf/RLinf`
 - 统计窗口: 最近一年

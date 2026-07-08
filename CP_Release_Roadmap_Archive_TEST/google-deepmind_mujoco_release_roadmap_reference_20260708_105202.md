@@ -1,4 +1,4 @@
-# google-deepmind/mujoco Release Roadmap Reference
+# Release Roadmap Reference
 
 - 仓库: `google-deepmind/mujoco`
 - 对应主报告: `google-deepmind_mujoco_release_roadmap.md`

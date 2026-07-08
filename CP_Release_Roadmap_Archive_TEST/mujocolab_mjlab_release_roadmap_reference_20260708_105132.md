@@ -1,4 +1,4 @@
-# mujocolab/mjlab Release Roadmap Reference
+# Release Roadmap Reference
 
 - 仓库: `mujocolab/mjlab`
 - 对应主报告: `mujocolab_mjlab_release_roadmap.md`

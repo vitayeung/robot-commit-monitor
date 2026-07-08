@@ -1,4 +1,4 @@
-# google-deepmind/mujoco Release Roadmap
+# Release Roadmap
 
 - 仓库: `google-deepmind/mujoco`
 - 统计窗口: 最近一年

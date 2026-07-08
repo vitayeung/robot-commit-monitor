@@ -1,4 +1,4 @@
-# RLinf/RLinf Release Roadmap Reference
+# Release Roadmap Reference
 
 - 仓库: `RLinf/RLinf`
 - 对应主报告: `RLinf_RLinf_release_roadmap.md`
