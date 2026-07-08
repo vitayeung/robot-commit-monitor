@@ -9,86 +9,86 @@
 
 ## 核心判断
 
-- mjlab 在过去一年从 beta 版本（v0.1.0）快速演进为稳定的生产级框架（v1.5.0），核心定位是轻量级、GPU 加速的机器人学习框架。框架采用 Isaac Lab 风格的 manager-based API，但依赖关系更简洁，单命令即可安装，启动开销低。
+- mjlab 在过去一年从早期 beta 版本快速演进为稳定的 GPU 加速机器人学习框架，核心定位是提供轻量级、可组合的环境和最小化设置摩擦。框架已从 v0.1.0 发展到 v1.5.0，依赖链从需要手动指定 git 修订版变为完全通过 PyPI 安装，大幅降低了用户入门门槛。
 
-- 产品能力从基础仿真环境搭建扩展到完整的训练工作流支持，包括域随机化、地形生成、多类型执行器、RGB-D 相机传感器、云端训练和 ONNX 导出。v1.5.0 已支持 MuJoCo 3.10 和 MuJoCo Warp 3.10，依赖管理从自定义索引迁移到 PyPI 固定版本，大幅降低安装断裂风险。
+- 产品演进的核心驱动力是持续对齐上游 MuJoCo 和 MuJoCo Warp 的版本更新，同时围绕 sim-to-real 转移的关键技术（域随机化、地形生成、执行器建模）进行深度重构。v1.2.0 的域随机化重写和 v1.3.0 的地形系统重设计是两条最重要的产品主线。
 
-- 框架的生态系统正在形成，v1.5.0 的文档中列出了多个外部项目（Unitree、PAL Robotics、LEAP Hand 等）基于 mjlab 构建的机器人环境和任务。这表明 mjlab 正在从单一项目向社区驱动的平台演进。
-
-- 迁移成本在多个版本中持续存在，尤其是 v1.2.0 的域随机化 API 重写和 v1.3.0 的执行器配置简化。v1.4.0 和 v1.5.0 的破坏性变更较少，API 趋于稳定，适合新用户采用。
+- 框架已获得初步的生态系统认可，Unitree Robotics 和 PAL Robotics 等厂商已发布基于 mjlab 的官方 RL 环境。这表明 mjlab 正在从学术原型向行业可用的训练基础设施过渡，但 Windows 支持和 macOS 训练能力仍是明确的平台限制。
 
 ## 产品演进主线
 
-- **从 beta 到稳定版的成熟度提升**：v0.1.0（2025年9月）作为早期 beta 发布，仅提供基础仿真能力。v1.0.0（2026年1月）宣布稳定，增加了 RayCastSensor、接触传感器历史追踪、肌肉执行器和 NaN 检测。v1.1.0 实现 PyPI 直接安装，移除了自定义索引依赖，大幅降低用户入门门槛。
+- **从手动依赖管理到一键安装**：v0.1.0 需要用户手动指定 `mujoco-warp` 的 git 修订版，v1.1.0 实现所有依赖从 PyPI 直接安装，v1.5.0 进一步移除对 `py.mujoco.org` 夜间索引的依赖。这条主线显著降低了新用户的设置成本，使 `pip install mjlab` 成为唯一需要的安装命令。
 
-- **域随机化从手动配置到类型安全的重构**：v1.2.0 用类型化的逐字段随机化函数（如 `dr.geom_friction`、`dr.body_mass`）替换了旧的 `randomize_field` 接口。新设计自动更新依赖的物理量（如质量变化时更新惯性），减少了不一致物理状态的风险。v1.5.0 进一步增加了材质相关的随机化函数（`dr.mat_emission`、`dr.mat_specular` 等）。
+- **域随机化从手动字段操作到类型化、自动一致的系统**：v1.2.0 用类型化的 `dr` 模块替换了旧的 `randomize_field` 接口，自动处理物理一致性（如质量变化后自动更新惯性）。v1.4.0 和 v1.5.0 持续扩展随机化覆盖范围，新增材质属性、几何对摩擦、以及每轴随机化事件的正确组合。这对 sim-to-real 转移的质量至关重要。
 
-- **执行器体系从单一类型到多样化原生支持**：早期版本仅支持基础的位置/速度执行器。v1.3.0 简化了执行器配置，移除了 `DelayedActuator` 包装器，将延迟直接集成到配置中。v1.4.0 增加了 `BuiltinPdActuator`（原生 PD 控制，比 Python 实现的 `IdealPdActuator` 更稳定）。v1.5.0 增加了 `BuiltinDcMotorActuator`，支持电压/位置/速度输入模式、反电动势、热模型和 LuGre 摩擦等高级特性。
+- **地形系统从基础生成到预设化、确定性课程**：v1.3.0 引入 `@terrain_preset` 装饰器和预设配置，v1.5.0 确保课程难度在行间确定且达到配置端点，并修复了多个边缘情况。这使得复杂地形训练可复现，对四足和人形机器人运动策略训练是核心能力。
 
-- **地形系统从基础生成到预设化课程体系**：v1.3.0 引入了 `@terrain_preset` 装饰器和预设配置（如 `STAIRS_TERRAINS_CFG`），使地形课程可组合和复用。v1.5.0 修复了地形生成的确定性问题，确保课程难度在行间可复现，并修复了多个边界情况（空边框、NaN 颜色、编译失败）。
+- **执行器建模从基础 PD 到完整的电机模型**：v1.3.0 简化了执行器配置（延迟内联化、XML 类型自动检测），v1.4.0 添加原生隐式 PD 执行器，v1.5.0 引入完整的直流电机执行器（支持电压/位置/速度模式、反电动势、热模型、LuGre 摩擦）。这使 mjlab 能够更准确地模拟真实机器人硬件。
 
 ## 版本演进解读
 
-### v1.5.0（2026-06-29）
+### v1.5.0 (2026-06-29)
 
-- 将 MuJoCo 和 MuJoCo Warp 升级到 3.10，依赖从自定义索引迁移到 PyPI 固定版本。这消除了夜间构建轮子被垃圾回收导致的依赖解析失败问题，安装更可靠。
-- 新增 `BuiltinDcMotorActuator`，原生支持直流电机模型，包含电压/位置/速度输入模式、反电动势、热模型、LuGre 摩擦和齿槽效应。这对需要精确电机建模的 sim-to-real 场景（如四足机器人、机械臂）价值显著。
-- 地形生成现在在课程模式下具有确定性的行间难度，高度场使用固定发散调色板按绝对高度着色。低振幅噪声不再渲染为高对比度杂乱，场景视觉一致性提升。
-- 修复了运动跟踪中 mid-episode 重采样后锚定到过时机器人位姿的长期 bug。`MotionCommand` 现在在计算相对体位姿前刷新仿真状态。
-- 域随机化中针对同一模型字段不同轴的事件现在正确组合而非静默覆盖。`MetricsTermCfg` 新增 `reduce="max"` 用于报告回合峰值（如峰值功率或接触力）。
+- 将 MuJoCo 和 MuJoCo Warp 升级到 3.10，完全从 PyPI 固定版本，移除了对 `py.mujoco.org` 夜间索引的依赖。`SimulationCfg.ls_parallel` 被弃用并忽略，因为上游已移除并行线搜索。
+- 新增 `BuiltinDcMotorActuator`，原生封装 MuJoCo 的 `<dcmotor>`，支持电压、位置、速度输入模式，以及可选的积分、电感、LuGre 摩擦和齿槽效应扩展。这对需要精确电机建模的 sim-to-real 场景是重要补充。
+- 地形生成实现确定性课程：难度在行间确定且达到配置端点，高度场使用固定发散调色板按绝对高度着色。修复了多个难度为 0 的边缘情况（空边框、NaN 颜色、编译失败）。
+- 域随机化新增材质属性（发射、镜面、光泽、纹理重复）的随机化，修复了针对同一模型字段不同轴的随机化事件正确组合的问题。
 
-### v1.4.0（2026-05-27）
+### v1.4.0 (2026-05-27)
 
-- 引入每世界网格变体（`VariantEntityCfg`），允许在批量仿真中为同一逻辑实体使用不同网格资产。例如，世界 0 使用立方体，世界 1 使用球体，世界 2 使用碗。变体必须具有相同的运动学结构（相同的体、关节和关节类型），但网格几何体可以不同。域随机化、原生查看器和 Viser 查看器自动使用分配的变体。
-- 新增 `BuiltinPdActuator`，作为原生 MuJoCo PD 控制实现，支持位置和速度目标。与 `IdealPdActuator`（在 Python 中计算扭矩并通过 `<motor>` 应用）相比，`BuiltinPdActuator` 利用隐式积分，稳定性更高。`dr.pd_gains` 和 `dr.effort_limits` 均支持新执行器。
-- 新增 `mdp.projected_gravity_from_sensor` 观测，从 IMU 站点的 `framezaxis` 传感器读取重力方向。当 IMU 站点应用了 `dr.site_quat` 随机化时，该观测能正确反映重力方向的变化。Go1 和 G1 机器人已包含 `imu_upvector` 传感器。
-- `RewardManager`、`TerminationManager` 和 `MetricsManager` 现在在计算时验证项的输出形状。每个项必须返回形状为 `(num_envs,)` 的张量，否则会引发 `ValueError` 并指明违规项，避免静默广播或训练时失败。
-- 破坏性变更：从 `MujocoCfg.enableflags` 中移除 `"multiccd"`（上游已默认启用）。`CameraSensorData.segmentation` 从 `[B, H, W]` 几何体 ID 更改为 `[B, H, W, 2]` 类型化 `(object_id, object_type)` 对。
+- 引入每世界网格变体（`VariantEntityCfg`），允许在批量模拟中为同一逻辑实体使用不同网格资产。变体必须具有相同的运动学结构，但网格几何体可以不同。域随机化、原生查看器和 Viser 查看器自动使用分配的变体。这对训练策略的泛化能力有直接价值。
+- 新增 `BuiltinPdActuator`，原生 MuJoCo PD 控制，支持位置和速度目标。与 `IdealPdActuator` 不同，它通过隐式积分实现更稳定的控制，`effort_limit` 通过 `jnt_actfrcrange` 或 `tendon_actfrcrange` 强制执行。
+- 新增 `mdp.projected_gravity_from_sensor` 观测，从 IMU 站点的 `framezaxis` 传感器读取，正确反映 IMU 安装随机化。Go1 和 G1 机器人已包含所需的 `imu_upvector` 传感器。
+- 奖励、终止和指标管理器现在在计算时验证项的输出形状，返回错误形状时引发 `ValueError` 并命名违规项，避免静默广播或训练时失败。
+- 破坏性变更：从 `MujocoCfg.enableflags` 中移除 `"multiccd"`；`CameraSensorData.segmentation` 从 `[B, H, W]` 几何体 ID 改为 `[B, H, W, 2]` 类型化 `(object_id, object_type)` 对。
 
-### v1.3.0（2026-04-15）
+### v1.3.0 (2026-04-15)
 
-- Viser 查看器内部重构，基于独立的 `mjviser` 包重建。场景创建、网格转换和叠加渲染（接触、力、惯性、肌腱、关节、框架）移至 `mjviser`，mjlab 保留调试可视化和 Warp 张量转换。新增可视化选项卡（叠加控制）、分组选项卡（几何体和站点可见性）、奖励条面板、W&B 运行浏览、检查点热切换和运动参考进度条。
-- 地形系统迁移到预设化配置，新增 `@terrain_preset` 装饰器用于组合可复用配置。课程模式现在每列分配一种地形类型，`proportion` 控制机器人分布而非列数。`STAIRS_TERRAINS_CFG` 预设提供渐进式楼梯课程。新增 `TerrainHeightSensor`（`RayCastSensor` 子类）计算每帧垂直间隙，替换了在粗糙地形上不正确的世界 Z 代理。
-- 执行器配置简化：`DelayedActuator`、`DelayedActuatorCfg` 和 `DelayedBuiltinActuatorGroup` 被移除。延迟现在直接在任何 `ActuatorCfg` 子类上配置。四个 XML 执行器配置类合并为单个 `XmlActuatorCfg`，自动从 XML 检测执行器类型。新增 `viscous_damping` 用于被动速度比例阻尼。
-- 新增 `RecorderManager` 用于记录 rollout 期间的观测、动作或任意环境数据。`termination_curriculum` 支持在训练期间调度终止项参数变化。`RelativeJointPositionAction` 提供相对于当前配置的关节位置控制。新增 cartpole 教程，从零开始构建环境。
-- 破坏性变更：`DelayedActuator` 系列移除，`delay_target` 移除，`Xml*ActuatorCfg` 合并，`TerrainImporter` 别名移除，`EntityData.generalized_force` 移除，`ActuatorCfg.armature` 和 `.frictionloss` 默认值从 `0.0` 改为 `None`。
+- Viser 查看器内部重构为基于独立的 `mjviser` 包，新增可视化标签页（叠加控制）、组标签页（几何体和站点可见性）、奖励条面板、W&B 运行浏览、检查点热切换和运动参考擦除器。查看器架构的模块化降低了维护成本。
+- 地形系统全面重设计：引入 `@terrain_preset` 装饰器用于组合可重用配置，课程模式每列分配一种地形类型，`proportion` 控制机器人分布。新增 `STAIRS_TERRAINS_CFG` 预设和 `TerrainHeightSensor`（基于 `RayCastSensor` 的垂直间隙传感器）。
+- 执行器配置简化：延迟字段内联到任何 `ActuatorCfg` 子类，移除 `DelayedActuator` 和相关类。四个 XML 执行器配置类合并为单个 `XmlActuatorCfg`，自动从 XML 检测执行器类型。
+- 新增 `RecorderManager`（记录观测/动作/环境数据）、`termination_curriculum`（调度终止参数变化）、`RelativeJointPositionAction`（相对当前配置的关节位置控制）、`dr.pair_friction`（几何对摩擦随机化）。
+- 新增 cartpole 教程，从零开始构建环境，涵盖场景设置、动作和观测项、奖励、终止和训练。
+- 破坏性变更：移除 `DelayedActuator`、`DelayedActuatorCfg`、`DelayedBuiltinActuatorGroup`；`delay_target` 移除；四个 XML 执行器配置类合并为 `XmlActuatorCfg`；`TerrainImporter` 和 `TerrainImporterCfg` 别名移除；`EntityData.generalized_force` 移除；`ActuatorCfg.armature` 和 `.frictionloss` 默认值从 `0.0` 改为 `None`。
 
-### v1.2.0（2026-03-07）
+### v1.2.0 (2026-03-07)
 
-- 域随机化完全重写：用类型化的逐字段随机化函数（`dr.geom_friction`、`dr.body_mass`、`dr.mat_rgba` 等）替换旧的 `randomize_field` 接口。新设计自动更新依赖的物理量（如质量变化时更新惯性），减少不一致物理状态的风险。自定义操作和分布是一等公民，原生查看器在每次重置时同步所有随机化字段。
-- 查看器时间模型重写：单个仿真预算累加器配合墙钟截止时间，在任何速度倍率（1/32x 到 8x）下保持物理和渲染同步。新增单步模式、错误恢复（暂停并记录回溯而非崩溃）、力箭头可视化和实时因子显示。Viser 查看器新增速度摇杆、改进的项绘图器和重新组织的控制面板。
-- 新增 `"step"` 事件模式，在每个环境步触发（不仅限于重置）。结合 `apply_body_impulse` 可在训练期间向机器人施加外部力，支持可配置的持续时间、大小和作用点。
-- 新增 SkyPilot 集成，支持单命令在云端 GPU（Lambda Cloud）训练。文档涵盖设置、监控和成本管理。W&B 扫描脚本支持在多 GPU 实例上每 GPU 分配一个代理。
-- 破坏性变更：`randomize_field` 移除，`EventTermCfg` 不再接受 `domain_randomization`，`RslRlModelCfg` 使用 `distribution_cfg` 字典替代 `stochastic`/`init_noise_std`/`noise_std_type`（现有检查点自动迁移）。
+- 域随机化全面重设计：用类型化的 `dr` 模块替换 `randomize_field` 接口，自动处理物理一致性（质量变化后更新惯性，几何体大小变化后更新碰撞边界）。覆盖几何体、刚体、视觉、相机和光照。自定义操作和分布是一等公民。
+- 查看器时序模型重写：单一模拟预算累加器配合挂钟时间截止，保持物理和渲染在任何速度倍率下同步。新增单步模式、错误恢复、力箭头可视化、实时因子显示。Viser 新增速度摇杆、改进的项绘图器和重新组织的控制面板。
+- 新增 `"step"` 事件模式（每环境步触发）和 `apply_body_impulse`（训练期间向机器人施加外部力，可配置持续时间、大小和作用点）。
+- 新增 SkyPilot 集成，支持单命令在 Lambda Cloud 上训练，文档涵盖设置、监控和成本管理。W&B 扫描脚本支持多 GPU 实例。
+- 文档完全重写，新增 `export-scene` CLI、`rsl-rl-lib` 升级到 5.0.1、Docker 镜像、接触传感器历史记录。
+- 破坏性变更：`randomize_field` 移除；`EventTermCfg` 不再接受 `domain_randomization`；`RslRlModelCfg` 使用 `distribution_cfg` 字典替代 `stochastic`/`init_noise_std`/`noise_std_type`。
 
-### v1.1.1（2026-02-15）
+### v1.1.1 (2026-02-15)
 
-- 新增差分 IK 动作空间，支持基于逆运动学的末端执行器控制。这对操作任务（如抓取、操控）特别有用，用户可以直接指定末端执行器位姿而非关节角度。
-- 原生查看器新增奖励图可视化，Viser 查看器扩展支持指标绘图。视频录制从 `moviepy` 切换到 `mediapy`。
-- 这是一个小补丁版本，主要修复 bug 并增加少量功能。无破坏性变更。
+- 新增差分 IK 动作空间，用于基于逆运动学的控制。
+- 原生查看器新增奖励可视化，Viser 查看器扩展支持指标绘图。
+- 视频录制从 `moviepy` 切换到 `mediapy`，减少依赖问题。
+- 此版本为小补丁，无破坏性变更。
 
-### v1.1.0（2026-02-13）
+### v1.1.0 (2026-02-13)
 
-- mjlab 及其所有依赖（包括 mujoco-warp）现在可直接从 PyPI 安装。安装命令简化为 `pip install mjlab`，不再需要固定特定 mujoco-warp 修订版或使用自定义索引。
-- 新增 RGB 和深度相机传感器，使用 BVH 加速的光线追踪。新增 `MetricsManager` 用于记录训练期间的自定义指标。新增地形可视化工具和多种新地形类型。Viser 查看器新增站点组可视化。
-- `rsl-rl-lib` 升级到 4.0.0，支持原生 ONNX 导出。这对策略部署到生产环境（如边缘设备）至关重要。
+- mjlab 及其所有依赖（包括 mujoco-warp）现在可直接从 PyPI 安装，安装命令简化为 `pip install mjlab`。这是从 beta 到稳定版的关键里程碑。
+- 新增 RGB 和深度相机传感器（BVH 加速光线投射）、MetricsManager（训练期间记录自定义指标）、地形可视化工具和多种新地形类型。
+- `rsl-rl-lib` 升级到 4.0.0，支持原生 ONNX 导出。
 
-### v1.0.0（2026-01-29）
+### v1.0.0 (2026-01-29)
 
-- mjlab 宣布稳定。新增 `RayCastSensor`（地形和障碍物检测）、接触传感器历史追踪（改进接触动力学）、肌肉执行器支持（生物力学仿真）、传感器缓存（大规模训练性能优化）和更好的 NaN 处理（观测和传感器数据中的检测）。
-- 新增 `notebooks/create_new_task.ipynb` 笔记本，指导用户创建新任务。`scripts/benchmarks/generate_report.py` 用于生成基准测试报告。
+- mjlab 正式宣布稳定。新增 RayCastSensor（地形和障碍物检测）、接触传感器历史跟踪、肌肉执行器支持（生物力学模拟）、传感器缓存（大规模训练性能优化）和改进的 NaN 处理。
+- 此版本标志着框架从 beta 阶段毕业，API 进入稳定状态。
 
-### v0.1.0（2025-09-29）
+### v0.1.0 (2025-09-29)
 
-- mjlab 首次公开发布，作为早期 beta 版本。可通过 PyPI 安装，但需要固定 mujoco-warp 的 git 修订版。提供预训练的 Unitree G1 人形机器人运动模仿策略演示。
-- API 可能随社区反馈演进。这是框架的起点，后续所有功能均在此基础上构建。
+- mjlab 首次公开发布，在 GitHub 和 PyPI 上可用。提供预训练的 Unitree G1 人形机器人运动模仿策略演示。
+- 明确标记为早期 beta 版本，API 可能随社区反馈演进。
 
 ## 采用与规划提示
 
-- **当前版本（v1.5.0）适合新项目启动**：API 趋于稳定，依赖管理简化（PyPI 固定版本），文档完善（包括 cartpole 教程和异构世界文档）。破坏性变更从 v1.3.0 的高峰期（执行器配置重写）减少到 v1.5.0 的少量弃用项（`SimulationCfg.ls_parallel`）。新用户应直接使用 v1.5.0。
+- **采用时机**：mjlab 已从 v1.0.0 开始稳定，依赖链已完全通过 PyPI 管理。对于需要 GPU 加速机器人学习框架的团队，当前版本（v1.5.0）已具备生产级能力，包括完整的域随机化、确定性地形课程和多种执行器模型。建议新项目直接从 v1.5.0 开始。
 
-- **从旧版本迁移需注意破坏性变更**：如果从 v1.1.x 或更早版本升级，需要处理 v1.2.0 的域随机化 API 重写（`randomize_field` 移除）和 v1.3.0 的执行器配置简化（`DelayedActuator` 移除）。v1.4.0 和 v1.5.0 的迁移成本较低，主要是 MuJoCo 版本升级和少量配置项调整。建议逐版本升级并参考每个版本的 changelog。
+- **迁移成本**：从 v1.2.0 到 v1.5.0 的每个主要版本都包含破坏性变更。域随机化接口在 v1.2.0 完全重写，执行器配置在 v1.3.0 简化，XML 执行器配置类合并。如果从 v1.1.x 或更早版本迁移，需要重写域随机化代码和执行器配置。v1.4.0 和 v1.5.0 的破坏性变更较小（移除 `multiccd` 标志、分割数据类型变更）。建议参考每个版本的 changelog 进行逐步迁移。
 
-- **生态系统正在形成，但社区贡献仍需培育**：v1.5.0 文档列出了 Unitree、PAL Robotics、LEAP Hand 等多个外部项目，表明框架正在被行业采用。但首次贡献者数量在 v1.3.0 达到峰值（6 人）后有所下降。产品经理应关注社区活跃度，考虑提供更多教程、示例任务和贡献指南来维持增长。
+- **目标用户**：mjlab 最适合需要大规模并行训练（4096+ 环境）的机器人学习团队，特别是四足和人形机器人运动控制。框架已获得 Unitree Robotics 和 PAL Robotics 的官方支持，表明在行业应用中有实际价值。macOS 仅支持评估，Windows 支持可能滞后，训练必须在 Linux 上使用 NVIDIA GPU 进行。
 
-- **产品方向明确聚焦于 GPU 加速的 sim-to-real 工作流**：从 v1.2.0 的域随机化重写、v1.3.0 的地形课程系统、v1.4.0 的异构世界到 v1.5.0 的直流电机执行器，mjlab 持续增强仿真保真度和策略泛化能力。云端训练（SkyPilot 集成）和 ONNX 导出支持表明框架正在覆盖从训练到部署的完整链路。建议关注 MuJoCo Warp 的更新节奏，因为 mjlab 的版本升级紧密跟随上游。
+- **生态系统观察点**：v1.5.0 的 research.rst 列出了多个基于 mjlab 的衍生项目（Asimov 双足机器人、H1 运动、MyoSuite 肌肉骨骼集成、LEAP Hand 灵巧操作等），表明社区正在围绕框架构建工具链。建议关注 `unitreerobotics/unitree_rl_mjlab` 和 `pal-robotics/pal_mjlab` 等官方仓库的更新，它们反映了框架在真实机器人平台上的应用方向。
