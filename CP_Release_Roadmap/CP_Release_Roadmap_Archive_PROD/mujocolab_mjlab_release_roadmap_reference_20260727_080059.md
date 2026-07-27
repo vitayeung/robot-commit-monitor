@@ -4,12 +4,12 @@
 - 对应主报告: `mujocolab_mjlab_release_roadmap.md`
 - 统计窗口: 最近一年
 - 生成策略: GitHub release body + 外链文档摘录 + 相邻 release tag 的 GitHub compare 摘要 + tagged README/docs/examples/configs/高信号源码证据
-- 版本总数: 11
-- 正式版数量: 10
+- 版本总数: 10
+- 正式版数量: 9
 - 预发布版数量: 1
 - 外链文档覆盖版本数: 3
-- compare 摘要覆盖版本数: 10
-- 最新版本: v1.5.3 (2026-07-22 23:54:36 CST)
+- compare 摘要覆盖版本数: 9
+- 最新版本: v1.5.2 (2026-07-18 00:59:02 CST)
 - 最早纳入统计版本: v0.1.0 (2025-09-29 18:00:45 CST)
 
 ## 分析策略决策
@@ -23,7 +23,6 @@
   - 因此主脚本自动升级为 L2，补充 tagged README/docs/examples/configs/高信号源码证据。
 
 ## Release 时间线
-- 2026-07-22 23:54:36 CST | v1.5.3 | 正式版
 - 2026-07-18 00:59:02 CST | v1.5.2 | 正式版
 - 2026-07-16 01:15:38 CST | v1.5.1 | 正式版
 - 2026-06-29 07:09:19 CST | v1.5.0 | 正式版
@@ -36,29 +35,6 @@
 - 2025-09-29 18:00:45 CST | v0.1.0 | 预发布版
 
 ## 证据附录
-
-### v1.5.3
-- 标题: mjlab v1.5.3
-- 类型: 正式版
-- 发布时间: 2026-07-22 23:54:36 CST
-- 链接: https://github.com/mujocolab/mjlab/releases/tag/v1.5.3
-- GitHub release body:
-Bumps mujoco-warp to 3.10.0.3, fixing CUDA 700 crashes from mass domain randomization on certain GPU architectures. Also fixes stale raycast sensor debug ray visualization.
-- Compare 摘要: v1.5.2 -> v1.5.3
-  - commits: 8
-  - files changed: 21
-  - additions: 485
-  - deletions: 210
-  - top directories: CITATION.cff, docs/source, pyproject.toml, src/mjlab, tests, uv.lock
-  - representative files:
-    - uv.lock (modified, +89/-183)
-    - tests/test_velocity_terrain_curriculum.py (added, +79/-0)
-    - tests/test_contact_sensor.py (modified, +74/-0)
-    - docs/source/changelog.rst (modified, +59/-0)
-    - tests/test_runner.py (modified, +43/-0)
-    - tests/test_reward_bar_panel.py (added, +34/-0)
-    - tests/test_terrain_utils.py (modified, +24/-0)
-    - src/mjlab/sensor/contact_sensor.py (modified, +7/-12)
 
 ### v1.5.2
 - 标题: mjlab v1.5.2
@@ -353,8 +329,15 @@ The full lineup covers geometry, bodies, visuals, cameras, and lights. Custom op
 https://github.com/user-attachmen...
 - 外链文档摘录:
   - https://skypilot.readthedocs.io/
-    NewAnnouncing SkyPilot Platform and our $20M seed→
-    Try SkyPilot PlatformTry Platform→
+    SkyPilot: Manage all your AI compute — SkyPilot DocsSkip to main content
+    Back to top
+    Ctrl+K
+    You are viewing the latest developer preview docs.Click hereto
+    view docs for the latest stable release.
+    - Slack
+    - Twitter
+    - GitHub
+    SkyPilot: Manage all your AI compute#
   - https://mujocolab.github.io/mjlab/main/index.html
     setup friction. It adopts the manager-based API introduced byIsaac Lab, where users compose
     - Sensors
@@ -522,90 +505,6 @@ This is an early beta release - we're actively implementing missing features and
 Thanks!
 
 # Tagged Repository Source Evidence
-
-## v1.5.3
-- README / repo positioning excerpt:
-![Project banner](https://raw.githubusercontent.com/mujocolab/mjlab/main/docs/source/_static/mjlab-banner.jpg)
-# mjlab
-[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/mujocolab/mjlab/ci.yml?branch=main)](https://github.com/mujocolab/mjlab/actions/workflows/ci.yml?query=branch%3Amain)
-[![Documentation](https://github.com/mujocolab/mjlab/actions/workflows/docs.yml/badge.svg)](https://mujocolab.github.io/mjlab/)
-[![License](https://img.shields.io/github/license/mujocolab/mjlab)](https://github.com/mujocolab/mjlab/blob/main/LICENSE)
-[![MuJoCo Warp](https://img.shields.io/badge/MuJoCo_Warp-3.10.0.2-blue)](https://github.com/google-deepmind/mujoco_warp/releases/tag/v3.10.0.2)
-[![Nightly Benchmarks](https://img.shields.io/badge/Nightly-Benchmarks-blue)](https://mujocolab.github.io/mjlab/nightly/)
-[![PyPI](https://img.shields.io/pypi/v/mjlab)](https://pypi.org/project/mjlab/)
-## Getting Started
-mjlab requires an NVIDIA GPU for training. macOS is supported for evaluation only.
-For alternative installation methods (PyPI, Docker), see the [Installation Guide](https://mujocolab.github.io/mjlab/main/source/installation.html).
-## Training Examples
-### 1. Velocity Tracking
-Train a Unitree G1 humanoid to follow velocity commands on flat terrain:
-uv run train Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs 4096
-**Multi-GPU Training:** Scale to multiple GPUs using `--gpu-ids`:
-uv run train Mjlab-Velocity-Flat-Unitree-G1 \
---gpu-ids "[0, 1]" \
---env.scene.num-envs 4096
-uv run play Mjlab-Velocity-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
-### 2. Motion Imitation
-uv run train Mjlab-Tracking-Flat-Unitree-G1 --registry-name your-org/motions/motion-name --env.scene.num-envs 4096
-uv run play Mjlab-Tracking-Flat-Unitree-G1 --wandb-run-path your-org/mjl...
-- High-signal repository paths at this tag:
-  - README.md
-  - docs/conf.py
-  - docs/index.rst
-  - scripts/cloud/README.md
-  - scripts/benchmarks/README.md
-  - docs/source/faq.rst
-  - docs/source/scene.rst
-  - docs/source/events.rst
-  - docs/source/actions.rst
-  - docs/source/metrics.rst
-  - docs/source/rewards.rst
-  - docs/source/terrain.rst
-- Changed high-signal files against previous included release:
-  - [M] docs/source/changelog.rst
-    Excerpt:
-    =========
-    Changelog
-    =========
-    Upcoming version (not yet released)
-    -----------------------------------
-    Added
-    ^^^^^
-    Changed
-    Version 1.5.3 (July 22, 2026)
-    - The Viser reward bar panel's term cap is now configurable via
-    ``ViewerConfig.reward_bar_max_terms``, so environments with more than 20
-    reward terms can show them all. Defaults to 20, preserving previous behavior.
-    :issue:`1079`
-    - Bumped ``pillow`` (12.3.0), ``onnx`` (1.22.0), and ``soupsieve`` (2.9.1) in the
-    - Fixed raycast sensor debug visualization and observations lagging one step
-    per-step motion instead of vertical. :issue:`998`
-    - Restored ONNX uploads and W&B run metadata for velocity and manipulation
-    training when using RSL-RL's current ``WandbLogWriter`` logger name.
-    - The Viser reward bar panel no longer *silently* drops reward terms beyond
-    environments with more than 20 reward terms had the overflow disappear from
-    the bar panel with no indication. :issue:`1079`
-    - Fixed the ``terrain_levels_vel`` curriculum promoting every env from level 0
-    to level 1 on the initial reset, ignoring ``max_init_terrain_level=0``. Before
-    the first step the robot sits at its spawn pose rather than a walked-to
-    that first reset. :issue:`1094`
-    - Fixed the velocity task's actor ``joint_pos`` observation not being biased by
-    See `discussion #1065 <https://github.com/mujocolab/mjlab/discussions/1065>`_.
-    - Hardened ``fit_terrain_normal`` against non-finite raycast hits. A single env
-    :issue:`912`
-    - Enabled ``obs_normalization`` on the Go1 velocity actor and critic to match
-    ``normal expects all elements of std >= 0.0`` crash. Note that Go1 velocity
-    longer load; retrain from scratch. :issue:`870` :issue:`1044` :issue:`1053`
-    - Fixed ``ContactSensor`` air-time tracking accumulating float32 sim-clock
-    The exact float64 substep ``dt`` is now accu...
-  - [M] src/mjlab/viewer/viewer_config.py
-    Excerpt:
-    The frame in which the camera position and target are defined.
-    Classes: ViewerConfig
-  - [M] src/mjlab/tasks/velocity/config/go1/rl_cfg.py
-    Excerpt:
-    RL configuration for Unitree Go1 velocity task.
-    Functions: unitree_go1_ppo_runner_cfg
 
 ## v1.5.2
 - README / repo positioning excerpt:
@@ -1298,4 +1197,87 @@ uv run play Mjlab-Tracking-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-i
     --gpu-ids "[0, 1]" \
     --env.scene.num-envs 4096
     uv run play Mjlab-Velocity-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
-    ### 2. Motion Imitati...
+    ### 2. Motion Imitation
+    uv run train Mjlab-Tracking-Flat-Unitree-G1 --registry-name your-org/motions/motion-name --env.scene.num-envs 4096
+    uv run play Mjlab-Tracking-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
+    ### 3. Sanity-check with Du...
+  - [M] docs/source/changelog.rst
+    Excerpt:
+    =========
+    Changelog
+    =========
+    Version 1.4.0 (May 26, 2026)
+    ----------------------------
+    Added
+    ^^^^^
+    - Added ``BuiltinPdActuator``, the implicit-integration version of
+    explicit Python PD would diverge, which matters when you want to
+    ``jnt_actfrcrange`` (or ``tendon_actfrcrange``). Supported by
+    - Added ``mdp.projected_gravity_from_sensor``, an observation that derives
+    randomization (e.g. via ``dr.site_quat``). Go1 and G1 ship an
+    - Added ``DebugVisualizer.add_box`` for drawing an axis-oriented box
+    primitive, mirroring ``add_ellipsoid``. Supported by both the native
+    and Viser viewers. ``size`` is the box half-extents (:issue:`992`).
+    - Added ``--log-root`` CLI option to ``train``, ``play``, and ``evaluate``
+    - ``RewardManager``, ``TerminationManager``, and ``MetricsManager`` now
+    - Added ``ContactSensor.primary_names`` property to expose the resolved
+    to the primary it belongs to (:issue:`914`).
+    - Added per-world mesh variant support via ``VariantEntityCfg``. Each
+    world in a batched simulation can now use a different mesh asset for
+    the same logical entity (e.g. world 0 holds a cube, world 1 a
+    spec callables; the optional ``assignment`` field controls how worlds
+    per-world arrays in the Warp model, so domain randomization, the
+    :ref:`heterogeneous_worlds` for usage. With help from @XiangruiJiang.
+    - Per-world mesh variants now support per-variant materials and textures.
+    ``geom_dataid`` table. Variants without a material get ``matid = -1``.
+    - ``Entity`` now raises a clear error at construction when its spec contains
+    - Changed ``compute_root_relative_mpkpe`` to re-anchor the reference to the
+    robot's root each step, removing yaw drift as well as translation so it
+    - Changed ``compute_joint_velocity_error`` from an L2 norm to a per-joint
+    - Bumped ``mujoco`` to 3.8 and ``mujoco-warp``...
+  - [M] docs/source/faq.rst
+    Excerpt:
+    .. _faq:
+    FAQ & Troubleshooting
+    =====================
+    This page collects common questions about **platform support**, **performance**,
+    **training stability**, and **visualization**, along with practical debugging
+    tips and links to further resources.
+    Platform Support
+    ----------------
+    - **Training is not recommended on macOS**, as it lacks GPU acceleration.
+    - **Evaluation works**, but is significantly slower than on Linux with CUDA.
+    - Windows support may **lag behind** Linux.
+    - Windows will be **tested less frequently**, since Linux is the primary
+    - Community contributions that improve Windows support are very welcome.
+    Not all CUDA versions are supported by MuJoCo Warp.
+    - See `mujoco_warp#101 <https://github.com/google-deepmind/mujoco_warp/issues/101>`_
+    - **Recommended**: CUDA **12.4+** (for conditional execution support in CUDA
+    on the GPU. See `issue #949
+    <https://github.com/mujocolab/mjlab/issues/949>`_ for background.
+    - **RTX 40-series GPUs** (or newer)
+    - **L40s, H100**
+    Does mjlab support multi-GPU training?
+    Yes, mjlab supports **multi-GPU distributed training** using
+    - Use ``--gpu-ids "[0, 1]"`` (or ``--gpu-ids all``) when running the ``train``
+    - See the :doc:`training/distributed_training` for configuration details and examples.
+    RuntimeError: normal expects all elements of std >= 0.0
+    1. **For training stability** - NaN termination
+    # In your ManagerBasedRlEnvCfg subclass:
+    # Your other terminations...
+    (for example, NaNs occur exactly when the agent tries to grasp an object),
+    2. **For debugging** - NaN guard
+    - Inspect the simulation state at the moment NaNs appear.
+    - Build a minimal reproducible example (MRE).
+    - Report potential framework bugs to the
+    uv run export-scene g1 --output-dir /tmp/g1
+    inspection or diffing. This is useful for verifying that task configuration...
+  - [M] docs/source/entity/index.rst
+    Excerpt:
+    .. _entity:
+    Entity
+    ======
+    An ``Entity`` represents a physical object in the simulation: a robot, a
+    manipulated object, or a fixed fixture like a table. It is the central
+    abstraction in mjlab's physics layer.
+    A single ``Entity`` class covers all variants (contrast Isaac...
