@@ -4,28 +4,25 @@
 - 对应主报告: `mujocolab_mjlab_release_roadmap.md`
 - 统计窗口: 最近一年
 - 生成策略: GitHub release body + 外链文档摘录 + 相邻 release tag 的 GitHub compare 摘要 + tagged README/docs/examples/configs/高信号源码证据
-- 版本总数: 11
-- 正式版数量: 10
+- 版本总数: 8
+- 正式版数量: 7
 - 预发布版数量: 1
 - 外链文档覆盖版本数: 3
-- compare 摘要覆盖版本数: 10
-- 最新版本: v1.5.3 (2026-07-22 23:54:36 CST)
+- compare 摘要覆盖版本数: 7
+- 最新版本: v1.5.0 (2026-06-29 07:09:19 CST)
 - 最早纳入统计版本: v0.1.0 (2025-09-29 18:00:45 CST)
 
 ## 分析策略决策
 - 请求模式: `auto`
 - 最终策略: `L2: Source-enhanced`
-- 证据充分性评分: 2/6
-- 触发规则: linked_docs_weak, migration_risk_high
+- 证据充分性评分: 1/6
+- 触发规则: migration_risk_high
 - 决策说明:
   - 采用条件、生态信号和破坏性变更更依赖仓库内证据，默认启用源码增强。
-  - 证据充分性评分 2/6，触发规则: linked_docs_weak, migration_risk_high。
+  - 证据充分性评分 1/6，触发规则: migration_risk_high。
   - 因此主脚本自动升级为 L2，补充 tagged README/docs/examples/configs/高信号源码证据。
 
 ## Release 时间线
-- 2026-07-22 23:54:36 CST | v1.5.3 | 正式版
-- 2026-07-18 00:59:02 CST | v1.5.2 | 正式版
-- 2026-07-16 01:15:38 CST | v1.5.1 | 正式版
 - 2026-06-29 07:09:19 CST | v1.5.0 | 正式版
 - 2026-05-27 06:52:20 CST | v1.4.0 | 正式版
 - 2026-04-15 06:05:30 CST | v1.3.0 | 正式版
@@ -36,77 +33,6 @@
 - 2025-09-29 18:00:45 CST | v0.1.0 | 预发布版
 
 ## 证据附录
-
-### v1.5.3
-- 标题: mjlab v1.5.3
-- 类型: 正式版
-- 发布时间: 2026-07-22 23:54:36 CST
-- 链接: https://github.com/mujocolab/mjlab/releases/tag/v1.5.3
-- GitHub release body:
-Bumps mujoco-warp to 3.10.0.3, fixing CUDA 700 crashes from mass domain randomization on certain GPU architectures. Also fixes stale raycast sensor debug ray visualization.
-- Compare 摘要: v1.5.2 -> v1.5.3
-  - commits: 8
-  - files changed: 21
-  - additions: 485
-  - deletions: 210
-  - top directories: CITATION.cff, docs/source, pyproject.toml, src/mjlab, tests, uv.lock
-  - representative files:
-    - uv.lock (modified, +89/-183)
-    - tests/test_velocity_terrain_curriculum.py (added, +79/-0)
-    - tests/test_contact_sensor.py (modified, +74/-0)
-    - docs/source/changelog.rst (modified, +59/-0)
-    - tests/test_runner.py (modified, +43/-0)
-    - tests/test_reward_bar_panel.py (added, +34/-0)
-    - tests/test_terrain_utils.py (modified, +24/-0)
-    - src/mjlab/sensor/contact_sensor.py (modified, +7/-12)
-
-### v1.5.2
-- 标题: mjlab v1.5.2
-- 类型: 正式版
-- 发布时间: 2026-07-18 00:59:02 CST
-- 链接: https://github.com/mujocolab/mjlab/releases/tag/v1.5.2
-- GitHub release body:
-Fixes multi-env domain-randomization crashes (`actuator_acc0`) and ignored `MaterialCfg.reflectance`.
-- Compare 摘要: v1.5.1 -> v1.5.2
-  - commits: 3
-  - files changed: 8
-  - additions: 54
-  - deletions: 9
-  - top directories: CITATION.cff, docs/source, pyproject.toml, src/mjlab, tests, uv.lock
-  - representative files:
-    - tests/test_events.py (modified, +29/-0)
-    - docs/source/changelog.rst (modified, +14/-1)
-    - CITATION.cff (modified, +3/-3)
-    - src/mjlab/managers/event_manager.py (modified, +3/-2)
-    - docs/source/randomization.rst (modified, +2/-1)
-    - pyproject.toml (modified, +1/-1)
-    - uv.lock (modified, +1/-1)
-    - src/mjlab/utils/spec_config.py (modified, +1/-0)
-
-### v1.5.1
-- 标题: mjlab v1.5.1
-- 类型: 正式版
-- 发布时间: 2026-07-16 01:15:38 CST
-- 链接: https://github.com/mujocolab/mjlab/releases/tag/v1.5.1
-- GitHub release body:
-This is a small compatibility and bugfix release. The headline is that mjlab now requires MuJoCo Warp 3.10.0.2, which fixes `qfrc_constraint` being populated incorrectly across vectorized environments (#1086). Earlier 3.10.0.x releases are no longer supported.
-
-Full changelog: https://github.com/mujocolab/mjlab/compare/v1.5.0...v1.5.1
-- Compare 摘要: v1.5.0 -> v1.5.1
-  - commits: 15
-  - files changed: 37
-  - additions: 1596
-  - deletions: 108
-  - top directories: .github, CITATION.cff, README.md, docs/source, pyproject.toml, src/mjlab
-  - representative files:
-    - tests/test_fused_group.py (added, +364/-0)
-    - src/mjlab/actuator/fused_group.py (added, +223/-0)
-    - tests/test_rl_exporter.py (modified, +164/-1)
-    - tests/test_domain_randomization.py (modified, +121/-0)
-    - tests/test_spec_config.py (modified, +104/-0)
-    - src/mjlab/actuator/dc_actuator.py (modified, +56/-33)
-    - src/mjlab/actuator/actuator.py (modified, +58/-8)
-    - src/mjlab/rl/exporter_utils.py (modified, +52/-9)
 
 ### v1.5.0
 - 标题: mjlab v1.5.0
@@ -353,8 +279,15 @@ The full lineup covers geometry, bodies, visuals, cameras, and lights. Custom op
 https://github.com/user-attachmen...
 - 外链文档摘录:
   - https://skypilot.readthedocs.io/
-    NewAnnouncing SkyPilot Platform and our $20M seed→
-    Try SkyPilot PlatformTry Platform→
+    SkyPilot: Manage all your AI compute — SkyPilot DocsSkip to main content
+    Back to top
+    Ctrl+K
+    You are viewing the latest developer preview docs.Click hereto
+    view docs for the latest stable release.
+    - Slack
+    - Twitter
+    - GitHub
+    SkyPilot: Manage all your AI compute#
   - https://mujocolab.github.io/mjlab/main/index.html
     setup friction. It adopts the manager-based API introduced byIsaac Lab, where users compose
     - Sensors
@@ -522,392 +455,6 @@ This is an early beta release - we're actively implementing missing features and
 Thanks!
 
 # Tagged Repository Source Evidence
-
-## v1.5.3
-- README / repo positioning excerpt:
-![Project banner](https://raw.githubusercontent.com/mujocolab/mjlab/main/docs/source/_static/mjlab-banner.jpg)
-# mjlab
-[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/mujocolab/mjlab/ci.yml?branch=main)](https://github.com/mujocolab/mjlab/actions/workflows/ci.yml?query=branch%3Amain)
-[![Documentation](https://github.com/mujocolab/mjlab/actions/workflows/docs.yml/badge.svg)](https://mujocolab.github.io/mjlab/)
-[![License](https://img.shields.io/github/license/mujocolab/mjlab)](https://github.com/mujocolab/mjlab/blob/main/LICENSE)
-[![MuJoCo Warp](https://img.shields.io/badge/MuJoCo_Warp-3.10.0.2-blue)](https://github.com/google-deepmind/mujoco_warp/releases/tag/v3.10.0.2)
-[![Nightly Benchmarks](https://img.shields.io/badge/Nightly-Benchmarks-blue)](https://mujocolab.github.io/mjlab/nightly/)
-[![PyPI](https://img.shields.io/pypi/v/mjlab)](https://pypi.org/project/mjlab/)
-## Getting Started
-mjlab requires an NVIDIA GPU for training. macOS is supported for evaluation only.
-For alternative installation methods (PyPI, Docker), see the [Installation Guide](https://mujocolab.github.io/mjlab/main/source/installation.html).
-## Training Examples
-### 1. Velocity Tracking
-Train a Unitree G1 humanoid to follow velocity commands on flat terrain:
-uv run train Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs 4096
-**Multi-GPU Training:** Scale to multiple GPUs using `--gpu-ids`:
-uv run train Mjlab-Velocity-Flat-Unitree-G1 \
---gpu-ids "[0, 1]" \
---env.scene.num-envs 4096
-uv run play Mjlab-Velocity-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
-### 2. Motion Imitation
-uv run train Mjlab-Tracking-Flat-Unitree-G1 --registry-name your-org/motions/motion-name --env.scene.num-envs 4096
-uv run play Mjlab-Tracking-Flat-Unitree-G1 --wandb-run-path your-org/mjl...
-- High-signal repository paths at this tag:
-  - README.md
-  - docs/conf.py
-  - docs/index.rst
-  - scripts/cloud/README.md
-  - scripts/benchmarks/README.md
-  - docs/source/faq.rst
-  - docs/source/scene.rst
-  - docs/source/events.rst
-  - docs/source/actions.rst
-  - docs/source/metrics.rst
-  - docs/source/rewards.rst
-  - docs/source/terrain.rst
-- Changed high-signal files against previous included release:
-  - [M] docs/source/changelog.rst
-    Excerpt:
-    =========
-    Changelog
-    =========
-    Upcoming version (not yet released)
-    -----------------------------------
-    Added
-    ^^^^^
-    Changed
-    Version 1.5.3 (July 22, 2026)
-    - The Viser reward bar panel's term cap is now configurable via
-    ``ViewerConfig.reward_bar_max_terms``, so environments with more than 20
-    reward terms can show them all. Defaults to 20, preserving previous behavior.
-    :issue:`1079`
-    - Bumped ``pillow`` (12.3.0), ``onnx`` (1.22.0), and ``soupsieve`` (2.9.1) in the
-    - Fixed raycast sensor debug visualization and observations lagging one step
-    per-step motion instead of vertical. :issue:`998`
-    - Restored ONNX uploads and W&B run metadata for velocity and manipulation
-    training when using RSL-RL's current ``WandbLogWriter`` logger name.
-    - The Viser reward bar panel no longer *silently* drops reward terms beyond
-    environments with more than 20 reward terms had the overflow disappear from
-    the bar panel with no indication. :issue:`1079`
-    - Fixed the ``terrain_levels_vel`` curriculum promoting every env from level 0
-    to level 1 on the initial reset, ignoring ``max_init_terrain_level=0``. Before
-    the first step the robot sits at its spawn pose rather than a walked-to
-    that first reset. :issue:`1094`
-    - Fixed the velocity task's actor ``joint_pos`` observation not being biased by
-    See `discussion #1065 <https://github.com/mujocolab/mjlab/discussions/1065>`_.
-    - Hardened ``fit_terrain_normal`` against non-finite raycast hits. A single env
-    :issue:`912`
-    - Enabled ``obs_normalization`` on the Go1 velocity actor and critic to match
-    ``normal expects all elements of std >= 0.0`` crash. Note that Go1 velocity
-    longer load; retrain from scratch. :issue:`870` :issue:`1044` :issue:`1053`
-    - Fixed ``ContactSensor`` air-time tracking accumulating float32 sim-clock
-    The exact float64 substep ``dt`` is now accu...
-  - [M] src/mjlab/viewer/viewer_config.py
-    Excerpt:
-    The frame in which the camera position and target are defined.
-    Classes: ViewerConfig
-  - [M] src/mjlab/tasks/velocity/config/go1/rl_cfg.py
-    Excerpt:
-    RL configuration for Unitree Go1 velocity task.
-    Functions: unitree_go1_ppo_runner_cfg
-
-## v1.5.2
-- README / repo positioning excerpt:
-![Project banner](https://raw.githubusercontent.com/mujocolab/mjlab/main/docs/source/_static/mjlab-banner.jpg)
-# mjlab
-[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/mujocolab/mjlab/ci.yml?branch=main)](https://github.com/mujocolab/mjlab/actions/workflows/ci.yml?query=branch%3Amain)
-[![Documentation](https://github.com/mujocolab/mjlab/actions/workflows/docs.yml/badge.svg)](https://mujocolab.github.io/mjlab/)
-[![License](https://img.shields.io/github/license/mujocolab/mjlab)](https://github.com/mujocolab/mjlab/blob/main/LICENSE)
-[![MuJoCo Warp](https://img.shields.io/badge/MuJoCo_Warp-3.10.0.2-blue)](https://github.com/google-deepmind/mujoco_warp/releases/tag/v3.10.0.2)
-[![Nightly Benchmarks](https://img.shields.io/badge/Nightly-Benchmarks-blue)](https://mujocolab.github.io/mjlab/nightly/)
-[![PyPI](https://img.shields.io/pypi/v/mjlab)](https://pypi.org/project/mjlab/)
-## Getting Started
-mjlab requires an NVIDIA GPU for training. macOS is supported for evaluation only.
-For alternative installation methods (PyPI, Docker), see the [Installation Guide](https://mujocolab.github.io/mjlab/main/source/installation.html).
-## Training Examples
-### 1. Velocity Tracking
-Train a Unitree G1 humanoid to follow velocity commands on flat terrain:
-uv run train Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs 4096
-**Multi-GPU Training:** Scale to multiple GPUs using `--gpu-ids`:
-uv run train Mjlab-Velocity-Flat-Unitree-G1 \
---gpu-ids "[0, 1]" \
---env.scene.num-envs 4096
-uv run play Mjlab-Velocity-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
-### 2. Motion Imitation
-uv run train Mjlab-Tracking-Flat-Unitree-G1 --registry-name your-org/motions/motion-name --env.scene.num-envs 4096
-uv run play Mjlab-Tracking-Flat-Unitree-G1 --wandb-run-path your-org/mjl...
-- High-signal repository paths at this tag:
-  - README.md
-  - docs/conf.py
-  - docs/index.rst
-  - scripts/cloud/README.md
-  - scripts/benchmarks/README.md
-  - docs/source/faq.rst
-  - docs/source/scene.rst
-  - docs/source/events.rst
-  - docs/source/actions.rst
-  - docs/source/metrics.rst
-  - docs/source/rewards.rst
-  - docs/source/terrain.rst
-- Changed high-signal files against previous included release:
-  - [M] docs/source/changelog.rst
-    Excerpt:
-    =========
-    Changelog
-    =========
-    Upcoming version (not yet released)
-    -----------------------------------
-    Added
-    ^^^^^
-    Changed
-    Version 1.5.2 (July 17, 2026)
-    - Fixed CUDA illegal memory accesses when domain randomization triggers
-    ``set_const`` with multiple environments. ``actuator_acc0`` is now expanded
-    - Fixed ``MaterialCfg.reflectance`` being ignored when building the MuJoCo
-    Version 1.5.1 (July 15, 2026)
-    - Added ``MeshCfg``, a spec editor that matches mesh assets by name and edits
-    - Added ``SimulationCfg.broadphase`` and ``SimulationCfg.broadphase_filter``
-    to configure MuJoCo Warp's broadphase collision algorithm and
-    - Enabled skybox rendering for camera sensors. Contribution by @bd-pmorais.
-    - Bumped the minimum ``mujoco-warp`` to 3.10.0.2, which fixes ``qfrc_constraint``
-    being populated incorrectly across vectorized environments (:issue:`1086`).
-    Earlier 3.10.0.x releases are no longer supported.
-    - Command delay on fusable actuators (ideal PD, DC motor) now applies one shared
-    lag per environment across all fused actuators sharing a delay config, matching
-    (:issue:`1035`).
-    - Fixed ``TerrainGenerator`` overwriting custom geom names set by sub-terrain
-    - Fixed ``TorchArray`` not expanding world-shared model fields to ``nworld``
-    with mujoco_warp 3.10.0.2, which allocates them as real size-1 arrays
-    instead of stride-0 broadcast views. Multi-env indexing of fields like
-    ``soft_joint_pos_limits`` raised ``IndexError`` during resets (:issue:`1093`).
-    - Fixed ``mdp.bad_orientation`` returning NaN when float32 rounding in
-    outside ``[-1, 1]``, making ``torch.acos`` return NaN and silently
-    suppressing the termination for flipped robots. The argument is now clamped
-    to ``[-1, 1]``.
-    - Fixed a crash when using command delay on ideal PD (or other custom)
-    config into a single gather, delay,...
-  - [M] docs/source/randomization.rst
-    Excerpt:
-    .. _domain_randomization:
-    Domain Randomization
-    ====================
-    Domain randomization varies physical parameters during training so that policies
-    are robust to modeling errors and real-world variation. This guide shows
-    how to attach randomization terms to an environment using ``EventTermCfg`` and
-    the ``dr`` module.
-    Quick Start
-    from mjlab.managers.scene_entity_config import SceneEntityCfg
-    "asset_cfg": SceneEntityCfg("robot", geom_names=[".*_foot.*"]),
-    "ranges": (0.3, 1.2),
-    automatically tracks the fields that need to be expanded for per-world
-    model). For example, ``dr.geom_friction`` writes to ``sim.model.geom_friction``,
-    :header-rows: 1
-    :widths: 28 18 34 20
-    - MuJoCo field
-    - Description
-    - Notes
-    - ``geom_friction``
-    - Sliding, torsional, and rolling friction coefficients
-    - Default axis: 0 (tangential only)
-    - ``geom_pos``
-    - Position of the geom in the parent body frame
-    - ``geom_quat``
-    - Orientation of the geom frame
-    - Accepts roll/pitch/yaw ranges (radians); composes with default
-    - ``geom_rgba``
-    - Color and transparency (RGBA)
-    - ``geom_size``
-    - Geom-specific size parameters (radius, half-lengths, etc.)
-    - Automatically recomputes ``geom_rbound`` and ``geom_aabb``
-    - ``geom_matid``
-    - Which baked material the geom renders with
-    - Samples uniformly from ``asset_cfg.material_names``
-    :header-rows: 1
-    :widths: 28 18 34 20
-    - MuJoCo field
-    - Description
-    - Notes
-    - ``body_mass``
-    - Mass of the body
-    - Triggers ``set_const`` recomputation
-    - ``body_ipos``
-    - Center of mass position relative to the body frame
-    - Triggers ``set_const``
-    - ``body_pos``
-    - Position of the body frame in the parent frame
-    - Triggers ``set_const_0``
-    - ``body_quat``
-    - Orientation of the body frame
-    - Accepts roll/pitch/yaw ranges (radians); composes with default;
-    triggers ``set_const_0``
-    :header-rows: 1
-    :widths: 28 1...
-  - [M] src/mjlab/utils/spec_config.py
-    Excerpt:
-    Base class for all MuJoCo spec configurations.
-    Classes: SpecCfg, TextureCfg, MaterialCfg, MeshCfg, CollisionCfg, LightCfg, CameraCfg
-
-## v1.5.1
-- README / repo positioning excerpt:
-![Project banner](https://raw.githubusercontent.com/mujocolab/mjlab/main/docs/source/_static/mjlab-banner.jpg)
-# mjlab
-[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/mujocolab/mjlab/ci.yml?branch=main)](https://github.com/mujocolab/mjlab/actions/workflows/ci.yml?query=branch%3Amain)
-[![Documentation](https://github.com/mujocolab/mjlab/actions/workflows/docs.yml/badge.svg)](https://mujocolab.github.io/mjlab/)
-[![License](https://img.shields.io/github/license/mujocolab/mjlab)](https://github.com/mujocolab/mjlab/blob/main/LICENSE)
-[![MuJoCo Warp](https://img.shields.io/badge/MuJoCo_Warp-3.10.0.2-blue)](https://github.com/google-deepmind/mujoco_warp/releases/tag/v3.10.0.2)
-[![Nightly Benchmarks](https://img.shields.io/badge/Nightly-Benchmarks-blue)](https://mujocolab.github.io/mjlab/nightly/)
-[![PyPI](https://img.shields.io/pypi/v/mjlab)](https://pypi.org/project/mjlab/)
-## Getting Started
-mjlab requires an NVIDIA GPU for training. macOS is supported for evaluation only.
-For alternative installation methods (PyPI, Docker), see the [Installation Guide](https://mujocolab.github.io/mjlab/main/source/installation.html).
-## Training Examples
-### 1. Velocity Tracking
-Train a Unitree G1 humanoid to follow velocity commands on flat terrain:
-uv run train Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs 4096
-**Multi-GPU Training:** Scale to multiple GPUs using `--gpu-ids`:
-uv run train Mjlab-Velocity-Flat-Unitree-G1 \
---gpu-ids "[0, 1]" \
---env.scene.num-envs 4096
-uv run play Mjlab-Velocity-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
-### 2. Motion Imitation
-uv run train Mjlab-Tracking-Flat-Unitree-G1 --registry-name your-org/motions/motion-name --env.scene.num-envs 4096
-uv run play Mjlab-Tracking-Flat-Unitree-G1 --wandb-run-path your-org/mjl...
-- High-signal repository paths at this tag:
-  - README.md
-  - docs/conf.py
-  - docs/index.rst
-  - scripts/cloud/README.md
-  - scripts/benchmarks/README.md
-  - docs/source/faq.rst
-  - docs/source/scene.rst
-  - docs/source/events.rst
-  - docs/source/actions.rst
-  - docs/source/metrics.rst
-  - docs/source/rewards.rst
-  - docs/source/terrain.rst
-- Changed high-signal files against previous included release:
-  - [M] README.md
-    Excerpt:
-    ![Project banner](https://raw.githubusercontent.com/mujocolab/mjlab/main/docs/source/_static/mjlab-banner.jpg)
-    # mjlab
-    [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/mujocolab/mjlab/ci.yml?branch=main)](https://github.com/mujocolab/mjlab/actions/workflows/ci.yml?query=branch%3Amain)
-    [![Documentation](https://github.com/mujocolab/mjlab/actions/workflows/docs.yml/badge.svg)](https://mujocolab.github.io/mjlab/)
-    [![License](https://img.shields.io/github/license/mujocolab/mjlab)](https://github.com/mujocolab/mjlab/blob/main/LICENSE)
-    [![MuJoCo Warp](https://img.shields.io/badge/MuJoCo_Warp-3.10.0.2-blue)](https://github.com/google-deepmind/mujoco_warp/releases/tag/v3.10.0.2)
-    [![Nightly Benchmarks](https://img.shields.io/badge/Nightly-Benchmarks-blue)](https://mujocolab.github.io/mjlab/nightly/)
-    [![PyPI](https://img.shields.io/pypi/v/mjlab)](https://pypi.org/project/mjlab/)
-    ## Getting Started
-    mjlab requires an NVIDIA GPU for training. macOS is supported for evaluation only.
-    For alternative installation methods (PyPI, Docker), see the [Installation Guide](https://mujocolab.github.io/mjlab/main/source/installation.html).
-    ## Training Examples
-    ### 1. Velocity Tracking
-    Train a Unitree G1 humanoid to follow velocity commands on flat terrain:
-    uv run train Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs 4096
-    **Multi-GPU Training:** Scale to multiple GPUs using `--gpu-ids`:
-    uv run train Mjlab-Velocity-Flat-Unitree-G1 \
-    --gpu-ids "[0, 1]" \
-    --env.scene.num-envs 4096
-    uv run play Mjlab-Velocity-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
-    ### 2. Motion Imitation
-    uv run train Mjlab-Tracking-Flat-Unitree-G1 --registry-name your-org/motions/motion-name --env.scene.num-envs 4096
-    uv run play Mjlab-Tracking-Flat-Unitree-G1 --wandb-run-path your-org/mjl...
-  - [M] docs/source/changelog.rst
-    Excerpt:
-    =========
-    Changelog
-    =========
-    Upcoming version (not yet released)
-    -----------------------------------
-    Added
-    ^^^^^
-    Changed
-    Version 1.5.1 (July 15, 2026)
-    - Added ``MeshCfg``, a spec editor that matches mesh assets by name and edits
-    - Added ``SimulationCfg.broadphase`` and ``SimulationCfg.broadphase_filter``
-    to configure MuJoCo Warp's broadphase collision algorithm and
-    - Enabled skybox rendering for camera sensors.
-    - Bumped the minimum ``mujoco-warp`` to 3.10.0.2, which fixes ``qfrc_constraint``
-    being populated incorrectly across vectorized environments (:issue:`1086`).
-    Earlier 3.10.0.x releases are no longer supported.
-    - Command delay on fusable actuators (ideal PD, DC motor) now applies one shared
-    lag per environment across all fused actuators sharing a delay config, matching
-    (:issue:`1035`).
-    - Fixed ``TerrainGenerator`` overwriting custom geom names set by sub-terrain
-    - Fixed ``TorchArray`` not expanding world-shared model fields to ``nworld``
-    with mujoco_warp 3.10.0.2, which allocates them as real size-1 arrays
-    instead of stride-0 broadcast views. Multi-env indexing of fields like
-    ``soft_joint_pos_limits`` raised ``IndexError`` during resets (:issue:`1093`).
-    - Fixed ``mdp.bad_orientation`` returning NaN when float32 rounding in
-    outside ``[-1, 1]``, making ``torch.acos`` return NaN and silently
-    suppressing the termination for flipped robots. The argument is now clamped
-    to ``[-1, 1]``.
-    - Fixed a crash when using command delay on ideal PD (or other custom)
-    config into a single gather, delay, control-law evaluation, and control
-    write, removing per-group host overhead (:issue:`1035`).
-    Version 1.5.0 (June 28, 2026)
-    - Added ``reduce="max"`` to ``MetricsTermCfg`` for reporting episode-peak values
-    - Added ``BuiltinDcMotorActuator``, a native MuJoCo ``<dcmotor>`` wrapper.
-    Sup...
-  - [M] docs/source/randomization.rst
-    Excerpt:
-    .. _domain_randomization:
-    Domain Randomization
-    ====================
-    Domain randomization varies physical parameters during training so that policies
-    are robust to modeling errors and real-world variation. This guide shows
-    how to attach randomization terms to an environment using ``EventTermCfg`` and
-    the ``dr`` module.
-    Quick Start
-    from mjlab.managers.scene_entity_config import SceneEntityCfg
-    "asset_cfg": SceneEntityCfg("robot", geom_names=[".*_foot.*"]),
-    "ranges": (0.3, 1.2),
-    automatically tracks the fields that need to be expanded for per-world
-    model). For example, ``dr.geom_friction`` writes to ``sim.model.geom_friction``,
-    :header-rows: 1
-    :widths: 28 18 34 20
-    - MuJoCo field
-    - Description
-    - Notes
-    - ``geom_friction``
-    - Sliding, torsional, and rolling friction coefficients
-    - Default axis: 0 (tangential only)
-    - ``geom_pos``
-    - Position of the geom in the parent body frame
-    - ``geom_quat``
-    - Orientation of the geom frame
-    - Accepts roll/pitch/yaw ranges (radians); composes with default
-    - ``geom_rgba``
-    - Color and transparency (RGBA)
-    - ``geom_size``
-    - Geom-specific size parameters (radius, half-lengths, etc.)
-    - Automatically recomputes ``geom_rbound`` and ``geom_aabb``
-    - ``geom_matid``
-    - Which baked material the geom renders with
-    - Samples uniformly from ``asset_cfg.material_names``
-    :header-rows: 1
-    :widths: 28 18 34 20
-    - MuJoCo field
-    - Description
-    - Notes
-    - ``body_mass``
-    - Mass of the body
-    - Triggers ``set_const`` recomputation
-    - ``body_ipos``
-    - Center of mass position relative to the body frame
-    - Triggers ``set_const``
-    - ``body_pos``
-    - Position of the body frame in the parent frame
-    - Triggers ``set_const_0``
-    - ``body_quat``
-    - Orientation of the body frame
-    - Accepts roll/pitch/yaw ranges (radians); composes with default;
-    triggers ``set_const_0``
-    :header-rows: 1
-    :widths: 28 1...
-  - [M] tests/test_spec_config.py
-    Excerpt:
-    Tests for spec_config.py.
-    Functions: simple_robot_xml, multi_geom_spec, test_collision_basic_properties, test_collision_regex_matching, test_collision_dict_field_resolution, test_collision_margin_gap_solmix, test_collision_margin_gap_solmix_dict, test_collision_disable_other_geoms, test_collision_validation, _sphere_points, multi_mesh_spec, _hull_numvert
-  - [M] src/mjlab/utils/spec_config.py
-    Excerpt:
-    Base class for all MuJoCo spec configurations.
-    Classes: SpecCfg, TextureCfg, MaterialCfg, MeshCfg, CollisionCfg, LightCfg, CameraCfg
 
 ## v1.5.0
 - README / repo positioning excerpt:
@@ -1298,4 +845,423 @@ uv run play Mjlab-Tracking-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-i
     --gpu-ids "[0, 1]" \
     --env.scene.num-envs 4096
     uv run play Mjlab-Velocity-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
-    ### 2. Motion Imitati...
+    ### 2. Motion Imitation
+    uv run train Mjlab-Tracking-Flat-Unitree-G1 --registry-name your-org/motions/motion-name --env.scene.num-envs 4096
+    uv run play Mjlab-Tracking-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
+    ### 3. Sanity-check with Du...
+  - [M] docs/source/changelog.rst
+    Excerpt:
+    =========
+    Changelog
+    =========
+    Version 1.4.0 (May 26, 2026)
+    ----------------------------
+    Added
+    ^^^^^
+    - Added ``BuiltinPdActuator``, the implicit-integration version of
+    explicit Python PD would diverge, which matters when you want to
+    ``jnt_actfrcrange`` (or ``tendon_actfrcrange``). Supported by
+    - Added ``mdp.projected_gravity_from_sensor``, an observation that derives
+    randomization (e.g. via ``dr.site_quat``). Go1 and G1 ship an
+    - Added ``DebugVisualizer.add_box`` for drawing an axis-oriented box
+    primitive, mirroring ``add_ellipsoid``. Supported by both the native
+    and Viser viewers. ``size`` is the box half-extents (:issue:`992`).
+    - Added ``--log-root`` CLI option to ``train``, ``play``, and ``evaluate``
+    - ``RewardManager``, ``TerminationManager``, and ``MetricsManager`` now
+    - Added ``ContactSensor.primary_names`` property to expose the resolved
+    to the primary it belongs to (:issue:`914`).
+    - Added per-world mesh variant support via ``VariantEntityCfg``. Each
+    world in a batched simulation can now use a different mesh asset for
+    the same logical entity (e.g. world 0 holds a cube, world 1 a
+    spec callables; the optional ``assignment`` field controls how worlds
+    per-world arrays in the Warp model, so domain randomization, the
+    :ref:`heterogeneous_worlds` for usage. With help from @XiangruiJiang.
+    - Per-world mesh variants now support per-variant materials and textures.
+    ``geom_dataid`` table. Variants without a material get ``matid = -1``.
+    - ``Entity`` now raises a clear error at construction when its spec contains
+    - Changed ``compute_root_relative_mpkpe`` to re-anchor the reference to the
+    robot's root each step, removing yaw drift as well as translation so it
+    - Changed ``compute_joint_velocity_error`` from an L2 norm to a per-joint
+    - Bumped ``mujoco`` to 3.8 and ``mujoco-warp``...
+  - [M] docs/source/faq.rst
+    Excerpt:
+    .. _faq:
+    FAQ & Troubleshooting
+    =====================
+    This page collects common questions about **platform support**, **performance**,
+    **training stability**, and **visualization**, along with practical debugging
+    tips and links to further resources.
+    Platform Support
+    ----------------
+    - **Training is not recommended on macOS**, as it lacks GPU acceleration.
+    - **Evaluation works**, but is significantly slower than on Linux with CUDA.
+    - Windows support may **lag behind** Linux.
+    - Windows will be **tested less frequently**, since Linux is the primary
+    - Community contributions that improve Windows support are very welcome.
+    Not all CUDA versions are supported by MuJoCo Warp.
+    - See `mujoco_warp#101 <https://github.com/google-deepmind/mujoco_warp/issues/101>`_
+    - **Recommended**: CUDA **12.4+** (for conditional execution support in CUDA
+    on the GPU. See `issue #949
+    <https://github.com/mujocolab/mjlab/issues/949>`_ for background.
+    - **RTX 40-series GPUs** (or newer)
+    - **L40s, H100**
+    Does mjlab support multi-GPU training?
+    Yes, mjlab supports **multi-GPU distributed training** using
+    - Use ``--gpu-ids "[0, 1]"`` (or ``--gpu-ids all``) when running the ``train``
+    - See the :doc:`training/distributed_training` for configuration details and examples.
+    RuntimeError: normal expects all elements of std >= 0.0
+    1. **For training stability** - NaN termination
+    # In your ManagerBasedRlEnvCfg subclass:
+    # Your other terminations...
+    (for example, NaNs occur exactly when the agent tries to grasp an object),
+    2. **For debugging** - NaN guard
+    - Inspect the simulation state at the moment NaNs appear.
+    - Build a minimal reproducible example (MRE).
+    - Report potential framework bugs to the
+    uv run export-scene g1 --output-dir /tmp/g1
+    inspection or diffing. This is useful for verifying that task configuration...
+  - [M] docs/source/entity/index.rst
+    Excerpt:
+    .. _entity:
+    Entity
+    ======
+    An ``Entity`` represents a physical object in the simulation: a robot, a
+    manipulated object, or a fixed fixture like a table. It is the central
+    abstraction in mjlab's physics layer.
+    A single ``Entity`` class covers all variants (contrast Isaac Lab, which
+    splits this across ``Articulation``, ``RigidObject``, and several other
+    A *fixed-base* entity is welded to the world and has no free joint. A
+    *floating-base* entity has a free joint giving it 6-DOF movement.
+    :header-rows: 1
+    :widths: 30 25 15 15 15
+    - Example
+    - ``is_fixed_base``
+    - ``is_articulated``
+    - ``is_actuated``
+    - Table, wall
+    - True
+    - False
+    - False
+    - Robot arm, door
+    - True
+    - True
+    - True/False
+    - Box, ball, mug
+    - False
+    - False
+    - False
+    - Humanoid, quadruped
+    - False
+    - True
+    - True/False
+    `mocap body <https://mujoco.readthedocs.io/en/stable/modeling.html#mocap-bodies>`_
+    welded to the world origin. The wrapping is transparent, but
+    event config; without one, every fixed-base entity will remain at
+    the origin. See the :ref:`FAQ <faq>` for a full example. Mocap
+    Configuring an entity
+    An actuated robot uses more of the interface:
+    robot_cfg = EntityCfg(
+    pos=(0.0, 0.0, 0.8),
+    joint_pos={".*_hip_.*": 0.5, ".*": 0.0},
+    stiffness={".*": 50.0},
+    damping={".*": 5.0},
+    spec_fn = lambda: mujoco.MjSpec.from_file("robot.xml")
+    return mujoco.MjSpec.from_file(str(ROBOT_XML))
+    `MjSpec edits <https://mujoco.readthedocs.io/en/stable/python.html#spec>`_
+    return the entity to its initial configuration.
+    pos=(0.0, 0.0, 0.8),       # root position
+    rot=(1.0, 0.0, 0.0, 0.0),  # root quaternion (w, x, y, z)
+    ".*": 0.0,              # all joints to zero
+    ".*_hip_.*": 0.5,       # then override hips to 0.5
+    Actuator configuration. Only needed for entities that have actuated
+    ``soft_joint_pos_limit_factor`` (default 1.0) shrinks the joint...
+  - [A] docs/source/entity/per_world_mesh.rst
+    Excerpt:
+    .. _heterogeneous_worlds:
+    Heterogeneous Worlds
+    ====================
+    mjlab can run a single batched simulation in which different parallel
+    worlds use different mesh assets for the same logical entity. World 0
+    may simulate a cube, world 1 a sphere, world 2 a bowl. All worlds
+    share the same compiled scene and the same body and joint structure;
+    only the meshes and the per-geom attributes that travel with them
+    worlds. Articulated props work too (you can have a hinge or slide
+    Say you want some parallel worlds to hold a sphere and others to hold
+    mesh.make_sphere(subdivision=3)
+    mesh.scale[:] = (0.05,) * 3
+    body = spec.worldbody.add_body(name="prop")
+    mesh.make_cone(nedge=16, radius=0.04)
+    body = spec.worldbody.add_body(name="prop")
+    assignment={"cone": 2.0},  # twice as many cones as spheres
+    init_state=EntityCfg.InitialStateCfg(pos=(0.0, 0.0, 0.2)),
+    num_envs=4096,
+    Twice as many worlds will hold a cone as a sphere. Variants not listed
+    in the ``assignment`` dict default to weight 1.0; omit ``assignment``
+    mujoco_warp's ``geom_contype``/``geom_conaffinity`` are 1D shared
+    (not per-world), so a slot's role is fixed across worlds by
+    A worked example
+    Say variant ``sphere`` has 1 visual mesh geom and 2 collision mesh
+    geoms on the prop body, and variant ``cone`` has 1 visual mesh geom
+    and 4 collision mesh geoms on the same body.
+    [coll]   sphere_col_0            [coll]   cone_col_0
+    [coll]   sphere_col_1            [coll]   cone_col_1
+    [coll]   cone_col_2
+    [coll]   cone_col_3
+    :header-rows: 1
+    :widths: 8 18 8 12 27 27
+    - body_path
+    - role
+    - ordinal
+    - sphere fills with
+    - cone fills with
+    * - 0
+    - /prop
+    - visual
+    - 0
+    - sphere_vis
+    - cone_vis
+    * - 1
+    - /prop
+    - collision
+    - 0
+    - sphere_col_0
+    - cone_col_0
+    * - 2
+    - /prop
+    - collision
+    - 1
+    - sphere_col_1
+    - cone_col_1
+    * - 3
+    - /prop
+    - collision
+    - 2
+    - *(unfilled)*
+  - [M] docs/source/sensors/index.rst
+    Excerpt:
+    .. _sensors:
+    Sensors
+    =======
+    As described in :ref:`entity`, sensors sit between ``EntityData`` and
+    raw simulation arrays in mjlab's data access hierarchy. At their
+    simplest, they wrap MuJoCo sensor primitives with a clean interface
+    that maps to real robot hardware. Beyond wrapping, they are a general
+    abstraction for transforming simulation data into structured outputs:
+    Sensors are configured at the **scene level**, not on individual entities. A
+    sensor can reference an entity element (a contact sensor on the robot's
+    # A robot with an IMU accelerometer and foot contact detection.
+    entities={"robot": robot_cfg},
+    obj=ObjRef(type="site", name="imu_site", entity="robot"),
+    mode="geom", pattern=r".*_foot$", entity="robot",
+    # Access at runtime.
+    imu = env.scene["robot/imu_acc"].data        # [B, 3] acceleration
+    feet.force                                    # [B, P, 3] contact force per foot
+    ``dim`` depends on the sensor type (3 for vectors, 4 for quaternions,
+    1 for scalars).
+    entity ``"robot"`` becomes ``"robot/imu_acc"``).
+    # Accelerometer attached to a site.
+    obj=ObjRef(type="site", name="imu_site", entity="robot"),
+    # Joint limit sensor with output clamping.
+    obj=ObjRef(type="joint", name="knee_joint", entity="robot"),
+    cutoff=0.1,
+    # Relative frame position (end-effector w.r.t. base).
+    obj=ObjRef(type="body", name="end_effector", entity="robot"),
+    ref=ObjRef(type="body", name="base", entity="robot"),
+    <!-- In robot.xml -->
+    # Access by prefixed name.
+    imu = env.scene["robot/trunk_imu"]
+    hip = env.scene["robot/hip_sensor"]
+    care about, reduces multiple contacts per element down to a fixed count,
+    `contact sensor <https://mujoco.readthedocs.io/en/stable/XMLreference.html#sensor-contact>`_.
+    Contacts are pairwise: you typically want to know "did the robot's feet
+    # Foot geoms contacting the te...
+  - [M] docs/source/sensors/rgbd_camera.rst
+    Excerpt:
+    .. _rgbd_camera:
+    RGB-D Camera
+    ============
+    ``CameraSensor`` renders RGB and depth images on the GPU using MuJoCo
+    Warp's ray-traced rendering pipeline. It can either wrap an existing
+    MuJoCo camera defined in your XML or create a new one programmatically.
+    Quick start
+    -----------
+    # Wrap an existing MuJoCo camera from the robot's XML.
+    camera_name="robot/wrist_camera",
+    width=160,
+    height=120,
+    entities={"robot": robot_cfg},
+    # Access at runtime.
+    data.rgb      # [B, 120, 160, 3] uint8
+    data.depth    # [B, 120, 160, 1] float32
+    # Wrap the camera named "front_cam" in the robot's XML.
+    camera_name="robot/front_cam",
+    # Fixed overhead camera on the worldbody.
+    pos=(0.0, 0.0, 2.0),
+    quat=(0.0, 0.707, 0.707, 0.0),
+    fovy=60.0,
+    width=320,
+    height=240,
+    MuJoCo supports two ways to define a camera's projection, and both
+    <https://mujoco.readthedocs.io/en/stable/XMLreference.html#body-camera>`_
+    than the worldbody. The ``pos`` and ``quat`` are then relative to the
+    # Camera mounted on the robot's end-effector.
+    parent_body="robot/link_6",
+    pos=(0.0, 0.0, 0.05),
+    quat=(1.0, 0.0, 0.0, 0.0),
+    fovy=45.0,
+    width=160,
+    height=120,
+    :header-rows: 1
+    :widths: 15 20 65
+    - Shape
+    - Description
+    - ``[B, H, W, 3]`` uint8
+    - Color image. Rendered as packed ABGR uint32 by MuJoCo Warp,
+    - ``[B, H, W, 1]`` float32
+    - Depth image. Values are distances from the camera plane.
+    - ``[B, H, W, 2]`` int32
+    - Typed segmentation. Channel 0 stores object IDs and channel 1 stores
+    MuJoCo object types. Background pixels are ``(-1, -1)``.
+    # These two cameras must agree on render settings.
+    camera_name="robot/front_cam",
+    enabled_geom_groups=(0, 1, 2),
+    camera_name="robot/wrist_cam",
+    enabled_geom_groups=(0, 1, 2),  # Must match cam_a
+    rgb: Tensor | None      # [B, H, W, 3] uint8
+    depth: Tensor | None    # [B, H, W, 1] float32
+    segmentation: Tensor |...
+  - [M] docs/source/tutorials/cartpole.rst
+    Excerpt:
+    .. _tutorial-cartpole:
+    Cartpole: Building Your First Environment
+    =========================================
+    This tutorial walks through building a cartpole swingup task from scratch.
+    A cart slides along a rail with a pole attached by a hinge. The agent
+    applies force to the cart to swing the pole up and balance it.
+    .. raw:: html
+    <video style="width:80%; display:block; margin:0 auto;" autoplay loop muted playsinline>
+    <source src="../../_static/tutorials/cartpole_swingup.mp4" type="video/mp4">
+    <p style="text-align:center; color:#666; font-size:0.9em; margin-top:0.5em;">
+    A trained agent performing the swingup task.
+    <body name="cart" pos="0 0 1">
+    <joint name="slider" type="slide" axis="1 0 0"
+    limited="true" range="-1.8 1.8" damping="5e-4"/>
+    <geom name="cart" type="box" size="0.2 0.15 0.1" mass="1"/>
+    <body name="pole_1" childclass="pole">
+    <joint name="hinge_1"/>
+    <geom name="pole_1"/>
+    <motor name="slide" joint="slider" gear="10"
+    ctrllimited="true" ctrlrange="-1 1"/>
+    The motor has gear ratio 10 and control range [-1, 1], so the maximum
+    force is 10 N. ``ctrllimited`` tells MuJoCo to clamp the control signal
+    each piece, then assemble them into a complete config at the end.
+    static table to an articulated robot. The ``EntityCfg`` wraps a MuJoCo
+    XML and, optionally, actuator and initial state configurations. At
+    function that loads the XML, an actuator configuration, and an initial
+    # Load the XML.
+    # Tell mjlab to use the motor defined in the XML as is.
+    The pole starts pointing down (``hinge = pi``). The agent must swing
+    joint_pos={"slider": 0.0, "hinge_1": math.pi},
+    joint_vel={".*": 0.0},
+    The pole starts upright (``hinge = 0``). The agent only needs to
+    joint_pos={"slider": 0.0, "hinge_1": 0.0},
+    joint_vel={".*": 0.0},
+    # Bundle the spec loader, actuator, and initial state into one co...
+  - [A] AGENTS.md
+    Excerpt:
+    CLAUDE.md
+  - [M] src/mjlab/rl/config.py
+    Excerpt:
+    RSL-RL configuration.
+    Classes: RslRlModelCfg, RslRlPpoAlgorithmCfg, RslRlBaseRunnerCfg, RslRlOnPolicyRunnerCfg
+
+## v1.3.0
+- README / repo positioning excerpt:
+![Project banner](https://raw.githubusercontent.com/mujocolab/mjlab/main/docs/source/_static/mjlab-banner.jpg)
+# mjlab
+[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/mujocolab/mjlab/ci.yml?branch=main)](https://github.com/mujocolab/mjlab/actions/workflows/ci.yml?query=branch%3Amain)
+[![Documentation](https://github.com/mujocolab/mjlab/actions/workflows/docs.yml/badge.svg)](https://mujocolab.github.io/mjlab/)
+[![License](https://img.shields.io/github/license/mujocolab/mjlab)](https://github.com/mujocolab/mjlab/blob/main/LICENSE)
+[![Nightly Benchmarks](https://img.shields.io/badge/Nightly-Benchmarks-blue)](https://mujocolab.github.io/mjlab/nightly/)
+[![PyPI](https://img.shields.io/pypi/v/mjlab)](https://pypi.org/project/mjlab/)
+mjlab combines [Isaac Lab](https://github.com/isaac-sim/IsaacLab)'s manager-based API with [MuJoCo Warp](https://github.com/google-deepmind/mujoco_warp), a GPU-accelerated version of [MuJoCo](https://github.com/google-deepmind/mujoco).
+## Getting Started
+mjlab requires an NVIDIA GPU for training. macOS is supported for evaluation only.
+For alternative installation methods (PyPI, Docker), see the [Installation Guide](https://mujocolab.github.io/mjlab/main/source/installation.html).
+## Training Examples
+### 1. Velocity Tracking
+Train a Unitree G1 humanoid to follow velocity commands on flat terrain:
+uv run train Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs 4096
+**Multi-GPU Training:** Scale to multiple GPUs using `--gpu-ids`:
+uv run train Mjlab-Velocity-Flat-Unitree-G1 \
+--gpu-ids "[0, 1]" \
+--env.scene.num-envs 4096
+uv run play Mjlab-Velocity-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
+### 2. Motion Imitation
+uv run train Mjlab-Tracking-Flat-Unitree-G1 --registry-name your-org/motions/motion-name --env....
+- High-signal repository paths at this tag:
+  - README.md
+  - docs/conf.py
+  - docs/index.rst
+  - scripts/cloud/README.md
+  - scripts/benchmarks/README.md
+  - docs/source/faq.rst
+  - docs/source/scene.rst
+  - docs/source/events.rst
+  - docs/source/actions.rst
+  - docs/source/metrics.rst
+  - docs/source/rewards.rst
+  - docs/source/terrain.rst
+- Changed high-signal files against previous included release:
+  - [M] README.md
+    Excerpt:
+    ![Project banner](https://raw.githubusercontent.com/mujocolab/mjlab/main/docs/source/_static/mjlab-banner.jpg)
+    # mjlab
+    [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/mujocolab/mjlab/ci.yml?branch=main)](https://github.com/mujocolab/mjlab/actions/workflows/ci.yml?query=branch%3Amain)
+    [![Documentation](https://github.com/mujocolab/mjlab/actions/workflows/docs.yml/badge.svg)](https://mujocolab.github.io/mjlab/)
+    [![License](https://img.shields.io/github/license/mujocolab/mjlab)](https://github.com/mujocolab/mjlab/blob/main/LICENSE)
+    [![Nightly Benchmarks](https://img.shields.io/badge/Nightly-Benchmarks-blue)](https://mujocolab.github.io/mjlab/nightly/)
+    [![PyPI](https://img.shields.io/pypi/v/mjlab)](https://pypi.org/project/mjlab/)
+    mjlab combines [Isaac Lab](https://github.com/isaac-sim/IsaacLab)'s manager-based API with [MuJoCo Warp](https://github.com/google-deepmind/mujoco_warp), a GPU-accelerated version of [MuJoCo](https://github.com/google-deepmind/mujoco).
+    ## Getting Started
+    mjlab requires an NVIDIA GPU for training. macOS is supported for evaluation only.
+    For alternative installation methods (PyPI, Docker), see the [Installation Guide](https://mujocolab.github.io/mjlab/main/source/installation.html).
+    ## Training Examples
+    ### 1. Velocity Tracking
+    Train a Unitree G1 humanoid to follow velocity commands on flat terrain:
+    uv run train Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs 4096
+    **Multi-GPU Training:** Scale to multiple GPUs using `--gpu-ids`:
+    uv run train Mjlab-Velocity-Flat-Unitree-G1 \
+    --gpu-ids "[0, 1]" \
+    --env.scene.num-envs 4096
+    uv run play Mjlab-Velocity-Flat-Unitree-G1 --wandb-run-path your-org/mjlab/run-id
+    ### 2. Motion Imitation
+    uv run train Mjlab-Tracking-Flat-Unitree-G1 --registry-name your-org/motions/motion-name --env....
+  - [M] docs/conf.py
+    Excerpt:
+    Suppress the ugly __init__ signature for dataclass Cfg classes.
+    Functions: skip_member, process_signature, process_docstring, setup
+  - [M] docs/index.rst
+    Excerpt:
+    Welcome to mjlab!
+    =================
+    .. figure:: source/_static/mjlab-banner.jpg
+    :width: 100%
+    :alt: mjlab
+    mjlab is a lightweight, open-source framework for robot learning that
+    combines GPU-accelerated simulation with composable environments and minimal
+    setup friction. It adopts the manager-based API introduced by
+    - **Composable environments:** users define observations, rewards,
+    - **Minimal dependencies:** single-command install via ``uv``, low startup
+    - **Direct MuJoCo data structures:** native ``MjModel``/``MjData`` access
+    - **PyTorch-native:** observations, rewards, and actions are PyTorch
+    :maxdepth: 1
+    source/tutorials
+    :maxdepth: 1
+    :maxdepth: 1
+    source/environment_config
+    :maxdepth: 1
+    :maxdepth: 2
+    :maxdepth: 1
+    mjlab is licensed under the Apache License, Version 2.0.
+    @article{Zak...
