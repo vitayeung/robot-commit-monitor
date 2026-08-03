@@ -7,10 +7,10 @@
 - 版本总数: 13
 - 正式版数量: 12
 - 预发布版数量: 1
-- 外链文档覆盖版本数: 10
+- 外链文档覆盖版本数: 9
 - compare 摘要覆盖版本数: 12
-- 最新版本: v1.16.0 (2026-08-03 10:32:53 CST)
-- 最早纳入统计版本: v1.9.0rc1 (2025-08-20 23:59:11 CST)
+- 最新版本: v1.15.0 (2026-07-08 06:40:23 CST)
+- 最早纳入统计版本: v1.8.1 (2025-08-02 01:41:44 CST)
 
 ## 分析策略决策
 - 请求模式: `auto`
@@ -23,7 +23,6 @@
   - 因此主脚本保持 L1，避免在主流程里默认引入额外源码分析成本。
 
 ## Release 时间线
-- 2026-08-03 10:32:53 CST | v1.16.0 | 正式版
 - 2026-07-08 06:40:23 CST | v1.15.0 | 正式版
 - 2026-06-01 23:29:00 CST | v1.14.0 | 正式版
 - 2026-05-04 12:52:26 CST | v1.13.0 | 正式版
@@ -36,143 +35,9 @@
 - 2025-10-01 15:37:06 CST | v1.9.1 | 正式版
 - 2025-09-05 11:54:40 CST | v1.9.0 | 正式版
 - 2025-08-20 23:59:11 CST | v1.9.0rc1 | 预发布版
+- 2025-08-02 01:41:44 CST | v1.8.1 | 正式版
 
 ## 证据附录
-
-### v1.16.0
-- 标题: v1.16.0
-- 类型: 正式版
-- 发布时间: 2026-08-03 10:32:53 CST
-- 链接: https://github.com/NVIDIA/warp/releases/tag/v1.16.0
-- GitHub release body:
-# Warp v1.16.0
-
-Warp v1.16 adds in-place rebuilding for fixed-capacity NanoVDB volumes, including during CUDA graph capture. This lets fluid simulations update sparse-grid topologies without allocating new volumes. The release also adds grouped HashGrid queries for multi-environment workloads, NumPy-style tile slicing, CPU support for JAX FFI wrappers, experimental support for replaying more operations in CPU graphs and saved `.wrp` graphs, and CUDA profiler range controls.
-
-## New features
-
-### Rebuild sparse NanoVDB volumes in place
-
-Previously, a volume's sparse topology was fixed at allocation time. Simulations whose active grid changed from one step to the next, such as the affine particle-in-cell (APIC) fluid example, had to allocate a new volume. That allocation required host synchronization and could not be replayed inside a CUDA graph. Warp 1.16 adds fixed-capacity, in-place rebuilding so simulations can reuse the same volume and dependent FEM topology buffers across graph replays (#1606).
-
-The excerpt below follows that example's allocation, rebuild, and replay flow. It omits particle initialization, capacity estimation, FEM space construction, and the APIC transfer and solve.
-
-```python
-import warp as wp
-import warp.fem as fem
-
-# API-shape excerpt. Simulation setup and solver work are omitted.
-# particle_q, voxel_size, grid_capacity, and frame_count come from that setup.
-
-grid_status = wp.zeros(1, dtype=wp.uint32, device=particle_q.device)
-volume = wp.Volume.allocate_by_voxels(
-    voxel_points=particle_q,
-    voxel_size=voxel_size,
-    device=particle_q.device,
-    rebuildable=True,
-    **grid_capacity,
-    status=grid_status,
-)
-grid = fem.Nanogrid(volume, rebuildable=True)
-
-# ... build linear_basis_space and strain_space once from grid ...
-
-def simulate(...
-- 外链文档摘录:
-  - https://nvidia.github.io/warp/v1.16/user_guide/interoperability/jax.html#cuda-block-dimensions-and-tile-kernels
-    JAX Interoperability — Warp 1.16.0
-    Interoperability with JAX arrays is supported through the following methods.
-    Internally these use the DLPack protocol to exchange data in a zero-copy way with JAX:
-    It may be preferable to use theDLPackprotocol directly for better performance and control over stream synchronization.
-    importwarpaswpimportjaximportjax.numpyasjnpfromwarpimportjax_kernel@wp.kerneldeftriple_kernel(input:wp.array[float],output:wp.array[float]):tid=wp.tid()output[tid]=3.0*input[tid]# create a Jax primitive from a Warp kerneljax_triple=jax_kernel(triple_kernel)# use the Warp kernel in a Jax jitted function@jax.jitdeff():x=jnp.arange(0,64,dtype=jnp.float32)returnjax_triple(x)print(f())
-    The same wrapper works on CPU and CUDA without a Warp device argument. Warp
-    For example, when JAX exposes both CPU and CUDA devices and Warp includes CUDA
-    support, the same jitted function can run on either device:
-    importnumpyasnpjax_triple=wp.jax_kernel(triple_kernel)@jax.jitdeff(x):returnjax_triple(x)[0]x=np.arange(64,dtype=np.float32)cpu_result=f(jax.device_put(x,jax.devices("cpu")[0]))cuda_result=f(jax.device_put(x,jax.devices("cuda")[0]))
-    importjaximportjax.numpyasjnpimportwarpaswpfromwarpimportjax_kernel@wp.kerneldefadd_kernel(a:wp.array[int],b:wp.array[int],output:wp.array[int]):tid=wp.tid()output[tid]=a[tid]+b[tid]jax_add=jax_kernel(add_kernel)@jax.jitdeff():n=10a=jnp.arange(n,dtype=jnp.int32)b=jnp.ones(n,dtype=jnp.int32)returnjax_add(a,b)print(f())
-    importmathimportjaximportjax.numpyasjnpimportwarpaswpfromwarpimportjax_kernel@wp.kerneldefsincos_kernel(angle:wp.array[float],# outputssin_out:wp.array[float],cos_out:wp.array[float]):tid=wp.tid()sin_out[tid]=wp.sin(angle[tid])cos_out[tid]=wp.cos(angle[tid])jax_sincos=jax_kernel(sincos_kernel,num_outputs=2)# specify multiple outputs@jax.jitdeff():a=jnp.linspace(0,2*math.pi,32)returnjax_sincos(a)s,c=f()print(s)print(c)
-    Here is a kernel with no inputs that initializes an array of 3x3 matrices with the diagonal values (1, 2, 3).
-    @wp.kerneldefdiagonal_kernel(output:wp.array[wp.mat33]):tid=wp.tid()output[tid]=wp.mat33(1.0,0.0,0.0,0.0,2.0,0.0,0.0,0.0,3.0)jax_diagonal=jax_kernel(diagonal_kernel)@jax.jitdeff():# launch dimensions determine the output shapereturnjax_diagonal(launch_dims=4)print(f())
-    Scalar input arguments are supported, although there are some limitations. Currently, scalars passed to Warp kernels must be constant or static values in JAX:
-    @wp.kerneldefscale_kernel(a:wp.array[float],s:float,# scalar inputoutput:wp.array[float]):tid=wp.tid()output[tid]=a[tid]*sjax_scale=jax_kernel(scale_kernel)@jax.jitdeff():a=jnp.arange(10,dtype=jnp.float32)returnjax_scale(a,2.0)# ok: constant scalar argumentprint(f())
-    @jax.jitdeff(a,s):returnjax_scale(a,s)# ERROR: traced scalar argumenta=jnp.arange(10,dtype=jnp.float32)print(f(a,2.0))
-    fromfunctoolsimportpartial# make scalar arguments static@partial(jax.jit,static_argnames=["s"])deff(a,s):returnjax_scale(a,s)# ok: static scalar argumenta=jnp.arange(10,dtype=jnp.float32)print(f(a,2.0))
-    @wp.kerneldefmatmul_kernel(a:wp.array2d[float],# NxK inputb:wp.array2d[float],# KxM inputc:wp.array2d[float],# NxM output):# launch dimensions should be (N, M)i,j=wp.tid()N=a.shape[0]K=a.shape[1]M=b.shape[1]ifi<Nandj<M:s=wp.float32(0)forkinrange(K):s+=a[i,k]*b[k,j]c[i,j]=s# no need to specify launch dims herejax_matmul=jax_kernel(matmul_kernel)@jax.jitdeff():N1,M1,K1=3,4,2a1=jnp.full((N1,K1),2,dtype=jnp.float32)b1=jnp.full((K1,M1),3,dtype=jnp.float32)# use custom launch dimsresult1=jax_matmul(a1,b1,launch_dims=(N1,M1))N2,M2,K2=4,3,2a2=jnp.full((N2,K2),2,dtype=jnp.float32)b2=jnp.full((K2,M2),3,dtype=jnp.float32)# use custom launch dimsresult2=jax_matmul(a2,b2,launch_dims=(N2,M2))returnresult1,result2r1,r2=f()print(r1)print(r2)
-    Arrays of Warp vector and matrix types are supported.
-    will have a JAX array shape of (…, 3)
-    will have a JAX array shape of (…, 2, 2):
-    @wp.kerneldefvecmat_kernel(a:wp.array[float],b:wp.array[wp.vec3],c:wp.array[wp.mat22],# outputsd:wp.array[float],e:wp.array[wp.vec3],f:wp.array[wp.mat22]):...jax_vecmat=jax_kernel(vecmat_kernel,num_outputs=3)@jax.jitdeff():n=10a=jnp.zeros(n,dtype=jnp.float32)# scalar arrayb=jnp.zeros((n,3),dtype=jnp.float32)# vec3 arrayc=jnp.zeros((n,2,2),dtype=jnp.float32)# mat22 arrayd,e,f=jax_vecmat(a,b,c)
-    CUDA Block Dimensions and Tile Kernels#
-    uses 256 threads per
-    block on CUDA. Pass
-    when a kernel needs another CUDA execution
-    value is fixed when the wrapper is constructed. CPU execution continues to
-    This example uses 64 CUDA threads to reduce each of four rows containing 256
-    importwarpaswpfromwarpimportjax_kernelimportjaximportjax.numpyasjnp@wp.kerneldefadd_kernel(a:wp.array[float],b:wp.array[float],output:wp.array[float]):tid=wp.tid()output[tid]=a[tid]+b[tid]jax_add=jax_kernel(add_kernel)# batched inputsa=jnp.arange(3*4,dtype=jnp.float32).reshape((3,4))b=jnp.ones(3*4,dtype=jnp.float32).reshape((3,4))(output,)=jax.jit(jax.vmap(jax_add))(a,b)print(output)
-    @wp.kerneldefrowsum_kernel(matrix:wp.array2d[fl...
-  - https://nvidia.github.io/warp/v1.16/user_guide/runtime.html#cpu-graphs
-    Runtime — Warp 1.16.0
-    This section describes the Warp Python runtime API, how to manage memory, launch kernels, and high-level functionality
-    for dealing with objects such as meshes and volumes. The APIs described in this section are intended to be used at
-    thePython Scopeand run inside the CPython interpreter. For a comprehensive list of functions available at
-    Kernels are defined via Python functions that are annotated with the
-    All arguments of the Python function must be annotated with their respective type.
-    The following example shows a simple kernel that adds two arrays together:
-    wp.launch(add_kernel,dim=1024,inputs=[a,b],outputs=[c],device="cuda")
-    Kernels launched on CUDA devices will be launched in parallel with a fixed block-size.
-    In the WarpCompilation Model, kernels are just-in-time compiled into dynamic libraries and PTX using
-    C++/CUDA as an intermediate representation.
-    Note that these functions only clear Warp’s own cache. The NVIDIA CUDA driver
-    Warp allows generating kernels on-the-fly with various customizations, including closure support.
-    overheads of CUDA graphs and also allow for the modification of launch
-    wp.empty(shape=1024,dtype=wp.vec3,device="cpu")wp.zeros(shape=1024,dtype=float,device="cuda")wp.full(shape=1024,value=10,dtype=int,device="cuda")
-    r=np.random.rand(1024)# copy to Warp owned arraya=wp.array(r,dtype=float,device="cpu")# return a Warp array wrapper around the NumPy data (zero-copy)a=wp.array(r,dtype=float,copy=False,device="cpu")# return a Warp copy of the array data on the GPUa=wp.array(r,dtype=float,device="cuda")
-    r=np.random.rand((1024,3))# initialize as an array of vec3 objectsa=wp.array(r,dtype=wp.vec3,device="cuda")
-    importcupyimportwarpaswpdevice=wp.get_cuda_device()r=cupy.arange(10)# return a Warp array wrapper around the cupy data (zero-copy)a=wp.array(r,device=device)
-    , it is important to pass the correct CUDA device to the Warp array constructor.  The
-    host_array=wp.array(a,dtype=float,device="cpu")# allocate and copy to GPUdevice_array=host_array.to("cuda")
-    Additionally, data can be copied between arrays in different memory spaces using
-    The following constructs a 2D array of size 1024 x 16:
-    wp.zeros(shape=(1024,16),dtype=float,device="cuda")
-    e.g. to pass a 2D array to a kernel, use the
-    # returns a float from the 2d arrayvalue=input[i,j]
-    # returns an 1d array slice representing a row of the 2d arrayrow=input[i]
-    [[ 5.  6.  7.  8.  9.]
-    [15. 16. 17. 18. 19.]]
-    importwarpaswpimportnumpyasnp@wp.structclassFoo:i:intf:float# allocate a Warp array on the CPUa=wp.zeros(5,dtype=Foo,device="cpu")# view it in NumPy without copyingna=a.numpy()# modify via NumPyna["i"][0]=42na["f"][2]=13.37print(a)
-    [(42,  0.  ) ( 0,  0.  ) ( 0, 13.37) ( 0,  0.  ) ( 0,  0.  )]
-    importwarpaswpimportnumpyasnpimportmathrng=np.random.default_rng(123)@wp.structclassBoid:vel:wp.vec3fwander_angles:wp.vec2fmass:floatgroup:intnum_boids=3npboids=np.zeros(num_boids,dtype=Boid.numpy_dtype())angles=math.pi-2*math.pi*rng.random(num_boids)npboids["vel"][:,0]=20*np.sin(angles)npboids["vel"][:,2]=20*np.cos(angles)npboids["wander_angles"][:,0]=math.pi*rng.random(num_boids)npboids["wander_angles"][:,1]=2*math.pi*rng.random(num_boids)npboids["mass"][:]=0.5+0.5*rng.random(num_boids)# create Warp array from prepared NumPy arrayboids=wp.array(npboids,dtype=Boid)
-    This approach leverages NumPy’s vectorized operations to initialize all array elements efficiently, avoiding Python loops.
-    Structured arrays fully support nested structs and Warp vector (and matrix) types:
-    importwarpaswpimportnumpyasnp@wp.structclassBar:x:wp.vec3@wp.structclassFoo:i:intf:floatbar:Barna=np.zeros(5,dtype=Foo.numpy_dtype())na["i"][0]=42na["f"][2]=13.37na["bar"]["x"][4]=wp.vec3(1.0)a=wp.array(na,dtype=Foo,device="cuda:0")print(a.numpy())
-    [(42,  0.  , ([0., 0., 0.],)) ( 0,  0.  , ([0., 0., 0.],))
-    ( 0, 13.37, ([0., 0., 0.],)) ( 0,  0.  , ([0., 0., 0.],))
-    ( 0,  0.  , ([1., 1., 1.],))]
-    While arrays are typically created at the Python scope and passed to kernels as arguments,
-    Warp also supports creating arrays directly inside kernels. This capability is limited to two specific approaches:
-    @wp.kerneldefsum_rows_kernel(flat_arr:wp.array[int],out:wp.array[int],):tid=wp.tid()# Reinterpret the flat array as a 2D array of 3x4 elements.arr=wp.array(ptr=flat_arr.ptr,shape=(3,4),dtype=int)# Compute sum of row.sum=int(0)forjinrange(arr.shape[1]):sum+=arr[tid,j]out[tid]=sumflat_arr=wp.array(range(12),dtype=int)row_sums=wp.zeros(3,dtype=int)wp.launch(sum_rows_kernel,dim=3,inputs=(flat_arr,row_sums))print(row_sums.numpy())
-    [ 6 22 38]
-    Allocating fixed-size arrays: Allocate a new zero-initialized array with a compile-time constant shape
-    The following scalar storage types are supported for array structures:
-    Brain Floating Point (16-bit)
-    bfloat16 and NumPy Interop#
-    NumPy does not natively support the bfloat16 format, so Warp stores
-    >>>a=wp.array([1.0,2.5,3.14],dtype=wp.bfloat16)>>>a.numpy()array([16256, 16416, 16457], dtype=uint16)>>>print(a)[16256 16416 16457]>>>a.list()[b...
-- Compare 摘要: v1.15.0 -> v1.16.0
-  - commits: 150
-  - files changed: 300+ returned files (GitHub compare API file list cap)
-  - additions: 15644
-  - deletions: 4168
-  - top directories: .claude, .codex, .github, .gitignore, .gitlab-ci.yml, .gitlab
-  - representative files:
-    - warp/_src/builtins.py (modified, +2139/-285)
-    - warp/__init__.pyi (modified, +1580/-189)
-    - uv.lock (modified, +830/-623)
-    - warp/_src/context.py (modified, +925/-178)
-    - warp/_src/codegen.py (modified, +859/-242)
-    - warp/_src/fem/geometry/nanogrid.py (modified, +845/-113)
-    - docs/user_guide/faq.rst (modified, +729/-167)
-    - warp/_src/types.py (modified, +752/-89)
 
 ### v1.15.0
 - 标题: v1.15.0
@@ -340,7 +205,7 @@ Saved APIC graphs can still be consumed from standalone C++ through the C API de
   - https://github.com/NVIDIA/warp/releases/tag/v1.13.0
     Release v1.13.0 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork578
+    - Fork557
     github-actionsreleased this04 May 04:52
     Warp v1.13 introduces experimental graph capture serialization with CPU replay, letting captured simulations roundtrip through a portable
     file and load from standalone C++ on either GPU or CPU. It also adds an experimental cuBQL BVH backend for
@@ -373,7 +238,7 @@ Saved APIC graphs can still be consumed from standalone C++ through the C API de
     calls, so internal allocations from BVH, hash-grid, mesh, volume, and sparse subsystems show up alongside Python-originated arrays, labeled with their subsystem (e.g.
     importwarpaswp@wp.kerneldeffill(x:wp.array[float]):i=wp.tid()x[i]=float(i)withwp.ScopedMemoryTracker("training step"):a=wp.zeros(1_000_000,dtype=wp.float32,device="cuda:0")b=wp.zeros(2_000_000,dtype=wp.float32,device="cuda:0")wp.launch(fill,dim=a.s...
   - https://clang.llvm.org/docs/AddressSanitizer.html
-    AddressSanitizer — Clang 24.0.0git documentation
+    AddressSanitizer — Clang 23.0.0git documentation
     AddressSanitizer is a fast memory error detector. It consists of a compiler
     Typical slowdown introduced by AddressSanitizer is2x.
     for the use/testing of AddressSanitizer:
@@ -520,7 +385,7 @@ The following deprecations will be finalized in **Warp 1.13.0**:
   - https://github.com/NVIDIA/warp/blob/v1.12.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.12.1 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork578
+    - Fork557
     2390 lines (2048 loc) · 155 KB
     - Remove the Kit extensions from this repository (GH-1296).
     - Fix silent precision loss in compile-time constants passed to 64-bit scalar type constructors
@@ -627,7 +492,7 @@ pr...
   - https://github.com/NVIDIA/warp/blob/v1.12.0/CHANGELOG.md
     warp/CHANGELOG.md at v1.12.0 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork578
+    - Fork557
     2324 lines (1991 loc) · 150 KB
     - Experimental: Add
     for hardware-accelerated texture sampling on CUDA devices,
@@ -714,7 +579,7 @@ This is primarily a bugfix release with no major new features. Key fixes include
   - https://github.com/NVIDIA/warp/blob/v1.11.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.11.1 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork578
+    - Fork557
     2175 lines (1855 loc) · 140 KB
     - Fix
     - Fix tile * constant multiplication when one operand is a vector or matrix type (GH-1175).
@@ -932,7 +797,7 @@ The following feature is deprecated and will be removed in **v1.11** (planned fo
   - https://github.com/NVIDIA/warp/blob/v1.10.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.10.1 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork578
+    - Fork557
     2018 lines (1714 loc) · 128 KB
     - Fix type inference errors when passing reference arguments (such as array elements) to built-in functions
     - Fix
@@ -1026,7 +891,7 @@ Key capabilities include:
   - https://github.com/NVIDIA/warp/blob/v1.10.0/CHANGELOG.md
     warp/CHANGELOG.md at v1.10.0 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork578
+    - Fork557
     1982 lines (1683 loc) · 126 KB
     - Add an in-place
     captured in CUDA graphs (GH-826).
@@ -1121,7 +986,7 @@ The following features have been deprecated in prior releases and will be remove
   - https://github.com/NVIDIA/warp/blob/v1.9.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.9.1 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork578
+    - Fork557
     1868 lines (1580 loc) · 117 KB
     - Add documentation describing Python
     - Fix crash when radix sort is used on multiple streams (e.g., when using hash grids on multiple streams)
@@ -1234,3 +1099,51 @@ See the documentation on [ahead-of-time compilation workflows](https://nvidia.gi
 - 链接: https://github.com/NVIDIA/warp/releases/tag/v1.9.0rc1
 - GitHub release body:
 Release candidate for Isaac Lab testing.
+- Compare 摘要: v1.8.1 -> v1.9.0rc1
+  - commits: 287
+  - files changed: 221
+  - additions: 14064
+  - deletions: 6112
+  - top directories: .coderabbit.yml, .github, .gitlab-ci.yml, .gitlab, CHANGELOG.md, PUBLICATIONS.md
+  - representative files:
+    - warp/native/exports.h (modified, +1842/-1908)
+    - warp/context.py (modified, +1360/-800)
+    - warp/native/mat.h (modified, +1911/-117)
+    - warp/native/nanovdb/NanoVDB.h (modified, +517/-895)
+    - warp/builtins.py (modified, +959/-138)
+    - warp/marching_cubes.py (added, +708/-0)
+    - warp/__init__.pyi (modified, +486/-111)
+    - warp/codegen.py (modified, +327/-209)
+
+### v1.8.1
+- 标题: v1.8.1
+- 类型: 正式版
+- 发布时间: 2025-08-02 01:41:44 CST
+- 链接: https://github.com/NVIDIA/warp/releases/tag/v1.8.1
+- GitHub release body:
+This patch release primarily contains bug fixes as expected.
+
+However, to support the adoption of Warp by the MuJoCo MJX physics engine, it also includes new features and deprecations limited to the `jax_experimental` module. We are flagging this deviation from our standard versioning practices to ensure clarity. Normal versioning practices will resume with the next release.
+
+## Full  Changelog
+
+### Deprecated
+
+- This is the final release that will provide builds for or support the CUDA 11.x Toolkit and driver. Starting with v1.9.0, Warp will require CUDA 12.x or newer.
+- Deprecate the `graph_compatible` boolean flag in `jax_callable()` in favor of the new `graph_mode` argument with `GraphMode` enum (#848).
+
+### Added
+
+- Add documentation for creating and manipulating Warp structured arrays using NumPy (#852)
+- Add documentation for `wp.indexedarray()` (#468).
+- Support input-output aliasing in JAX FFI (#815).
+- Support capturing `jax_callable()` using Warp via the new `graph_mode` parameter (`GraphMode.WARP`), enabling capture of graphs with conditional nodes that cannot be used as subgraphs in a JAX capture (#848).
+
+### Fixed
+
+- Fix `tape.zero()` to correctly reset gradient arrays in nested structs (#807).
+- Fix incorrect adjoints for `div(scalar, vec)`, `div(scalar, mat)`, and `div(scalar, quat)`, and other miscellaneous issues with adjoints (#831).
+- Fix a module-hashing issue for functions or kernels using static expressions that cannot be resolved at the time of declaration (#830).
+- Fix a bug in which changes to `wp.config.mode` were not being picked up after module initialization (#856).
+- Fix a bug where CUDA modules could get prematurely unloaded when conditional graph nodes are used.
+- Fix compile time regression for kernels using matmul, Cholesky, and FFT...
