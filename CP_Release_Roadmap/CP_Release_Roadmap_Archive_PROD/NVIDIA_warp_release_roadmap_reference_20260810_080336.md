@@ -4,12 +4,12 @@
 - 对应主报告: `NVIDIA_warp_release_roadmap.md`
 - 统计窗口: 最近一年
 - 生成策略: GitHub release body + 外链文档摘录 + 相邻 release tag 的 GitHub compare 摘要
-- 版本总数: 14
-- 正式版数量: 13
+- 版本总数: 13
+- 正式版数量: 12
 - 预发布版数量: 1
-- 外链文档覆盖版本数: 11
-- compare 摘要覆盖版本数: 13
-- 最新版本: llvm-sdk-22.1.8-warp.1 (2026-08-07 09:54:26 CST)
+- 外链文档覆盖版本数: 10
+- compare 摘要覆盖版本数: 12
+- 最新版本: v1.16.0 (2026-08-03 10:32:53 CST)
 - 最早纳入统计版本: v1.9.0rc1 (2025-08-20 23:59:11 CST)
 
 ## 分析策略决策
@@ -23,7 +23,6 @@
   - 因此主脚本保持 L1，避免在主流程里默认引入额外源码分析成本。
 
 ## Release 时间线
-- 2026-08-07 09:54:26 CST | llvm-sdk-22.1.8-warp.1 | 正式版
 - 2026-08-03 10:32:53 CST | v1.16.0 | 正式版
 - 2026-07-08 06:40:23 CST | v1.15.0 | 正式版
 - 2026-06-01 23:29:00 CST | v1.14.0 | 正式版
@@ -39,79 +38,6 @@
 - 2025-08-20 23:59:11 CST | v1.9.0rc1 | 预发布版
 
 ## 证据附录
-
-### llvm-sdk-22.1.8-warp.1
-- 标题: LLVM SDK 22.1.8 (llvm-sdk-22.1.8-warp.1)
-- 类型: 正式版
-- 发布时间: 2026-08-07 09:54:26 CST
-- 链接: https://github.com/NVIDIA/warp/releases/tag/llvm-sdk-22.1.8-warp.1
-- GitHub release body:
-Prebuilt LLVM/Clang SDKs that Warp's CPU-JIT compiler (`warp-clang`) links against. This is not a Warp release, and nothing here is required: if you install Warp from PyPI you can ignore this page, and if you build from source you can compile LLVM yourself with `build_lib.py --build-llvm`, which takes about an hour. These archives are the shortcut.
-
-Warp builds its own rather than using the upstream clang+llvm binaries because the SDK ends up inside a PyPI wheel, and the upstream builds are far too large for that. These are cut down to clang and static libraries with no external dependencies, targeting the host backend and NVPTX, compiled for size.
-
-Built from the [LLVM 22.1.8 source release](https://github.com/llvm/llvm-project/releases/tag/llvmorg-22.1.8) by the `Build LLVM SDK` workflow. The Linux archives are produced inside manylinux containers, which puts their glibc floor at 2.28 on x86_64 and 2.34 on aarch64. windows-x86_64 is built with the v142 toolset so that it remains linkable from VS2019, while windows-arm64 uses v143 and is still experimental. Per-platform build details are in `llvm-source-and-build-info.json`.
-
-`sha256sum -c SHA256SUMS --ignore-missing` verifies the downloads. Once extracted, the tree works directly as `build_lib.py --llvm-path` or `WARP_LLVM_PATH`. See [tools/llvm/README.md](https://github.com/NVIDIA/warp/blob/f452084886ec38662d0e32ebba8813719951a8d5/tools/llvm/README.md) if you want to build one yourself.
-- 外链文档摘录:
-  - https://github.com/llvm/llvm-project/releases/tag/llvmorg-22.1.8
-    Release LLVM 22.1.8 · llvm/llvm-project · GitHub
-    - NotificationsYou must be signed in to change notification settings
-    - Fork18.2k
-    github-actionsreleased this16 Jun 13:48
-    - Linux x86_64(signature)
-    - Linux Arm64(signature)
-    - macOS Apple Silicon(ARM64) (signature)
-    - Windows x64 (64-bit):installer(signature),archive(signature)
-    - Windows on Arm (ARM64):installer(signature),archive(signature)
-    Download links for common platforms will appear above once builds have completed, if they are available. Check the full list of release packages at the bottom of this release page if you do not find a link above.
-    If you do not find a release package for your platform, you may be able to find a community built package on the LLVM Discourse forum thread for this release. Remember that these are built by volunteers and may not always be available. If you rely on a platform or configuration that is not one of the defaults, we suggest you use the binaries that your platform provides, or build your own release packages.
-    Each platform has one binary release package. The file name starts with either
-    and ends with the platform's name. For example,
-    contains LLVM binaries for Arm64 Linux.
-    In addition, source archives are available:
-    👍35Matrix3600, Lev275568, RLR64, tnodir, deadmarshal, a5632645, Safari77, 0x00MagicKey, ImperSwet, samurai-busido, and 25 more reacted with thumbs up emoji😄9RLR64, SenseiDeElite, ByteFlowing1337, fabyr, lanhostt, william9523, lin72h, FIRESTARS-ZFYX, and xgupta reacted with laugh emoji🎉140xfeeddeadbeef, franckgaga, RLR64, tnodir, uwu-420, SenseiDeElite, pedroMVicente, fabyr, muguqti, selimozturk13, and 4 more reacted with hooray emoji❤️15RLR64, tnodir, Islam-Imad, uwu-420, LB--, SenseiDeElite, lucascampolimm, ameaninglessname, KAban24, Mickey-snow, and 5 more reacted with heart emoji🚀12TotallyAaron, RLR64, marcauberer, uwu-420, hhoffstaette, SenseiDeElite, debohman, lucascampolimm, lin72h, FIRESTARS-ZFYX, and 2 more reacted with rocket emoji👀6RLR64, SenseiDeElite, brianhoy23, FIRESTARS-ZFYX, xgupta, and kmplexr reacted with eyes emoji
-    - 👍35 reactions
-    - 😄9 reactions
-    - 🎉14 reactions
-    - ❤️15 reactions
-    - 🚀12 reactions
-    - 👀6 reactions
-  - https://github.com/NVIDIA/warp/blob/f452084886ec38662d0e32ebba8813719951a8d5/tools/llvm/README.md
-    warp/tools/llvm/README.md at f452084886ec38662d0e32ebba8813719951a8d5 · NVIDIA/warp · GitHub
-    - NotificationsYou must be signed in to change notification settings
-    - Fork583
-    92 lines (71 loc) · 4.17 KB
-    SDKs Warp links its CPU-JIT compiler (
-    Requires Python, a host C++ toolchain, and ~50 GB of disk. cmake and ninja
-    pip install conan==2.30.0 cmake ninja
-    conan create tools/llvm --version 22.1.8 \
-    -pr:h tools/llvm/profiles/<platform> -pr:b default
-    . On Windows and macOS pass the platform profile for
-    -e LLVM_VERSION=22.1.8 -e BUNDLE_REVISION=1 \
-    -e PROFILE=linux-x86_64 -e IMAGE_DIGEST=local -e OUTPUT_DIR=/warp/_sdk_assets \
-    -e CONAN_VERSION=2.30.0 -e CMAKE_PIN=3.31.6 -e NINJA_PIN=1.11.1.4 \
-    runners. To cross-compile from an
-    x64 machine instead (fallback), pair the profiles; the recipe detects the
-    cross build and compiles native x64 tablegen tools first:
-    - windows-x86_64 builds require the MSVC v142 toolset (VS2019 floor: MSVC
-    link compatibility is directional, so a v143-built SDK could not be
-    linked by VS2019 users). CI installs the v142 component on the
-    Visual Studio is newer than the profile's IDE mapping, add
-    -c:a "tools.microsoft.msbuild:vs_version=<installed major, e.g. 17>"
-    - windows-arm64 uses v143; its floor is VS2022.
-    conan install --requires clang-warp/22.1.8 \
-    -pr:h tools/llvm/profiles/<platform> -pr:b default \
-    all five platforms, checks and packages each SDK, and runs a consumer smoke
-    per the LLVM SDK distribution plan. Partial-platform dispatches build
-    - Add the new version's source URL and sha256 to
-- Compare 摘要: v1.16.0 -> llvm-sdk-22.1.8-warp.1
-  - commits: 0
-  - files changed: 0
-  - additions: 0
-  - deletions: 0
-  - top directories: (none)
-  - representative files:
 
 ### v1.16.0
 - 标题: v1.16.0
@@ -414,7 +340,7 @@ Saved APIC graphs can still be consumed from standalone C++ through the C API de
   - https://github.com/NVIDIA/warp/releases/tag/v1.13.0
     Release v1.13.0 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork583
+    - Fork578
     github-actionsreleased this04 May 04:52
     Warp v1.13 introduces experimental graph capture serialization with CPU replay, letting captured simulations roundtrip through a portable
     file and load from standalone C++ on either GPU or CPU. It also adds an experimental cuBQL BVH backend for
@@ -594,7 +520,7 @@ The following deprecations will be finalized in **Warp 1.13.0**:
   - https://github.com/NVIDIA/warp/blob/v1.12.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.12.1 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork583
+    - Fork578
     2390 lines (2048 loc) · 155 KB
     - Remove the Kit extensions from this repository (GH-1296).
     - Fix silent precision loss in compile-time constants passed to 64-bit scalar type constructors
@@ -701,7 +627,7 @@ pr...
   - https://github.com/NVIDIA/warp/blob/v1.12.0/CHANGELOG.md
     warp/CHANGELOG.md at v1.12.0 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork583
+    - Fork578
     2324 lines (1991 loc) · 150 KB
     - Experimental: Add
     for hardware-accelerated texture sampling on CUDA devices,
@@ -788,7 +714,7 @@ This is primarily a bugfix release with no major new features. Key fixes include
   - https://github.com/NVIDIA/warp/blob/v1.11.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.11.1 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork583
+    - Fork578
     2175 lines (1855 loc) · 140 KB
     - Fix
     - Fix tile * constant multiplication when one operand is a vector or matrix type (GH-1175).
@@ -1006,7 +932,7 @@ The following feature is deprecated and will be removed in **v1.11** (planned fo
   - https://github.com/NVIDIA/warp/blob/v1.10.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.10.1 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork583
+    - Fork578
     2018 lines (1714 loc) · 128 KB
     - Fix type inference errors when passing reference arguments (such as array elements) to built-in functions
     - Fix
@@ -1100,7 +1026,7 @@ Key capabilities include:
   - https://github.com/NVIDIA/warp/blob/v1.10.0/CHANGELOG.md
     warp/CHANGELOG.md at v1.10.0 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork583
+    - Fork578
     1982 lines (1683 loc) · 126 KB
     - Add an in-place
     captured in CUDA graphs (GH-826).
@@ -1195,7 +1121,7 @@ The following features have been deprecated in prior releases and will be remove
   - https://github.com/NVIDIA/warp/blob/v1.9.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.9.1 · NVIDIA/warp · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork583
+    - Fork578
     1868 lines (1580 loc) · 117 KB
     - Add documentation describing Python
     - Fix crash when radix sort is used on multiple streams (e.g., when using hash grids on multiple streams)

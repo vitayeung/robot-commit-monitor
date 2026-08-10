@@ -2,9 +2,9 @@
 
 - 仓库: `NVIDIA/warp`
 - 统计窗口: 最近一年
-- 最新版本: llvm-sdk-22.1.8-warp.1 (2026-08-07 09:54:26 CST)
+- 最新版本: v1.16.0 (2026-08-03 10:32:53 CST)
 - 纳入统计的最早版本: v1.9.0rc1 (2025-08-20 23:59:11 CST)
-- 版本概况: 最近一年共 14 个版本，其中正式版 13 个、预发布版 1 个
+- 版本概况: 最近一年共 13 个版本，其中正式版 12 个、预发布版 1 个
 - 详细证据索引: `NVIDIA_warp_release_roadmap_reference.md`
 
 ## 核心判断
@@ -15,7 +15,7 @@
 
 - **平台兼容性正在收紧：放弃旧版 Python 和 CUDA，拥抱新硬件特性。** v1.11 放弃 Python 3.8，v1.12 弃用 Python 3.9（v1.13 正式移除），v1.9 起要求 CUDA 12.x+。同时，v1.14 增加了对异构内存管理（HMM）和地址转换服务（ATS）系统的宽松 CPU/GPU 数组访问支持。产品团队应规划 Python 3.10+ 和 CUDA 12.x+ 的基础环境，并关注未来对 CUDA 13.x 的过渡。
 
-- **CPU-JIT 编译基础设施随 LLVM 22.1.8 更新，但该版本不改变 Warp 用户可见功能。** `llvm-sdk-22.1.8-warp.1` 是预构建的 LLVM/Clang SDK 归档，供 Warp 的 CPU-JIT 编译器（`warp-clang`）链接使用，并非 Warp 功能版本。该 SDK 面向主机后端和 NVPTX 裁剪编译，Linux 归档的 glibc 下限为 x86_64 2.28、aarch64 2.34，windows-x86_64 使用 v142 工具集以保持 VS2019 链接兼容性。从 PyPI 安装 Warp 的用户无需关注此版本。
+- **Tile 编程模型和 FEM 能力持续成熟，成为高性能仿真和科学计算的核心路径。** 从 v1.9 的可微 Marching Cubes，到 v1.12 的硬件加速纹理和可微 FFT，再到 v1.14 的多环境 FEM 和可复用批处理线性求解器，Warp 在保持易用性的同时，不断将底层 GPU 能力（纹理单元、CUDA 图、确定性原子操作）封装为高级 API。v1.16 新增的 NanoVDB 体积原地重建和分组 HashGrid 查询进一步降低了高性能仿真开发的门槛，但用户需注意实验性 API 可能无正式弃用周期即变更。
 
 ## 产品演进主线
 
@@ -28,14 +28,6 @@
 - **Tile 编程模型和 FEM 持续扩展：** 从 v1.9 的可微 Marching Cubes 和 AOT 编译，到 v1.12 的硬件加速纹理和可微 FFT，再到 v1.14 的多环境 FEM 和可复用批处理线性求解器，Warp 的 tile 编程模型和有限元方法（FEM）能力不断深化。v1.15 进一步为 tile 操作添加了 struct 支持，并允许稀疏矩阵预留 BSR 行容量。v1.16 新增 NanoVDB 体积原地重建和分组 HashGrid 查询，使多环境仿真和稀疏网格流体模拟的工作流更加高效。这条主线使 Warp 在高性能仿真和科学计算领域的能力边界持续扩展。
 
 ## 版本演进解读
-
-### llvm-sdk-22.1.8-warp.1（2026-08-07）
-
-- **这是预构建的 LLVM/Clang SDK 归档，而非 Warp 功能版本。** 该 SDK 供 Warp 的 CPU-JIT 编译器（`warp-clang`）链接使用，基于 LLVM 22.1.8 源码构建，裁剪为 clang 和静态库，无外部依赖，面向主机后端和 NVPTX，按体积优化编译。从 PyPI 安装 Warp 的用户无需任何操作，从源码构建的用户也可通过 `build_lib.py --build-llvm` 自行编译（约需一小时）。
-
-- **平台兼容性细节明确：** Linux 归档在 manylinux 容器中构建，glibc 下限为 x86_64 2.28、aarch64 2.34。windows-x86_64 使用 v142 工具集构建，保持 VS2019 链接兼容性；windows-arm64 使用 v143，仍为实验性。这为从源码构建 Warp CPU-JIT 的团队提供了明确的平台基线。
-
-- **迁移与使用注意：** 该 SDK 不改变 Warp 的用户可见 API 或运行时行为。源码构建者可通过 `build_lib.py --llvm-path` 或 `WARP_LLVM_PATH` 环境变量直接使用解压后的 SDK 树。验证下载可使用 `sha256sum -c SHA256SUMS --ignore-missing`。此版本对产品规划无迁移影响。
 
 ### v1.16.0（2026-08-03）
 
