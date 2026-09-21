@@ -2,38 +2,32 @@
 
 - 仓库: `isaac-sim/IsaacLab`
 - 统计窗口: 最近一年
-- 最新版本: v3.0.0-EA (2026-09-17 06:34:03 CST)
-- 纳入统计的最早版本: v2.3.0 (2025-10-29 05:38:54 CST)
-- 版本概况: 最近一年共 7 个版本，其中正式版 4 个、预发布版 3 个
+- 最新版本: v3.0.0-beta2.patch1 (2026-07-02 12:21:18 CST)
+- 纳入统计的最早版本: v2.1.1 (2025-07-30 20:59:44 CST)
+- 版本概况: 最近一年共 9 个版本，其中正式版 6 个、预发布版 3 个
 - 详细证据索引: `isaac-sim_IsaacLab_release_roadmap_reference.md`
 
 ## 核心判断
 
-- **v3.0.0-EA 标志着 Isaac Lab 3.0 从 beta 阶段进入 Early Access 阶段，架构与功能集已定型。** 官方明确说明从 Early Access 到 General Availability 期间，`release/3.0.0` 分支只做缺陷修复、稳定性、兼容性和文档改进，General Availability 目标为 2026 年 10 月底。这意味着 3.0 的核心 API 与后端划分已可作为迁移目标，不再处于频繁重构状态。
+- **Isaac Lab 在过去一年完成了从成熟稳定版到架构级重构的跨越。** 从 v2.1.1 到 v3.0.0-beta2.patch1，产品经历了两个截然不同的阶段：前半年（v2.1.1 至 v2.3.2）以功能增量和生态扩展为主，后半年（v3.0.0-beta 系列）则是一次彻底的架构重写，引入了多后端物理引擎、可插拔渲染器、无 Kit 运行模式等根本性变化。这意味着现有用户面临显著的迁移成本，但新用户将获得更高的灵活性和性能上限。
 
-- **3.0 的定位被明确为“下一代机器人学习基础”：一套任务 API 覆盖多种物理、渲染与可视化后端。** 官方表述涵盖 kit-less 执行、Warp 原生数据路径，以及从安装到训练、评估、部署的统一工作流。这与此前 beta 系列逐步补齐 Newton 传感器覆盖度的路径一致，EA 阶段将其收敛为完整的产品主张。
+- **多后端架构是 3.0 版本最核心的产品决策，直接决定了未来 2-3 年的技术路线。** 通过工厂模式将核心 API 与 PhysX、Newton（基于 MuJoCo-Warp）等物理后端解耦，Isaac Lab 不再绑定于单一物理引擎。这不仅允许用户在不同精度/速度需求间切换（如 Newton 支持 CUDA 图加速），更重要的是开启了“无 Isaac Sim”运行模式，大幅降低了部署门槛和硬件依赖。
 
-- **运行栈整体前移：Isaac Sim 6.1、Python 3.12、PyTorch 2.11、NVIDIA Warp 1.16、Newton 1.5.2。** 安装文档明确 Isaac Sim 5.1 及更早版本不再受支持，必须使用 Isaac Sim 6.1 与 Python 3.12。这进一步拉大了 2.x 与 3.0 之间的环境差距，2.x 用户无法通过简单升级依赖完成过渡。
+- **模仿学习（Mimic）和灵巧操作成为 2.x 后期版本最突出的应用方向。** v2.2.0 引入 FORGE 和 AutoMate 接触丰富操作任务，v2.3.0 推出 DexSuite 灵巧操作环境和 SkillGen 技能生成管线，v2.3.2 增加多旋翼无人机支持。这些功能表明产品正从基础仿真平台向面向具体机器人学习场景的端到端工具链演进。
 
-- **kit-less 路径从“可选能力”升级为默认演示路径。** 官方给出的首个示例即为不安装、不启动 Isaac Sim 的 Newton 工作流，并额外提供 OVPhysX + OVRTX 的完全 kit-less PhysX 与 RTX 渲染组合。这确认了无 Kit 运行是 3.0 的一等公民，而非边缘场景。
+- **3.0 beta 系列仍处于早期阶段，生产级稳定性尚未达到。** 官方明确标注 beta 版本可能存在性能回退和破坏性变更，且开发分支仍在活跃迭代。对于需要稳定产出的团队，v2.3.2 是当前最稳妥的选择；对于希望提前适配新架构的团队，建议从 v3.0.0-beta2 开始评估，并密切关注后续正式版发布。
 
 ## 产品演进主线
 
-- **多后端架构从 beta 的“可用”走向 EA 的“可依赖”。** 3.0 的核心承诺被固化为“一套任务 API 跨多种物理、渲染、可视化后端”，并给出 Newton（`newton_mjwarp`）、OVPhysX、Isaac Sim PhysX 三条并行的物理路径，以及 `newton_gl`、OVRTX 等可视化/渲染组合。后端选择通过 `physics=`、`renderer=`、`presets=`、`--viz` 等参数在命令行层面暴露，用户无需改动任务代码即可切换。
+- **从单后端到多后端物理架构。** v2.x 时代完全基于 PhysX，所有资产和传感器类直接绑定 PhysX 实现。v3.0.0-beta 引入工厂模式，将 `Articulation`、`RigidObject`、`ContactSensor` 等核心类抽象为基类，后端实现分散到 `isaaclab_physx` 和 `isaaclab_newton` 等独立扩展包。用户代码无需修改导入路径，工厂在运行时自动分发到激活的后端。这一变化的意义在于：用户可以在同一套 API 下选择 PhysX（高保真、支持形变物体）或 Newton（高速、CUDA 图加速、可无 Kit 运行），甚至未来接入其他后端。
 
-- **部署形态从“依赖 Isaac Sim”扩展为“按需装配”。** EA 提供三种安装路径：纯 Newton 无 Isaac Sim、`--extra ov` 的 OVPhysX/OVRTX 无 Kit 运行时、以及 `--extra isaacsim` 的完整 Isaac Sim 体验（含 Isaac Sim PhysX、RTX 渲染、ROS bridge 等 Kit 集成）。这使同一套 Isaac Lab 代码可以覆盖从资源受限环境到完整仿真工作站的不同部署目标。
+- **从依赖 Isaac Sim 到可独立运行。** v3.0.0-beta 引入的 `isaaclab_newton` 扩展使得 Isaac Lab 环境可以在不启动 Isaac Sim 的情况下运行（kit-less 模式）。这直接降低了系统资源占用和部署复杂度，使得在云端、边缘设备或资源受限环境中运行训练和推理成为可能。v3.0.0-beta2 进一步强化了这一路径，增加了对 Newton 射线投射器、IMU/PVA 传感器、形变物体 VBD 耦合等支持，并提供了 Newton 粗糙地形运动预设。
 
-- **工具链与工程化配套同步成熟。** EA 引入 `uv` 作为安装与运行入口（`uv run isaaclab train/play`），并新增发布分支回迁工作流与冲突解析脚本，说明 3.0 已进入需要长期维护 release 分支的运营阶段。安装文档同时覆盖 Linux x86_64、Linux aarch64、DGX Spark 与 Windows 11。
+- **从基础仿真到端到端机器人学习工具链。** v2.2.0 开始，产品明显加速了在模仿学习和灵巧操作领域的投入。v2.3.0 的 SkillGen 集成 cuRobo 实现 GPU 加速运动规划和技能分段数据生成，v2.3.2 增加了视觉触觉传感器和多旋翼无人机支持。这些功能将 Isaac Lab 从一个“仿真环境”扩展为“数据生成-策略训练-策略部署”的完整闭环，直接服务于具身智能研究者的核心工作流。
 
-- **平台兼容性要求进一步收紧。** 完整 Isaac Sim 工作流要求 Ubuntu 22.04+ 或 Windows 11、Python 3.12、较新的 NVIDIA 生产驱动，以及至少 32 GB 内存与 16 GB 显存。CUDA 13.0 的 PyTorch 构建支持 Blackwell GPU，DGX Spark 需要 CUDA 13 或更新版本。
+- **平台兼容性和开发者体验持续优化。** v2.2.0 将 Python 版本从 3.10 升级到 3.11，放弃 Ubuntu 20.04 支持，转向 22.04 和 24.04。v3.0.0-beta 进一步升级到 Python 3.12 和 PyTorch 2.10.0，并支持 CUDA 12.8（x86_64）和 CUDA 13.0（aarch64）。v3.0.0-beta2 改进了 aarch64、DGX Spark、ARM Docker 和 Windows 安装文档。这些变化反映了产品对更广泛硬件平台（尤其是 NVIDIA 自有硬件如 DGX Spark）的覆盖意图。
 
 ## 版本演进解读
-
-### v3.0.0-EA（2026-09-17）
-
-- 这是 Isaac Lab 3.0 的 Early Access 版本，架构与功能集已定型：一套任务 API 跨多种物理、渲染、可视化后端，支持 kit-less 执行、Warp 原生数据路径，以及从安装到训练、评估、部署的统一工作流。构建基线为 Isaac Sim 6.1、Python 3.12、PyTorch 2.11、NVIDIA Warp 1.16、Newton 1.5.2。
-- 对用户价值在于迁移目标明确化：官方声明从 EA 到 GA 期间 `release/3.0.0` 分支只做缺陷修复、稳定性、兼容性与文档改进，GA 目标为 2026 年 10 月底，因此现在开始迁移、训练与测试的返工风险低于 beta 阶段。官方同时提供三条可直接运行的路径：Newton 无 Isaac Sim、`--extra ov` 的 OVPhysX + OVRTX 完全 kit-less、以及 `--extra isaacsim` 的完整 Isaac Sim 体验。
-- 迁移与兼容注意：Isaac Sim 5.1 及更早版本不再受支持，必须使用 Isaac Sim 6.1 与 Python 3.12；完整 Isaac Sim 工作流要求 Ubuntu 22.04+ 或 Windows 11、至少 32 GB 内存与 16 GB 显存；CUDA 13.0 的 PyTorch 构建支持 Blackwell GPU，DGX Spark 需要 CUDA 13 或更新版本。SkillGen、XR 遥操作、livestream、Hub Workstation Cache、Cosmos Transfer1 与 RLinf 目前在 DGX Spark 上未获支持或验证。
 
 ### v3.0.0-beta2.patch1（2026-07-02）
 
@@ -91,10 +85,10 @@
 
 ## 采用与规划提示
 
-- **3.0 的迁移窗口已经打开，建议从评估性迁移转为实际迁移。** EA 阶段官方承诺只做修复、稳定性、兼容性与文档改进，GA 目标为 2026 年 10 月底。计划在 3.0 上落地的团队应在 GA 前完成环境搭建、后端选型与关键任务验证，以降低 GA 后的集中适配压力。
+- **生产环境用户应继续使用 v2.3.2，同时开始评估 v3.0.0-beta2。** v2.3.2 是 2.x 分支的最终稳定版本，经过充分验证，适合需要确定性输出的项目。建议在隔离环境中部署 v3.0.0-beta2，重点测试多后端切换、kit-less 运行和 Newton 传感器覆盖度是否满足需求。正式迁移应等待 3.0 正式版发布。
 
-- **后端选型应在项目初期确定，并区分三条部署路径。** 追求训练吞吐与低部署门槛的场景可走 Newton（`newton_mjwarp`）无 Isaac Sim 路径；需要 PhysX 物理但不需要完整 Kit 的场景可走 `--extra ov` 的 OVPhysX + OVRTX；需要 Isaac Sim PhysX、RTX 渲染、ROS bridge 等完整 Kit 集成的场景使用 `--extra isaacsim`。三条路径的依赖与硬件要求不同，混用会显著增加环境维护成本。
+- **新项目建议直接基于 v3.0.0-beta2 开始原型开发，但需接受 beta 阶段的不稳定性。** 如果项目对训练吞吐量有较高要求（如大规模 RL 训练），Newton 后端的 CUDA 图加速和 kit-less 模式可能带来显著收益。如果项目依赖形变物体、表面夹持器等 PhysX 特有功能，则需继续使用 PhysX 后端。建议在项目初期就明确后端选型，避免后期迁移成本。
 
-- **生产环境仍应保留 v2.3.2 作为稳定基线，直到 3.0 GA 发布。** v2.3.2 是 2.x 分支的最终稳定版本，而 3.0 目前仍为 Early Access。对确定性输出要求高的项目建议继续使用 v2.3.2，同时用隔离环境验证 3.0 的后端切换、kit-less 运行与传感器覆盖度是否满足需求。
+- **关注模仿学习和灵巧操作工具链的成熟度。** SkillGen（v2.3.0）和 DexSuite（v2.3.0）代表了产品在具身智能方向的核心投入。如果团队的工作流涉及运动规划、技能分段数据生成或灵巧操作策略训练，这些功能值得优先评估。注意 cuRobo 的专有许可条款可能影响商业使用。
 
-- **硬件与平台规划需按 3.0 的新基线执行。** Isaac Sim 5.1 及更早版本不再受支持，Python 3.12、Ubuntu 22.04+/Windows 11、32 GB 内存与 16 GB 显存成为完整工作流的门槛。使用 aarch64 或 DGX Spark 的团队需注意 CUDA 13 要求，以及 SkillGen、XR 遥操作、livestream、Hub Workstation Cache、Cosmos Transfer1、RLinf 在 DGX Spark 上尚未支持或验证的限制。
+- **平台兼容性变化需要提前规划。** Python 3.12（v3.0.0-beta）、CUDA 12.8/13.0、Ubuntu 22.04/24.04 已成为新版本的标准配置。Windows 10 支持即将移除。如果团队使用 aarch64 平台（如 DGX Spark），v3.0.0-beta2 的安装文档改进值得关注。建议在下一个硬件采购周期中考虑这些兼容性要求。

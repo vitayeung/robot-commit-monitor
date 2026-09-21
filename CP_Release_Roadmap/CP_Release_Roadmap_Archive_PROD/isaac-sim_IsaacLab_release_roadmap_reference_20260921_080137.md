@@ -4,13 +4,13 @@
 - 对应主报告: `isaac-sim_IsaacLab_release_roadmap.md`
 - 统计窗口: 最近一年
 - 生成策略: GitHub release body + 外链文档摘录 + 相邻 release tag 的 GitHub compare 摘要
-- 版本总数: 7
-- 正式版数量: 4
+- 版本总数: 9
+- 正式版数量: 6
 - 预发布版数量: 3
-- 外链文档覆盖版本数: 5
-- compare 摘要覆盖版本数: 6
-- 最新版本: v3.0.0-EA (2026-09-17 06:34:03 CST)
-- 最早纳入统计版本: v2.3.0 (2025-10-29 05:38:54 CST)
+- 外链文档覆盖版本数: 6
+- compare 摘要覆盖版本数: 8
+- 最新版本: v3.0.0-beta2.patch1 (2026-07-02 12:21:18 CST)
+- 最早纳入统计版本: v2.1.1 (2025-07-30 20:59:44 CST)
 
 ## 分析策略决策
 - 请求模式: `auto`
@@ -23,162 +23,17 @@
   - 因此主脚本保持 L1，避免在主流程里默认引入额外源码分析成本。
 
 ## Release 时间线
-- 2026-09-17 06:34:03 CST | v3.0.0-EA | 正式版
 - 2026-07-02 12:21:18 CST | v3.0.0-beta2.patch1 | 预发布版
 - 2026-06-17 10:16:55 CST | v3.0.0-beta2 | 预发布版
 - 2026-03-17 14:38:37 CST | v3.0.0-beta | 预发布版
 - 2026-02-03 02:54:35 CST | v2.3.2 | 正式版
 - 2025-12-05 06:26:35 CST | v2.3.1 | 正式版
 - 2025-10-29 05:38:54 CST | v2.3.0 | 正式版
+- 2025-08-30 01:58:55 CST | v2.2.1 | 正式版
+- 2025-08-08 03:42:33 CST | v2.2.0 | 正式版
+- 2025-07-30 20:59:44 CST | v2.1.1 | 正式版
 
 ## 证据附录
-
-### v3.0.0-EA
-- 标题: v3.0.0-EA
-- 类型: 正式版
-- 发布时间: 2026-09-17 06:34:03 CST
-- 链接: https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0-EA
-- GitHub release body:
-# Isaac Lab 3.0 Early Access
-
-**Isaac Lab 3.0 Early Access is ready.**
-
-Isaac Lab 3.0 establishes the foundation for the next generation of robot learning in Isaac Lab: one task API across multiple physics, rendering, and visualization backends; kit-less execution; Warp-native data paths; and unified workflows from installation through training, evaluation, and deployment.
-
-This release is built for **Isaac Sim 6.1**, Python 3.12, PyTorch 2.11, NVIDIA Warp 1.16, and Newton 1.5.2.
-
-> [!NOTE]
-> **Early Access status**
->
-> The architecture and feature set for Isaac Lab 3.0 are ready for users to build on. From Early Access to General Availability, the `release/3.0.0` branch will focus only on bug fixes, stability, compatibility, and documentation improvements. General Availability is targeted toward the end of October 2026.
->
-> We encourage you to start migrating, training, and testing now—and to tell us what you find.
-
-## Try Isaac Lab 3.0 today
-
-Install [`uv`](https://docs.astral.sh/uv/), clone the Early Access branch, and launch a kit-less Newton workflow:
-
-```bash
-git clone --branch release/3.0.0 https://github.com/isaac-sim/IsaacLab.git
-cd IsaacLab
-
-uv run isaaclab train \
-    --rl_library rsl_rl \
-    --task Isaac-Cartpole \
-    physics=newton_mjwarp \
-    --viz newton_gl
-```
-
-For a fully kit-less PhysX and RTX rendering workflow, use OVPhysX and OVRTX backends. The `ov` extra installs both optional runtimes; Isaac Sim is not installed or launched:
-
-```bash
-uv run --extra ov isaaclab train \
-    --rl_library rsl_rl \
-    --task Isaac-Cartpole-Camera-Direct \
-    physics=ovphysx \
-    renderer=ovrtx \
-    presets=rgb \
-    --viz newton_gl
-```
-
-For the full Isaac Sim experience with Isaac Sim PhysX, Isaac Sim RTX rendering, Isaac Sim ROS bridge, and other Kit integr...
-- 外链文档摘录:
-  - https://docs.astral.sh/uv/
-    An extremely fast Python package and project manager, written in Rust.
-    - 10-100x fasterthan
-    - Runs scripts, with support forinline dependency metadata.
-    - Installs and managesPython versions.
-    - Runs and installstools published as Python packages.
-    - Includes apip-compatible interfacefor a performance boost with a familiar
-    - Supports Cargo-styleworkspacesfor scalable projects.
-    - Installable without Rust or Python via
-    - Supports macOS, Linux, and Windows.
-    PS>powershell-ExecutionPolicyByPass-c"irm https://astral.sh/uv/install.ps1 | iex"
-    uv manages project dependencies and environments, with support for lockfiles, workspaces, and more,
-    $uvinitexampleInitialized project `example` at `/home/user/example`$cdexample$uvaddruffCreating virtual environment at: .venvResolved 2 packages in 170msBuilt example @ file:///home/user/examplePrepared 2 packages in 627msInstalled 2 packages in 1ms+ example==0.1.0 (from file:///home/user/example)+ ruff==0.5.4$uvrunruffcheckAll checks passed!$uvlockResolved 2 packages in 0.33ms$uvsyncResolved 2 packages in 0.70msChecked 1 package in 0.02ms
-    uv also supports building and publishing projects, even if they're not managed with uv. See thepackaging guideto learn more.
-    Create a new script and add inline metadata declaring its dependencies:
-    $echo'import requests; print(requests.get("https://astral.sh"))'>example.py$uvadd--scriptexample.pyrequestsUpdated `example.py`
-    $uvrunexample.pyReading inline script metadata from: example.pyInstalled 5 packages in 12ms<Response [200]>
-    uv executes and installs command-line tools provided by Python packages, similar to
-    $uvxpycowsay'hello world!'Resolved 1 package in 167msInstalled 1 package in 9ms+ pycowsay==0.0.0.2"""------------< hello world! >------------\   ^__^\  (oo)\_______(__)\       )\/\||----w |||     ||
-    $uvtoolinstallruffResolved 1 package in 6msInstalled 1 package in 2ms+ ruff==0.5.4Installed 1 executable: ruff$ruff--versionruff 0.5.4
-    uv installs Python and allows quickly switching between versions.
-    Install multiple Python versions:
-    Download Python versions as needed:
-    Use a specific Python version in the current directory:
-    $uvpythonpin3.11Pinned `.python-version` to `3.11`
-    See theinstalling Python guideto get started.
-    platform-independent resolutions, reproducible resolutions, alternative resolution strategies, and
-    Migrate to uv without changing your existing workflows — and experience a 10-100x speedup — with the
-    Compile requirements into a platform-independent requirements file:
-    $uvpipcompilerequirements.in\--universal\--output-filerequirements.txtResolved 43 packages in 12ms
-    $uvvenvUsing CPython 3.12.3Creating virtual environment at: .venvActivate with: source .venv/bin/activate
-    $uvpipsyncrequirements.txtResolved 43 packages in 11msInstalled 43 packages in 208ms+ babel==2.15.0+ black==24.4.2+ certifi==2024.7.4...
-  - https://isaac-sim.github.io/IsaacLab/release/3.0.0/source/setup/installation/index.html
-    Python environment with Isaac Sim
-    Isaac Lab Python package
-    Download Isaac Sim and use the Python interpreter included with it.
-    Provision a remote GPU workstation on a supported cloud provider.
-    Full Isaac Sim workflows require Python 3.12 on Ubuntu 22.04+ or Windows 11. Use a recent NVIDIA
-    production driver and a workstation with at least 32 GB RAM and 16 GB GPU VRAM. Rendering can
-    require additional VRAM. Confirm your machine against theIsaac Sim system requirementsandOmniverse technical requirements.
-    Isaac Sim 5.1 and older are not supported. Use Isaac Sim 6.1 with Python 3.12.
-    The CUDA 13.0 PyTorch build requires NVIDIA driver
-    or newer on Windows, as documented in thePyTorch 2.12 release announcement. CUDA 13.0 wheels support Blackwell GPUs.
-    Linux x86_64 and aarch64,
-    Linux aarch64 and DGX Spark requirements
-    DGX Spark requires CUDA 13 or newer and the corresponding PyTorch build. Install the build
-    sudoaptinstallpython3.12-devlibgl1-mesa-devlibx11-devlibxcursor-dev\libxi-devlibxinerama-devlibxrandr-dev
-    SkillGen, XR teleoperation, livestream, Hub Workstation Cache, Cosmos Transfer1, and RLinf are
-    not currently supported or validated on DGX Spark. SkillGen depends on native CUDA/C++
-    # Newton backend without Isaac Simuvrunisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=newton_mjwarp# OV PhysX backenduvrun--extraovphysxisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=ovphysx# Full Isaac Sim supportuvrun--extraisaacsimisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=isaacsim_physx# Play a policyuvrunisaaclabplay--rl_libraryrsl_rl--taskIsaac-Cartpole-Direct--viznewton
-    Linux aarch64 (DGX Spark)
-    # Newton backenduvrunisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=newton_mjwarp# OV PhysX backenduvrun--extraovphysxisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=ovphysx# Full Isaac Sim supportuvrun--extraisaacsimisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=isaacsim_physx# Play a policyuvrunisaaclabplay--rl_libraryrsl_rl--taskIsaac-Cartpole-Direct--viznewton
-    For direct Python commands that import Isaac Sim on aarch64, prefix the
-    Enable Windows long-path support before cloning. In an elevated PowerShell window, run:
-    powershell -ExecutionPolicy ByPass -c"irm https://astral.sh/uv/install.ps1 | iex"
-    :: Newton backend without Isaac Simuv run isaaclab train --rl_library rsl_rl^--task Isaac-Cartpole-Direct physics=newton_mjwarp:: OV PhysX backenduv run --extra ovphysx isaaclab train --rl_library rsl_rl^--task Isaac-Cartpole-Direct physics=ovphysx:: Full Isaac Sim supportuv run --extra isaacsim isaaclab train --rl_library rsl_rl^--task Isaac-Cartpole-Direct physics=isaacsim_physx:: Play a policyuv run isaaclab play --rl_library rsl_rl --task Isaac-Cartpole-Direct --viz newton
-    The source checkout selects PyTorch’s CUDA 13.0 build on Linux x86_64, Linux aarch64, and Windows.
-    No additional command flags are needed.
-    The published wheel pins the PyTorch versions, but downstream uv projects must configure their own
-    Kit-less installation uses a Python 3.12 environment and does not install Isaac Sim. Clone Isaac
-    uvvenv--python3.12--seedenv_isaaclabsourceenv_isaaclab/bin/activate
-    uv venv --python 3.12 --seed env_isaaclab
-    condacreate-nenv_isaaclabpython=3.12
-    conda create -n env_isaaclab python=3.12
-    python -m pip install --upgrade pip
-    Teleoperation tools (Linux x86_64).
-    OV runtime wheels. Select
-    Python environment with Isaac Sim#
-    Use this path when you want an editable Isaac Lab checkout with full Isaac Sim support and a
-    Python environment you manage yourself. Create and activate the environment before installing
-    Isaac Sim or Isaac Lab. Isaac Sim’s pip packages require GLIBC 2.35 or newer on Linux. EnableWindows long-path supportbefore installing on Windows.
-    Create and activate a Python 3.12 environment:
-    Install Isaac Sim and the CUDA 13.0 PyTorch build for your platform:
-    On aarch64 systems such as DGX Spark, install the required development packages before
-    sudoaptinstallpython3.12-devlibgl1-mesa-devlibx11-devlibxcursor-devlibxi-dev\libxinerama-devlibxrandr-dev
-    exportLD_PRELOAD=$(python-c"import sys,os;[print(os.path.join(p,'omni','client','libcarb.so')) for p in sys.path if os.path.isfile(os.path.join(p,'omni','client','libcarb.so'))]"2>/dev/null|head-1)${LD_PRELOAD:+:$LD_PRELOAD}
-    isaaclab.bat -p scripts\tutorials\00_sim\create_empty.py --viz kit
-    Isaac Lab Python package#
-    Use this path when Isaac Lab is a dependency of an external Python project. The released
-    Isaac Lab wheels are published for major releases, not every patch release.
-    resources as a released wheel:
-- Compare 摘要: v3.0.0-beta2.patch1 -> v3.0.0-EA
-  - commits: 1041
-  - files changed: 300+ returned files (GitHub compare API file list cap)
-  - additions: 14501
-  - deletions: 1970
-  - top directories: .agents, .claude, .dockerignore, .gitattributes, .github, .gitignore
-  - representative files:
-    - .github/workflows/build.yaml (modified, +562/-248)
-    - .github/workflows/license-exceptions.json (modified, +698/-17)
-    - .github/actions/run-tests/run_tests.sh (added, +556/-0)
-    - .github/workflows/license-check.yaml (modified, +487/-32)
-    - .github/actions/run-tests/action.yml (modified, +153/-311)
-    - .github/scripts/resolve_backport_conflicts.py (added, +425/-0)
-    - .github/workflows/backport-release-3.0.yml (added, +387/-0)
-    - docs/_extensions/isaaclab_docs.py (added, +360/-0)
 
 ### v3.0.0-beta2.patch1
 - 标题: v3.0.0-beta2.patch1
@@ -294,7 +149,7 @@ Newton and OVPhysX support have been expanded and stabilized for larger kit-less
   - https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0-beta
     Release v3.0.0-beta · isaac-sim/IsaacLab · GitHub
     - NotificationsYou must be signed in to change notification settings
-    - Fork3.9k
+    - Fork3.7k
     kellyguo11released this17 Mar 06:38
     Isaac Lab 3.0 Beta 🚀
     branch is under active development and may experience breaking changes, error messages, or performance regressions in some use cases.
@@ -335,8 +190,8 @@ Newton and OVPhysX support have been expanded and stabilized for larger kit-less
     - Performance regressions may be observed in some use cases as the multi-backend architecture stabilizes.
     - Breaking changes may still occur on the develop branch before the final 3.0 release.
     For a comprehensive guide on migrating from Isaac Lab 2.x to 3.0, including code examples, API rename tables, and automated tooling, see theMigration Guide.
-    🎉29ZzzzzzS, qianl-nv, rthaker01, sheikh-nv, evanzijianhe, johnsutor, IvolgaDmitriy, seawee1, diegoferigo-rai, momo-van, and 19 more reacted with hooray emoji
-    - 🎉29 reactions
+    🎉28ZzzzzzS, qianl-nv, rthaker01, sheikh-nv, evanzijianhe, johnsutor, IvolgaDmitriy, seawee1, diegoferigo-rai, momo-van, and 18 more reacted with hooray emoji
+    - 🎉28 reactions
   - https://docs.isaacsim.omniverse.nvidia.com/6.0.0/installation/download.html
     Omniverse Launcher, Nucleus Workstation, and Nucleus Cache will be deprecated and will no longer be available starting October 1, 2025.
     For those who want to use Nucleus and Live Sync after October 1, 2025, please useEnterprise Nucleus Server.
@@ -396,47 +251,37 @@ The new `isaaclab_newton` extension enables running Isaac Lab environments **wit
 - CUDA graph support for high-thro...
 - 外链文档摘录:
   - https://isaac-sim.github.io/IsaacLab/develop/source/migration/migrating_to_isaaclab_3-0.html
-    Migrating To 3.0 — Isaac Lab Documentation
-    Choose the path that matches the code you are starting from. The Isaac Lab 2.x path is organized in
-    the order most projects should migrate: install the new release, configure a backend, update task APIs,
-    Migration from Isaac Lab 2.x to 3.0– update an existing
-    Isaac Lab project for the new installation, APIs, and multi-backend architecture.
-    Migration from Isaac Gym and IsaacGymEnvs– port an Isaac Gym
-    Migration of deformables– move from the old soft-body API to
-    Migration from Isaac Lab 2.x to 3.0
-    Isaac Lab 3.0 separates backend-specific simulation code from the core API and introduces unified
-    When you change it, update the skill so agent guidance stays in sync. SeeAgent Skills.
-    Start from a fresh Isaac Lab 3.0 checkout and Python 3.12 environment instead of upgrading the
-    packages inside an existing 2.x environment. The recommended workflow now uses
-    condacreate-nenv_isaaclabpython=3.11
-    for full Isaac Sim support. SeeAutomatic setup with uv (recommended)for platform-specific
-    use a preset when an environment supports multiple backends.
+    Migrating to Isaac Lab 3.0 — Isaac Lab Documentation
+    Migrating to Isaac Lab 3.0
+    Migrating to Isaac Lab 3.0#
+    Isaac Lab 3.0 introduces a multi-backend architecture that separates simulation backend-specific code
+    from the core Isaac Lab API. This allows for future support of different physics backends while
+    maintaining a consistent user-facing API.
+    This guide covers the main breaking changes and deprecations you need to address when migrating
+    from Isaac Lab 2.x to Isaac Lab 3.0.
+    In Isaac Lab 3.0, the
+    argument is deprecated. Instead, use
+    is deprecated (still supported) and overrides
+    Isaac Lab 3.0 provides unified reinforcement learning entrypoints for training
+    # Isaac Lab 2.x/deprecated./isaaclab.sh-pscripts/reinforcement_learning/rsl_rl/train.py--taskIsaac-Cartpole# Isaac Lab 3.0./isaaclab.shtrain--rl_libraryrsl_rl--taskIsaac-Cartpole
+    Supported reinforcement learning libraries are
+    remain available as deprecated compatibility entrypoints and emit a
+    For distributed launchers that execute a Python script directly, use the unified
+    python-mtorch.distributed.run--nproc_per_node=2scripts/reinforcement_learning/train.py\--rl_libraryrsl_rl--taskIsaac-Cartpole--distributed
     Isaac Lab 3.0 introduces afactory-based multi-backend architecturethat allows asset classes
     fromisaaclab.assetsimportArticulation,ArticulationCfg# The factory pattern creates the appropriate backend implementation.# No import changes are needed — the same isaaclab imports work regardless of backend.robot=Articulation(cfg=ArticulationCfg(...))
-    seeBackend Architecture. To add a new backend, seeAdd a Physics Backend.
+    by default. Newton backend support is being
+    For a comprehensive overview of the factory pattern, backend selection, and how to add a new
     ``isaaclab_physx``— PhysX-specific implementations of asset and sensor classes.
     ``isaaclab_newton``— Newton-specific implementations of supported asset classes, including
     Deformable object public APIs remain in the backend-neutral
     extension is installed automatically with Isaac Lab. No additional
-    The following sensor classes also remain in the
-    package with unchanged imports:
-    These sensor classes now use factory patterns that automatically instantiate the appropriate backend
-    sensor in Isaac Lab 3.0 isnotthe same as the
-    sensor in 2.x.
-    (full state sensor) has been renamed to
-    is a lightweight sensor that only provides angular velocity
-    and linear acceleration. SeeIMU Sensor Renamed to PVA; New Lightweight IMU Sensorbelow for details.
-    If you need to import the PhysX sensor implementations directly (e.g., for type hints or subclassing),
-    # Direct PhysX implementation importsfromisaaclab_physx.sensorsimportContactSensor,ContactSensorDatafromisaaclab_physx.sensorsimportImu,ImuDatafromisaaclab_physx.sensorsimportPva,PvaDatafromisaaclab_physx.sensorsimportFrameTransformer,FrameTransformerDatafromisaaclab_physx.sensorsimportJointWrenchSensor,JointWrenchSensorData
-    ensuring a consistent API across backends. They use the same warp-based data conventions
     In Isaac Lab 3.0, the spawner schema cfg classes are split into solver-commonbase classes(in
     the same asset cfg portable across PhysX and Newton backends, and adds slots
-    now deprecated in favor of schema fragments, and will be removed in 3.2. Read
-    this subsection to understand where a 2.x name went, then migrate to the
     The following 2.x class names are kept as deprecated aliases. They forward to
-    the new location and will be removed in 3.2.
+    the new location and will be removed in 4.0.
     Existing 2.x code continues to work via the deprecation aliases (with a
-    ; removed in 3.2):
+    ; removed in 4.0):
     # Isaac Lab 2.ximportisaaclab.simassim_utilsrigid_props=sim_utils.RigidBodyPropertiesCfg(disable_gravity=True,linear_damping=0.1)
     Recommended 3.0 pattern when targeting PhysX:
     # Isaac Lab 3.0 — PhysX backendfromisaaclab_physx.sim.schemasimportPhysxRigidBodyPropertiesCfgrigid_props=PhysxRigidBodyPropertiesCfg(disable_gravity=True,linear_damping=0.1)
@@ -444,6 +289,16 @@ The new `isaaclab_newton` extension enables running Isaac Lab environments **wit
     # Isaac Lab 3.0 — backend-portablefromisaaclab.sim.schemasimportRigidBodyBaseCfgrigid_props=RigidBodyBaseCfg(rigid_body_enabled=True,disable_gravity=True)
     USD camelCase attribute names. The old names remain as deprecated dataclass
     scheduled for removal in 4.0.
+    Isaac Lab 2.x style still works (emits
+    Recommended 3.0 pattern, backend-portable:
+    Recommended 3.0 pattern, PhysX-targeted:
+    For the Newton backend (and Newton’s MuJoCo solver), new cfg classes are
+    (body-level gravity compensation, MuJoCo solver only)
+    . SeeGravity compensation (MuJoCo solver)for details.
+    USD, seeSchema Configuration Classes.
+    name is kept as a deprecated alias.
+    For most users, the only change needed is updating imports:
+    physics backend. The deprecated
 - Compare 摘要: v2.3.2 -> v3.0.0-beta
   - commits: 309
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -574,7 +429,7 @@ Key highlights of this release include:
 - 外链文档摘录:
   - https://github.com/isaac-sim/IsaacLab/blob/main/docs/licenses/dependencies/cuRobo-license.txt
     - NotificationsYou must be signed in to change notification settings
-    - Fork3.9k
+    - Fork3.7k
     93 lines (47 loc) · 17.1 KB
     NVIDIA ISAAC LAB ADDITIONAL SOFTWARE AND MATERIALS LICENSE
     1. License Grant. The Software made available by NVIDIA to you is licensed, not sold. Subject to the terms of this Agreement, NVIDIA grants you a limited, non-exclusive, revocable, non-transferable, and non-sublicensable (except as expressly granted in this Agreement), license to install and use copies of the Software together with NVIDIA Isaac Lab in systems with NVIDIA GPUs ("Purpose").
@@ -612,3 +467,246 @@ Key highlights of this release include:
     Letâs round the value up and use 4 Nm to allow for a bit of a margin. Note that the link containing the finger pad is not directly connected to joint J0, which has the drive. However, all the joints are connected via a mimic to the driven joint J0, and as such, all joints are considered to be driven here. Furthermore, the gearing ratio for all mimic joints is 1. Thus, we can make the generous assumption that each joint will experience the same torque from the drive. To summarize, the estimated torque of 4 Nm is considered to be the maximum drive force for each joint.
     One last important consideration before using this value to set the maximum drive force on joint J0: the estimated torque is per joint, but joint J0has to drive all six joints (itself plus the five mimic joints). Consequently, the maximum drive force on joint J0is set to:
     (4)#\[J_0 \; maxDriveForce = 6...
+- Compare 摘要: v2.2.1 -> v2.3.0
+  - commits: 168
+  - files changed: 300+ returned files (GitHub compare API file list cap)
+  - additions: 13286
+  - deletions: 2323
+  - top directories: .github, .gitignore, CITATION.cff, CONTRIBUTORS.md, README.md, VERSION
+  - representative files:
+    - scripts/imitation_learning/locomanipulation_sdg/generate_data.py (added, +774/-0)
+    - source/isaaclab/test/controllers/test_controller_utils.py (added, +662/-0)
+    - source/isaaclab/isaaclab/ui/xr_widgets/scene_visualization.py (added, +609/-0)
+    - docs/source/overview/imitation-learning/skillgen.rst (added, +548/-0)
+    - source/isaaclab/isaaclab/devices/openxr/manus_vive_utils.py (added, +509/-0)
+    - source/isaaclab/test/controllers/test_local_frame_task.py (added, +481/-0)
+    - docs/source/setup/installation/binaries_installation.rst (modified, +19/-420)
+    - docs/source/setup/installation/pip_installation.rst (modified, +54/-337)
+
+### v2.2.1
+- 标题: v2.2.1
+- 类型: 正式版
+- 发布时间: 2025-08-30 01:58:55 CST
+- 链接: https://github.com/isaac-sim/IsaacLab/releases/tag/v2.2.1
+- GitHub release body:
+## 👀 Overview
+
+This is a minor patch release with some improvements and bug fixes.
+
+**Full Changelog**: https://github.com/isaac-sim/IsaacLab/compare/v2.2.0...v2.2.1
+
+## ✨ New Features
+
+* Adds contact point location reporting to ContactSensor by @jtigue-bdai in https://github.com/isaac-sim/IsaacLab/pull/2842
+* Adds environments actions/observations descriptors for export by @AntoineRichard in https://github.com/isaac-sim/IsaacLab/pull/2730
+* Adds RSL-RL symmetry example for cartpole and ANYmal locomotion by @Mayankm96 in https://github.com/isaac-sim/IsaacLab/pull/3057
+
+## 🔧 Improvements
+
+### Core API
+
+* Enhances Pink IK controller with null-space posture control and improv… by @michaellin6 in https://github.com/isaac-sim/IsaacLab/pull/3149
+* Adds periodic logging when checking USD path on Nucleus server by @matthewtrepte in https://github.com/isaac-sim/IsaacLab/pull/3221
+* Disallows string value written in sb3_ppo_cfg.yaml get evaluated in process_sb3_cfg by @ooctipus in https://github.com/isaac-sim/IsaacLab/pull/3110
+
+### Infrastructure
+
+* **Application Settings**
+  * Disables rate limit for headless and headless rendering app by @matthewtrepte, @kellyguo11  in https://github.com/isaac-sim/IsaacLab/pull/3219, https://github.com/isaac-sim/IsaacLab/pull/3089
+  * Disables `rtx.indirrectDiffuse.enabled`  in render preset balanced and performance modes by @matthewtrepte in https://github.com/isaac-sim/IsaacLab/pull/3240
+  * Sets profiler backend to NVTX by default by @soowanpNV, @rwiltz in https://github.com/isaac-sim/IsaacLab/pull/3238, https://github.com/isaac-sim/IsaacLab/pull/3255
+* **Dependencies**
+  * Adds hf-xet license by @hhansen-bdai in https://github.com/isaac-sim/IsaacLab/pull/3116
+  * Fixes new typing-inspection dependency license by @kellyguo11 in https://g...
+- Compare 摘要: v2.2.0 -> v2.2.1
+  - commits: 46
+  - files changed: 191
+  - additions: 8245
+  - deletions: 1064
+  - top directories: .github, CITATION.cff, CONTRIBUTORS.md, README.md, VERSION, apps
+  - representative files:
+    - source/isaaclab/isaaclab/envs/mdp/events.py (modified, +490/-307)
+    - docs/source/_static/policy_deployment/01_io_descriptors/isaac_velocity_flat_g1_v0_IO_descriptors.yaml (added, +724/-0)
+    - source/isaaclab/test/controllers/test_pink_ik.py (modified, +305/-151)
+    - source/isaaclab/isaaclab/envs/utils/io_descriptors.py (added, +372/-0)
+    - docs/source/_static/policy_deployment/01_io_descriptors/isaac_velocity_flat_anymal_d_v0_IO_descriptors.yaml (added, +349/-0)
+    - source/isaaclab/test/controllers/test_null_space_posture_task.py (added, +339/-0)
+    - docs/source/policy_deployment/01_io_descriptors/io_descriptors_101.rst (added, +281/-0)
+    - source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/mdp/symmetry/anymal.py (added, +271/-0)
+
+### v2.2.0
+- 标题: v2.2.0
+- 类型: 正式版
+- 发布时间: 2025-08-08 03:42:33 CST
+- 链接: https://github.com/isaac-sim/IsaacLab/releases/tag/v2.2.0
+- GitHub release body:
+## 👀 Overview
+
+**Isaac Lab 2.2** brings major upgrades across simulation capabilities, tooling, and developer experience. It expands support for advanced physics features, new environments, and improved testing and documentation workflows. This release includes full compatibility with **Isaac Sim 5.0** as well as backwards compatibility with **Isaac Sim 4.5**.
+
+Key highlights of this release include:
+
+- **Enhanced Physics Support**: Updated [joint friction modeling using the latest PhysX APIs](https://nvidia-omniverse.github.io/PhysX/physx/5.6.1/docs/Articulations.html#articulation-joint-friction), added support for [spatial tendons](https://nvidia-omniverse.github.io/PhysX/physx/5.6.1/docs/Articulations.html#spatial-tendons), and improved surface gripper interactions.
+- **New Environments for Imitation Learning**: Introduction of two new GR1 mimic environments, with domain randomization and visual robustness evaluation, and improved pick-and-place tasks.
+- **New Contact-Rich Manipulation Tasks**: Integration of [FORGE](https://noseworm.github.io/forge/) and [AutoMate](https://bingjietang718.github.io/automate/) tasks for learning fine-grained contact interactions in simulation.
+- **Teleoperation Improvements**: Teleoperation tools have been enhanced with configurable parameters and CloudXR runtime updates, including head tracking and hand tracking.
+- **Performance & Usability Improvements**: Includes support for Stage in Memory and Cloning in Fabric for faster scene creation, new OVD recorder for large-scene GPU-based animation recording, and FSD (Fabric Scene Delegate) for improved rendering speed.
+- **Improved Documentation**: The documentation has been extended and updated to cover new features, resolve common issues, and streamline setup, including updates to te...
+- 外链文档摘录:
+  - https://nvidia-omniverse.github.io/PhysX/physx/5.6.1/docs/Articulations.html#articulation-joint-friction
+    Articulations provide an alternative, often superior approach to simulating mechanisms over addingjointsto rigid bodies. Typically, we achieve higher simulation fidelity with articulations as they have zero joint error by design, and can handle larger mass ratios between the jointed bodies. PhysX simulates articulations in reduced-coordinates, where the configuration of the articulation is determined by its root-body pose and the joint angles instead of the world pose of each body involved.
+    It is often possible to turn jointed rigid bodies into an articulation given that they do not contain unsupported joints, seeArticulation Jointsbelow, and making sure thatloopsare resolved appropriately.
+    Fixed Tendonsthat can create constraints on joint angles, for example to enforce mirrored motion of two joints, or
+    The robot arm is afixed-basearticulation: Its root or base is fixed to the world frame. The fixed-base property can be set with a flag on the articulationat creation. Setting this flag is advantageous over constraining the root link using aFixed Jointbecause the immoveable property of the root link is solved perfectly.
+    While articulations natively only support tree-structures, it is possible to create loops in the articulation by adding rigid-bodyJointsbetween articulation links. For example, we could tie the ragdoll’s hands together by adding aDistance Jointbetween the two hand spheres.
+    The articulation links also do not have individual sleep states or solver iteration counts because they are simulated as a unit in the articulation. Those properties are set on the articulation instead. For the same reason, the links do not support force thresholding.
+    Otherwise, articulation links can be treated as rigid bodies; for example, they use the same mass and collision-shape setup API, or we can apply a spatial force to them, or we can query their world pose and velocity (querying is ok, setting is not). In particular, links are also compatible with rigid-bodyJointsthat can be used to close loops.
+    Performance-wise, the simulation cost is generally proportional to the number of degrees of freedom, rather than the number of links (assuming few contacts that need resolving). Therefore, in common robotics applications, where most joints have 0-1 degrees of freedom, the simulation cost of reduced-coordinate articulations is often lower than using rigid-bodies with joints.
+    Set the articulation to be fixed-base, if applicable, and any other optional configuration options (see the API doc of
+    Then add links one by one, each time specifying a parent link (
+    joint->setJointType(PxArticulationJointType::eREVOLUTE);// revolute joint that rotates about the z axis (eSWING2) of the joint framesjoint->setMotion(PxArticulationAxis::eSWING2,PxArticulationMotion::eLIMITED);PxArticulationLimitlimits;limits.low=-PxPiDivFour;// in rad for a rotational motionlimits.high=PxPiDivFour;joint->setLimitParams(PxArticulationAxis::eSWING2,limits);
+    Note how the axis must be specified consistently for both setting the motion and limit. In addition to limits, you may add a joint drive (i.e. motor):
+    PxArticulationDriveposDrive;posDrive.stiffness=driveStiffness;// the spring constant driving the joint to a target positionposDrive.damping=driveDamping;// the damping coefficient driving the joint to a target velocityposDrive.maxForce=actuatorLimit;// force limit for the driveposDrive.driveType=PxArticulationDriveType::eFORCE;// make the drive output be a force/torque (default)// apply and set targets (note again the consistent axis)joint->setDriveParams(PxArticulationAxis::eSWING2,posDrive);joint->setDriveVelocity(PxArticulationAxis::eSWING2,0.0f);joint->setDriveTarget(PxArticulationAxis::eSWING2,targetPosition);
+    You may also set joint friction, armature, etc; see the API doc of
+    for details. At creation, you can also addArticulation Tendons:
+    Finally, add the articulation to the scene (seecaveatbelow about changing articulation topology after scene insertion):
+    In order to allow for pre-computing and optimization of simulation data, it is not possible to make changes to an articulation that change its topology after the articulation has been added to the scene. Topological changes include:
+    adding and removing links ortendons
+    adding/removing tendon attachments or joints.
+    If you need to make topology changes, simply remove and re-add the articulation to the scene:
+    scene->removeArticulation(*articulation);// make topology changesscene->addArticulation(*articulation);
+    The articulation state (i.e. pose and velocities) is preserved through the remove and re-add cycle, so you do not have to store and reapply the state. In case of link removal, the corresponding joint state is removed as well; the state of joints of new links may be set with
+    . Note that any changes to the articulation topology, in particular changes affecting degrees-of-freedom, typically require recreating the articulation’sPxArticulationCacheand recomputinglow-level indices to the cache.
+    - a f...
+  - https://nvidia-omniverse.github.io/PhysX/physx/5.6.1/docs/Articulations.html#spatial-tendons
+    Articulations provide an alternative, often superior approach to simulating mechanisms over addingjointsto rigid bodies. Typically, we achieve higher simulation fidelity with articulations as they have zero joint error by design, and can handle larger mass ratios between the jointed bodies. PhysX simulates articulations in reduced-coordinates, where the configuration of the articulation is determined by its root-body pose and the joint angles instead of the world pose of each body involved.
+    It is often possible to turn jointed rigid bodies into an articulation given that they do not contain unsupported joints, seeArticulation Jointsbelow, and making sure thatloopsare resolved appropriately.
+    Fixed Tendonsthat can create constraints on joint angles, for example to enforce mirrored motion of two joints, or
+    The robot arm is afixed-basearticulation: Its root or base is fixed to the world frame. The fixed-base property can be set with a flag on the articulationat creation. Setting this flag is advantageous over constraining the root link using aFixed Jointbecause the immoveable property of the root link is solved perfectly.
+    While articulations natively only support tree-structures, it is possible to create loops in the articulation by adding rigid-bodyJointsbetween articulation links. For example, we could tie the ragdoll’s hands together by adding aDistance Jointbetween the two hand spheres.
+    The articulation links also do not have individual sleep states or solver iteration counts because they are simulated as a unit in the articulation. Those properties are set on the articulation instead. For the same reason, the links do not support force thresholding.
+    Otherwise, articulation links can be treated as rigid bodies; for example, they use the same mass and collision-shape setup API, or we can apply a spatial force to them, or we can query their world pose and velocity (querying is ok, setting is not). In particular, links are also compatible with rigid-bodyJointsthat can be used to close loops.
+    Performance-wise, the simulation cost is generally proportional to the number of degrees of freedom, rather than the number of links (assuming few contacts that need resolving). Therefore, in common robotics applications, where most joints have 0-1 degrees of freedom, the simulation cost of reduced-coordinate articulations is often lower than using rigid-bodies with joints.
+    Set the articulation to be fixed-base, if applicable, and any other optional configuration options (see the API doc of
+    Then add links one by one, each time specifying a parent link (
+    joint->setJointType(PxArticulationJointType::eREVOLUTE);// revolute joint that rotates about the z axis (eSWING2) of the joint framesjoint->setMotion(PxArticulationAxis::eSWING2,PxArticulationMotion::eLIMITED);PxArticulationLimitlimits;limits.low=-PxPiDivFour;// in rad for a rotational motionlimits.high=PxPiDivFour;joint->setLimitParams(PxArticulationAxis::eSWING2,limits);
+    Note how the axis must be specified consistently for both setting the motion and limit. In addition to limits, you may add a joint drive (i.e. motor):
+    PxArticulationDriveposDrive;posDrive.stiffness=driveStiffness;// the spring constant driving the joint to a target positionposDrive.damping=driveDamping;// the damping coefficient driving the joint to a target velocityposDrive.maxForce=actuatorLimit;// force limit for the driveposDrive.driveType=PxArticulationDriveType::eFORCE;// make the drive output be a force/torque (default)// apply and set targets (note again the consistent axis)joint->setDriveParams(PxArticulationAxis::eSWING2,posDrive);joint->setDriveVelocity(PxArticulationAxis::eSWING2,0.0f);joint->setDriveTarget(PxArticulationAxis::eSWING2,targetPosition);
+    You may also set joint friction, armature, etc; see the API doc of
+    for details. At creation, you can also addArticulation Tendons:
+    Finally, add the articulation to the scene (seecaveatbelow about changing articulation topology after scene insertion):
+    In order to allow for pre-computing and optimization of simulation data, it is not possible to make changes to an articulation that change its topology after the articulation has been added to the scene. Topological changes include:
+    adding and removing links ortendons
+    adding/removing tendon attachments or joints.
+    If you need to make topology changes, simply remove and re-add the articulation to the scene:
+    scene->removeArticulation(*articulation);// make topology changesscene->addArticulation(*articulation);
+    The articulation state (i.e. pose and velocities) is preserved through the remove and re-add cycle, so you do not have to store and reapply the state. In case of link removal, the corresponding joint state is removed as well; the state of joints of new links may be set with
+    . Note that any changes to the articulation topology, in particular changes affecting degrees-of-freedom, typically require recreating the articulation’sPxArticulationCacheand recomputinglow-level indices to the cache.
+    - a f...
+- Compare 摘要: v2.1.1 -> v2.2.0
+  - commits: 159
+  - files changed: 300+ returned files (GitHub compare API file list cap)
+  - additions: 11867
+  - deletions: 2439
+  - top directories: .aws, .github, .pre-commit-config.yaml, CITATION.cff, CONTRIBUTORS.md, README.md
+  - representative files:
+    - scripts/tools/record_demos.py (modified, +306/-206)
+    - source/isaaclab/test/devices/test_device_constructors.py (added, +461/-0)
+    - source/isaaclab/isaaclab/assets/articulation/articulation.py (modified, +406/-47)
+    - docs/source/overview/augmented_imitation.rst (added, +431/-0)
+    - scripts/demos/pick_and_place.py (added, +412/-0)
+    - source/isaaclab/isaaclab/assets/surface_gripper/surface_gripper.py (added, +393/-0)
+    - docs/source/how-to/cloudxr_teleoperation.rst (modified, +302/-36)
+    - scripts/imitation_learning/robomimic/robust_eval.py (added, +334/-0)
+
+### v2.1.1
+- 标题: v2.1.1
+- 类型: 正式版
+- 发布时间: 2025-07-30 20:59:44 CST
+- 链接: https://github.com/isaac-sim/IsaacLab/releases/tag/v2.1.1
+- GitHub release body:
+## 👀 Overview
+
+This release has been in development over the past few months and includes a significant number of updates, enhancements, and new features across the entire codebase. Given the volume of changes, we've grouped them into relevant categories to improve readability. This version is compatible with [NVIDIA Isaac Sim 4.5](https://docs.isaacsim.omniverse.nvidia.com/4.5.0/installation/download.html).
+
+We appreciate the community’s patience and contributions in ensuring quality and stability throughout. We're aiming for more frequent patch releases moving forward to improve the developer experience.
+
+**Note:** This minor release does not include a Docker image or pip package.
+
+**Full Changelog**: https://github.com/isaac-sim/IsaacLab/compare/v2.1.0...v2.1.1
+
+## ✨ New Features
+
+* **Asset Interfaces**
+  * Adds `position` argument to set external forces and torques at different locations on the rigid body by @AntoineRichard in https://github.com/isaac-sim/IsaacLab/pull/1680
+  * Adds `body_incoming_joint_wrench_b` to ArticulationData field by @jtigue-bdai in https://github.com/isaac-sim/IsaacLab/pull/2128
+  * Allows selecting articulation root prim explicitly by @lgulich in https://github.com/isaac-sim/IsaacLab/pull/2228
+* **Sensor Interfaces**
+  * Draws connection lines for FrameTransformer visualization by @Mayankm96 in https://github.com/isaac-sim/IsaacLab/pull/1754
+  * Uses visualization marker for connecting lines inside FrameTransformer by @bikcrum in https://github.com/isaac-sim/IsaacLab/pull/2526
+* **MDP Terms**
+  * Adds `body_pose_w` and `body_projected_gravity_b` observations by @jtigue-bdai in https://github.com/isaac-sim/IsaacLab/pull/2212
+  * Adds joint effort observation by @jtigue-bdai in https://github.com/isaac-sim/IsaacLab/pull/2211
+  * Adds CoM...
+- 外链文档摘录:
+  - https://docs.isaacsim.omniverse.nvidia.com/4.5.0/installation/download.html
+    Omniverse Launcher, Nucleus Workstation, and Nucleus Cache will be deprecated and will no longer be available starting October 1, 2025.  Functionality may be reduced If these applications are used after this date.
+    Isaac Sim 4.5.0 will be the last release on Omniverse Launcher. SeeLatest Releaseinstead.
+    The Live Sync feature is deprecated in Isaac Sim 4.5.0.
+    Using the latest version of Isaac Sim is recommended to receive the latest security patches and bug-fixes.
+    Pack 1 of 3(33.5 GB)
+    Pack 2 of 3(28.6 GB)
+    Pack 3 of 3(24.1 GB)
+    Pack 1 of 4(13.7 GB)
+    Pack 2 of 4(18.2 GB)
+    Pack 3 of 4(14.5 GB)
+    Pack 4 of 4(22.6 GB)
+  - https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.sim.html#isaaclab.sim.PhysxCfg.enable_stabilization
+    Define and modify various schemas on USD prims
+    Converters to obtain USD file from other file formats (such as URDF, OBJ, STL, FBX)
+    Currently, only a subset of all possible schemas and prims in Omniverse are supported.
+    Sub-module containing converters for converting various file types to USD.
+    Utilities built around USD operations.
+    Configuration for PhysX solver-related parameters.
+    Configuration for Omniverse RTX Renderer.
+    and the physics solver parameters (for more information, see
+    adding and removing callbacks to different simulation events such as physics stepping, rendering, etc.
+    adds additional functionalities such as setting up the simulation context with a configuration object,
+    Since we only support thePyTorchbackend for simulation, the
+    Standalone python script: In this mode, the user has full control over the simulation and
+    Based on above, for most functions in this class there is an equivalent function that is suffixed
+    functions are used in the standalone python script mode.
+    Returns whether the simulation has any RTX-rendering related sensors.
+    Change the current render mode of the simulation.
+    : No rendering, where only 1 is updated at a lower rate.
+    : Partial rendering, where only 1 and 2 are updated.
+    : Full rendering, where everything (1, 2, 3) is updated.
+    The parameter is set to True when instances of RTX-related sensors (cameras or LiDARs) are
+    created using Isaac Lab’s sensor classes.
+    True if the simulation has RTX sensors (such as USD Cameras or LiDARs).
+    When fabric interface is enabled, USD read/write operations are disabled. Instead all applications
+    that occurs during USD read/write operations.
+    Major version: This is the year of the release (e.g. 2022).
+    Minor version: This is the half-year of the release (e.g. 1 or 2).
+    Patch version: This is the patch number of the release (e.g. 0).
+    This function is deprecated and will be removed in the future.
+    change the render mode.
+    mode.(SimulationContext's _sphinx_paramlinks_isaaclab.sim.SimulationContext.set_render_mode.mode is changed to the new)
+    ValueError– If the input mode is not supported.
+    The prim path where the USD PhysicsScene is created.
+    The gravity vector (in m/s^2).
+    Enable/disable scene query support for collision shapes.
+    The prim path where the USD PhysicsScene is created. Default is “/physicsScene”.
+    "cuda:0"
+    : Use GPU, where N is the device ID. For example, “cuda:0”.
+    The physics simulation time-step (in seconds). Default is 0.0167 seconds.
+    The number of physics simulation steps per rendering step. Default is 1.
+    The gravity vector (in m/s^2). Default is (0.0, 0.0, -9.81).
+    If set to (0.0, 0.0, 0.0), gravity is disabled.
+    Enable/disable scene query support for collision shapes. Default is False.
+    functionality will not be available. However, this provides some performance speed-up.
+    When running the simulation, updates in the states in the scene is normally synchronized with USD.
+    When using GPU simulation, it is required to enable Fabric to visualize updates in the renderer.
+    Transform updates are propagated to the renderer through Fabric. If Fabric is disabled with GPU simulation,
+    the renderer will not be able to render any updates in the simulation, although simulation will still be
+    PhysX solver settings. Default is PhysxCfg().
