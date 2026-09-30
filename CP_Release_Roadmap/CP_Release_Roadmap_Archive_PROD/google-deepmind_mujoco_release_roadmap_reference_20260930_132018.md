@@ -9,8 +9,8 @@
 - 预发布版数量: 0
 - 外链文档覆盖版本数: 12
 - compare 摘要覆盖版本数: 12
-- 最新版本: 3.14.0 (2026-09-23 00:52:58 CST)
-- 最早纳入统计版本: 3.3.7 (2025-10-15 01:38:32 CST)
+- 最新版本: 3.13.0 (2026-09-09 23:03:05 CST)
+- 最早纳入统计版本: 3.3.6 (2025-09-16 22:28:40 CST)
 
 ## 分析策略决策
 - 请求模式: `auto`
@@ -23,7 +23,6 @@
   - 因此主脚本保持 L1，避免在主流程里默认引入额外源码分析成本。
 
 ## Release 时间线
-- 2026-09-23 00:52:58 CST | 3.14.0 | 正式版
 - 2026-09-09 23:03:05 CST | 3.13.0 | 正式版
 - 2026-08-20 19:11:59 CST | 3.12.0 | 正式版
 - 2026-07-28 09:17:52 CST | 3.11.0 | 正式版
@@ -36,100 +35,9 @@
 - 2026-02-13 09:20:28 CST | 3.5.0 | 正式版
 - 2025-12-06 07:17:44 CST | 3.4.0 | 正式版
 - 2025-10-15 01:38:32 CST | 3.3.7 | 正式版
+- 2025-09-16 22:28:40 CST | 3.3.6 | 正式版
 
 ## 证据附录
-
-### 3.14.0
-- 标题: 3.14.0
-- 类型: 正式版
-- 发布时间: 2026-09-23 00:52:58 CST
-- 链接: https://github.com/google-deepmind/mujoco/releases/tag/3.14.0
-- GitHub release body:
-# Version 3.14.0 (September 22, 2026)
-
-## General
-
-1. [`458189298`](https://github.com/google-deepmind/mujoco/commit/458189298) Added the `ipc` [flag](https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-flag-ipc), an experimental contact mode of the `discrete`
-   integrator for penetration-free flex contact. Each step minimizes an incremental potential subject to linearized
-   contact constraints, using a barrier-free augmented Lagrangian whose subproblems are the discrete solve. Every
-   committed position update is verified intersection-free by continuous collision detection, so flex contact cannot
-   tunnel. Supported for dim-2 flexes: a flex with edge equality constraints keeps its elasticity in the constraint
-   solver, while `elastic2d` elasticity is integrated implicitly through the effective metric. The contacts the mode
-   resolves are frictionless. The mode keeps contact multipliers across steps that no state specification covers, so
-   `mj_getState`/`mj_setState` do not capture its full state and exact replay is not supported.
-
-2. [`2fec92237`](https://github.com/google-deepmind/mujoco/commit/2fec92237) Introduced [archive resource providers](https://mujoco.readthedocs.io/en/stable/APIreference/functions.html#mjp_registerArchiveResourceProvider)
-   (`mjp_registerArchiveResourceProvider`). Archive providers use the
-   [`mjpResourceProvider`](https://mujoco.readthedocs.io/en/stable/APIreference/APItypes.html#mjpResourceProvider) interface to mount and read archive containers (such as
-   `.mjz`/`.zip`), decoupling container handling from format decoders and enabling
-   on-demand asset extraction without requiring a pre-allocated [VFS](https://mujoco.readthedocs.io/en/stable/APIreference/functions_override.html#Virtualfilesystem).
-
-3. [`e312ce82d`...
-- 外链文档摘录:
-  - https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-flag-ipc
-    XML Reference - MuJoCo Documentation
-    - XML Reference
-    - API Reference
-    - Python
-    - API
-    - OpenUSD
-    - File Format Plugin
-    - Changelog
-    This chapter is the reference manual for the MJCF modeling language used in MuJoCo.
-    The dropdown below summarizes the XML elements and their attributes in MJCF. All information in MJCF is entered through
-    An array of N integers. If N is omitted it equals 1.
-    An array of N real-valued numbers. If N is omitted it equals 1.
-    In addition to having a data type, attributes can be required or optional. Optional attributes can have internal
-    This state is different from any valid setting that can be entered in the XML. This mechanism enables the compiler to
-    appropriate action. Some attributes have internal defaults (usually 0) which are not actually allowed by the
-    compiler. When such attributes become relevant in a given context, they must be set to allowed values.
-    The schema is also emitted as anXML Schema(XSD) document, generated from the
-    same source of truth and checked in assrc/xml/generated/mjcf.xsd.
-    To enable this in VS Code, install the Red HatXML extension(or the same extension fromOpen VSXin forks such as Cursor and VSCodium) and reference
-    <mujocoxmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/google-deepmind/mujoco/refs/heads/main/src/xml/generated/mjcf.xsd">
-    that the compiler rejects. Constraints that XSD 1.0 cannot express – child cardinality and presence constraints
-    In the remainder of this chapter we describe all valid MJCF elements and their attributes. Some elements can be used in
-    prefix in the documentation below.
-    These elements are not strictly part of the low-level MJCF format definition, but rather instruct the compiler to
-    saving the XML; the exception isframe, which is preserved. There are currently six meta-elements in
-    schema, but serve to procedurally generate other MJCF elements.
-    (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
-    offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
-    replicating 200 times, suffixes will be
-    The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
-    replicate elements, the innermost namespace suffixes are appended first.
-    <mujoco><worldbody><replicatecount="2"offset="0 1 0"euler="90 0 0"><replicatecount="2"sep="-"offset="1 0 0"euler="0 90 0"><geomname="Alice"size=".1"/></replicate></replicate></worldbody><sensor><accelerometername="Bob"site="Alice"/></sensor></mujoco>
-    <mujoco><worldbody><geomname="Alice-00"size="0.1"/><geomname="Alice-10"size="0.1"pos="1 0 0"quat="1 0 1 0"/><geomname="Alice-01"size="0.1"pos="0 1 0"quat="1 1 0 0"/><geomname="Alice-11"size="0.1"pos="1 1 0"quat="0.5 0.5 0.5 0.5"/></worldbody><sensor><accelerometername="Bob-00"site="Alice-00"/><accelerometername="Bob-10"site="Alice-10"/><accelerometername="Bob-01"site="Alice-01"/><accelerometername="Bob-11"site="Alice-11"/></sensor></mujoco>
-    This element does not strictly belong to MJCF. Instead it is a meta-element, used to assemble multiple XML
-    files in a single document object model (DOM) before parsing. The included file must be a valid XML file with a unique
-    top-level element. This top-level element is removed by the parser, and the elements below it are inserted at the
-    location of theincludeelement. At least one element must be inserted as a result of this procedure. Theincludeelement can be used wherever an XML element is expected in the MJCF file. Nested includes are allowed,
-    however a given XML file can be included at most once in the entire model. After all the included XML files have been
-    assembled into a single DOM, it must correspond to a valid MJCF model. Other than that, it is up to the user to decide
-    The name of the XML file to be included. The file location is relative to the directory of the main MJCF file. If the
-    file is not in the same directory, it should be prefixed with a relative path.
-    The unique top-level element, identifying the XML file as an MJCF model file.
-    adjust it properly through the XML.
-    Simulation time step in seconds. This is the single most important parameter affecting the speed-accuracy trade-off
-    real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
-    by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
-    attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
-- Compare 摘要: 3.13.0 -> 3.14.0
-  - commits: 195
-  - files changed: 300+ returned files (GitHub compare API file list cap)
-  - additions: 13027
-  - deletions: 5640
-  - top directories: .github, .gitignore, CMakeLists.txt, CONTRIBUTING.md, cmake, dist
-  - representative files:
-    - model/flex/bag.xml (modified, +944/-3156)
-    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_flex.py (modified, +691/-253)
-    - src/engine/engine_collision_driver.c (modified, +392/-520)
-    - python/mujoco/render_filament_generated.cc.inc (added, +873/-0)
-    - doc/skills/studio/SKILL.md (added, +606/-0)
-    - python/mujoco/render_filament.cc (added, +544/-0)
-    - .github/workflows/build_steps.sh (modified, +426/-21)
-    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/forward.py (modified, +422/-9)
 
 ### 3.13.0
 - 标题: 3.13.0
@@ -233,9 +141,10 @@
     In the remainder of this chapter we describe all valid MJCF elements and their attributes. Some elements can be used in
     prefix in the documentation below.
     These elements are not strictly part of the low-level MJCF format definition, but rather instruct the compiler to
-    saving the XML; the exception isframe, which is preserved. There are currently six meta-elements in
+    saving the XML. There are currently six meta-elements in MJCF:
     schema, but serve to procedurally generate other MJCF elements.
-    (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
+    <mujoco><worldbody><framequat="0 0 1 0"><geomname="Alice"quat="0 1 0 0"size="1"/></frame><framepos="0 1 0"><geomname="Bob"pos="0 1 0"size="1"/><bodyname="Carl"pos="1 0 0">...</body></frame></worldbody></mujoco>
+    <mujoco><worldbody><geomname="Alice"quat="0 0 0 1"size="1"/><geomname="Bob"pos="0 2 0"size="1"/><bodyname="Carl"pos="1 1 0">...</body></worldbody></mujoco>
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
@@ -256,7 +165,6 @@
     real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
     by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
     attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
 - Compare 摘要: 3.12.0 -> 3.13.0
   - commits: 171
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -318,9 +226,10 @@
     In the remainder of this chapter we describe all valid MJCF elements and their attributes. Some elements can be used in
     prefix in the documentation below.
     These elements are not strictly part of the low-level MJCF format definition, but rather instruct the compiler to
-    saving the XML; the exception isframe, which is preserved. There are currently six meta-elements in
+    saving the XML. There are currently six meta-elements in MJCF:
     schema, but serve to procedurally generate other MJCF elements.
-    (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
+    <mujoco><worldbody><framequat="0 0 1 0"><geomname="Alice"quat="0 1 0 0"size="1"/></frame><framepos="0 1 0"><geomname="Bob"pos="0 1 0"size="1"/><bodyname="Carl"pos="1 0 0">...</body></frame></worldbody></mujoco>
+    <mujoco><worldbody><geomname="Alice"quat="0 0 0 1"size="1"/><geomname="Bob"pos="0 2 0"size="1"/><bodyname="Carl"pos="1 1 0">...</body></worldbody></mujoco>
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
@@ -341,7 +250,6 @@
     real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
     by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
     attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
   - https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-pid-ki
     XML Reference - MuJoCo Documentation
     - XML Reference
@@ -367,9 +275,10 @@
     In the remainder of this chapter we describe all valid MJCF elements and their attributes. Some elements can be used in
     prefix in the documentation below.
     These elements are not strictly part of the low-level MJCF format definition, but rather instruct the compiler to
-    saving the XML; the exception isframe, which is preserved. There are currently six meta-elements in
+    saving the XML. There are currently six meta-elements in MJCF:
     schema, but serve to procedurally generate other MJCF elements.
-    (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
+    <mujoco><worldbody><framequat="0 0 1 0"><geomname="Alice"quat="0 1 0 0"size="1"/></frame><framepos="0 1 0"><geomname="Bob"pos="0 1 0"size="1"/><bodyname="Carl"pos="1 0 0">...</body></frame></worldbody></mujoco>
+    <mujoco><worldbody><geomname="Alice"quat="0 0 0 1"size="1"/><geomname="Bob"pos="0 2 0"size="1"/><bodyname="Carl"pos="1 1 0">...</body></worldbody></mujoco>
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
@@ -390,7 +299,6 @@
     real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
     by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
     attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
 - Compare 摘要: 3.11.0 -> 3.12.0
   - commits: 133
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -448,9 +356,10 @@
     In the remainder of this chapter we describe all valid MJCF elements and their attributes. Some elements can be used in
     prefix in the documentation below.
     These elements are not strictly part of the low-level MJCF format definition, but rather instruct the compiler to
-    saving the XML; the exception isframe, which is preserved. There are currently six meta-elements in
+    saving the XML. There are currently six meta-elements in MJCF:
     schema, but serve to procedurally generate other MJCF elements.
-    (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
+    <mujoco><worldbody><framequat="0 0 1 0"><geomname="Alice"quat="0 1 0 0"size="1"/></frame><framepos="0 1 0"><geomname="Bob"pos="0 1 0"size="1"/><bodyname="Carl"pos="1 0 0">...</body></frame></worldbody></mujoco>
+    <mujoco><worldbody><geomname="Alice"quat="0 0 0 1"size="1"/><geomname="Bob"pos="0 2 0"size="1"/><bodyname="Carl"pos="1 1 0">...</body></worldbody></mujoco>
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
@@ -471,7 +380,6 @@
     real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
     by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
     attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
   - https://mujoco.readthedocs.io/en/stable/XMLreference.html#body-geom-adhesion
     XML Reference - MuJoCo Documentation
     - XML Reference
@@ -497,9 +405,10 @@
     In the remainder of this chapter we describe all valid MJCF elements and their attributes. Some elements can be used in
     prefix in the documentation below.
     These elements are not strictly part of the low-level MJCF format definition, but rather instruct the compiler to
-    saving the XML; the exception isframe, which is preserved. There are currently six meta-elements in
+    saving the XML. There are currently six meta-elements in MJCF:
     schema, but serve to procedurally generate other MJCF elements.
-    (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
+    <mujoco><worldbody><framequat="0 0 1 0"><geomname="Alice"quat="0 1 0 0"size="1"/></frame><framepos="0 1 0"><geomname="Bob"pos="0 1 0"size="1"/><bodyname="Carl"pos="1 0 0">...</body></frame></worldbody></mujoco>
+    <mujoco><worldbody><geomname="Alice"quat="0 0 0 1"size="1"/><geomname="Bob"pos="0 2 0"size="1"/><bodyname="Carl"pos="1 1 0">...</body></worldbody></mujoco>
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
@@ -520,7 +429,6 @@
     real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
     by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
     attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
 - Compare 摘要: 3.10.0 -> 3.11.0
   - commits: 226
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -1128,3 +1036,76 @@ See the [changelog](https://mujoco.readthedocs.io/en/3.3.7/changelog.html).
     combines the Composite Rigid Body algorithm inmj_crband additional terms related totendon armature. Code that usesmj_crbto compute the inertia should now usemj_makeMinstead.
     Fixed a bug that caused object lists in the child to have missing elements after attaching an mjSpec. This was
     caused by adding to the lists only the objects that belong to the tree of the requested body, but this causes to
+- Compare 摘要: 3.3.6 -> 3.3.7
+  - commits: 137
+  - files changed: 300+ returned files (GitHub compare API file list cap)
+  - additions: 6936
+  - deletions: 11234
+  - top directories: .readthedocs.yml, CMakeLists.txt, README.md, STYLEGUIDE.md, cmake, dist
+  - representative files:
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_primitive.py (modified, +952/-2170)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_primitive_core.py (added, +1433/-0)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/sensor.py (modified, +753/-266)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/io.py (modified, +799/-154)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_driver_test.py (removed, +0/-906)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_gjk.py (modified, +433/-293)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_sdf.py (modified, +474/-163)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_convex.py (modified, +413/-194)
+
+### 3.3.6
+- 标题: 3.3.6
+- 类型: 正式版
+- 发布时间: 2025-09-16 22:28:40 CST
+- 链接: https://github.com/google-deepmind/mujoco/releases/tag/3.3.6
+- GitHub release body:
+See the [changelog](https://mujoco.readthedocs.io/en/3.3.6/changelog.html).
+- 外链文档摘录:
+  - https://mujoco.readthedocs.io/en/3.3.6/changelog.html
+    Changelog - MuJoCo Documentation
+    - XML Reference
+    - API Reference
+    - Python
+    - MJX
+    - OpenUSD
+    - File Format Plugin
+    - Changelog
+    3.3.6 (September 15, 2025)#
+    a strict improvement over the monolithic constraint solver, please let us know if you experience any issues.
+    Contact sensorsubtree1/subtree2specification is now available for any body, not
+    was moved from the end of the solver call (mj_fwdConstraint) to
+    the end ofmj_step, and is now updated with all other state variables. This change makesmj_forwardfully idempotent.
+    Before this change, callingmj_forwardrepeatedly would make the constraint solver converge,
+    Migration:If your code depended on this behavior, you can recover it by updating manually after eachmj_forward:
+    Furthermore, this change has a numerical impact on the output of theRK4integrator.
+    Before this change, due to the
+    the solver convergence of RK4 was faster, at the cost of unprincipled integration. This change makes the RK4
+    integration principled and well-defined. Since this change to RK4 is effectively a bug fix, migration to the
+    flag for disabling passive forces was removed and replaced bymjDSBL_SPRINGandmjDSBL_DAMPERwith correspondingmjcfattributes. Each flag disables only joint and tendon
+    compensation, fluid forces, forces computed by themjcb_passivecallback, and forces computed bypluginswhen passed themjPLUGIN_PASSIVEcapability flag.
+    Added support for shells with a curved reference configuration. See thisexample.
+    Added experimental option forpassivecontacts involving flexes.
+    to the public MJX API. Add Warp support for
+    Fixed a latent bug where MjData objects were not serialized correctly by the Python bindings when islanding was
+    Version 3.3.5 (August 8, 2025)#
+    Added theinsidesitesensor, for checking if an object is inside the volume of a site.
+    Added thecontactsensor, for reporting contact information according to user-defined
+    The purpose of thecontactsensor is to report contact-related information in a fixed-size array. This is
+    Added thetactilesensor, for measuring the penetration depth between two objects at given
+    points and the sliding velocities in the tangent frame. The sensor reports tactile data only when colliding with
+    Removed the SdfLib plugin and the dependency onSdfLib. SDFs are now
+    supported natively in mjModel.
+    Added the functionality to create a builtin meshes, seemesh/builtin.
+    combines the Composite Rigid Body algorithm inmj_crband additional terms related totendon armature. Code that usesmj_crbto compute the inertia should now usemj_makeMinstead.
+    Fixed a bug that caused object lists in the child to have missing elements after attaching an mjSpec. This was
+    caused by adding to the lists only the objects that belong to the tree of the requested body, but this causes to
+    Fixed a bug where the convex hull of a collision mesh was not being computed if the mesh could only collide via acontact pair.
+    On Linux, built distribution packages (wheels) now target the
+    based on CentOS 7, which reached end-of-life in June 2024.
+    Add Warp as a backend implementation for MJX. The implementation can be specified via
+    a CUDA device and
+    Version 3.3.4 (July 8, 2025)#
+    In the mjSpec C API, directly setting an element’s name usingmjs_setStringhas been replaced with a new
+    functionmjs_setNamewhich allows checking for naming collisions at set-time rather than compile-time, for
+    attribute has been removed from all mjs elements. Known issue:
+    Added support for setting the initial camera in the viewer usingvisual/global/cameraid.
+    Added support to only sync the state in the Pythonpassive viewer’s
