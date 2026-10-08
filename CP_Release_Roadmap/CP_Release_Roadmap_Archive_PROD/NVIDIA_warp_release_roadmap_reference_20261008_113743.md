@@ -9,8 +9,8 @@
 - 预发布版数量: 0
 - 外链文档覆盖版本数: 12
 - compare 摘要覆盖版本数: 12
-- 最新版本: v1.18.0 (2026-10-05 08:24:57 CST)
-- 最早纳入统计版本: v1.10.0 (2025-11-02 22:11:50 CST)
+- 最新版本: v1.17.0 (2026-08-31 15:13:49 CST)
+- 最早纳入统计版本: v1.9.1 (2025-10-01 15:37:06 CST)
 
 ## 分析策略决策
 - 请求模式: `auto`
@@ -23,7 +23,6 @@
   - 因此主脚本保持 L1，避免在主流程里默认引入额外源码分析成本。
 
 ## Release 时间线
-- 2026-10-05 08:24:57 CST | v1.18.0 | 正式版
 - 2026-08-31 15:13:49 CST | v1.17.0 | 正式版
 - 2026-08-07 09:54:26 CST | llvm-sdk-22.1.8-warp.1 | 正式版
 - 2026-08-03 10:32:53 CST | v1.16.0 | 正式版
@@ -36,128 +35,9 @@
 - 2026-01-02 21:26:06 CST | v1.11.0 | 正式版
 - 2025-12-01 21:13:27 CST | v1.10.1 | 正式版
 - 2025-11-02 22:11:50 CST | v1.10.0 | 正式版
+- 2025-10-01 15:37:06 CST | v1.9.1 | 正式版
 
 ## 证据附录
-
-### v1.18.0
-- 标题: v1.18.0
-- 类型: 正式版
-- 发布时间: 2026-10-05 08:24:57 CST
-- 链接: https://github.com/NVIDIA/warp/releases/tag/v1.18.0
-- GitHub release body:
-# Warp v1.18.0
-
-Warp v1.18 introduces the `warp.geometry` module, with Python and kernel APIs for extracting meshes from implicit fields and sampled rigid motion, and improving 2D triangulations directly on the device. Experimental CPU block execution improves tile portability by supporting the same explicit `block_dim` on CPU and CUDA. The release also supports automatic differentiation through vector and matrix component updates in arrays and avoids unnecessary GPU-to-CPU transfers of sparse-matrix block counts.
-
-> [!IMPORTANT]
-> The default PyPI and nightly wheels for Linux and Windows now use CUDA Toolkit 13.4. CUDA acceleration requires an NVIDIA R580-series or newer driver and a Turing (`sm_75`) or newer GPU. CUDA 12 compatibility wheels remain available from [GitHub Releases](https://github.com/NVIDIA/warp/releases/tag/v1.18.0) with a `+cu12` version suffix.
-
-## New features
-
-### Sparse marching cubes
-
-You can now extract an isosurface from a custom sparse volume or other geometry representation without converting it to a dense grid. `warp.geometry.sparse_marching_cubes()` accepts a callable that samples a scalar field at batches of query points, so your sampler can read directly from the existing data structure. Warp builds a Lipschitz octree to prune cells away from the requested surface and runs marching cubes on the remaining cells (#1803).
-
-`nx`, `ny`, and `nz` specify grid-node counts, as in dense marching cubes. The field callable accepts `wp.vec3` query points in batches and returns `wp.float32` values on the same device. The output contains `wp.vec3` vertices and flat triangle indices, with three indices per face. This example evaluates a sphere field in a Warp kernel on the GPU and compares its evaluation count with sampling every node of a `257³` gr...
-- 外链文档摘录:
-  - https://github.com/NVIDIA/warp/releases/tag/v1.18.0
-    Release v1.18.0 · NVIDIA/warp · GitHub
-    github-actionsreleased this05 Oct 00:24
-    Warp v1.18 introduces the
-    module, with Python and kernel APIs for extracting meshes from implicit fields and sampled rigid motion, and improving 2D triangulations directly on the device. Experimental CPU block execution improves tile portability by supporting the same explicit
-    on CPU and CUDA. The release also supports automatic differentiation through vector and matrix component updates in arrays and avoids unnecessary GPU-to-CPU transfers of sparse-matrix block counts.
-    The default PyPI and nightly wheels for Linux and Windows now use CUDA Toolkit 13.4. CUDA acceleration requires an NVIDIA R580-series or newer driver and a Turing (
-    ) or newer GPU. CUDA 12 compatibility wheels remain available fromGitHub Releaseswith a
-    accepts a callable that samples a scalar field at batches of query points, so your sampler can read directly from the existing data structure. Warp builds a Lipschitz octree to prune cells away from the requested surface and runs marching cubes on the remaining cells (#1803).
-    )print(f"Mesh:{vertices.shape[0]:,}vertices,{indices.shape[0]//3:,}triangles")print(f"Sparse field evaluations:{stats['field_evaluations']:,}")print(f"Dense grid samples:{n**3:,}")
-    Mesh: 77,094 vertices, 154,184 triangles
-    Sparse field evaluations: 400,259
-    Dense grid samples: 16,974,593
-    Here, sparse extraction uses about 2.4% of the field evaluations required by dense sampling.
-    . Cell selection and mesh connectivity remain fixed during differentiation.
-    works for a true signed distance function. Fields that change faster with distance need a larger bound. Setting it too low can discard cells containing the surface.
-    updates a 2D triangle mesh's connectivity on the device after its vertices move. It flips non-Delaunay interior edges in place.
-    importwarpaswpimportwarp.geometrypositions=wp.array([[-3.0,0.0], [3.0,0.0], [0.0,1.0], [0.0,-1.0]],dtype=wp.vec2)triangles=wp.array([[0,1,2], [1,0,3]],dtype=wp.int32)flips=warp.geometry.delaunay_edge_flip(positions,triangles)neighbors,neighbor_edges=warp.geometry.tri_tri_adjacency(triangles,vertex_count=4)print(int(flips.numpy()[0]))# 1faces=triangles.numpy().tolist()print(sorted(set(faces[0])&set(faces[1])))# [2, 3]
-    The shared diagonal changes from
-    is reached. If you supply reference positions, the algorithm skips flips that would create degenerate triangles in the reference mesh. Both APIs support CUDA graph capture. Supply
-    builds a single mesh of the space occupied by a rigid assembly across sampled poses. It samples a signed distance field on a dense grid. Each grid point queries every mesh at every supplied pose, so finer grids and more pose samples increase computation. Use the result for motion visualization or as an input to robotics clearance checks (#1824).
-    importnumpyasnpimportwarpaswpimportwarp.geometrypoints=wp.array([[0,0,0], [1,0,0], [0,1,0], [0,0,1]],dtype=wp.vec3)faces=wp.array([0,2,1,0,3,2,0,1,3,1,2,3],dtype=wp.int32)mesh=wp.Mesh(points,faces,support_winding_number=True)poses=np.zeros((1,8,7),dtype=np.float32)poses[...,6]=1.0# Identity rotations, quaternion order xyzw.poses[0, :,0]=np.linspace(0.0,1.0,8)vertices,indices=warp.geometry.swept_volume_mesh(
-    [mesh],poses,voxel_size=0.1,threshold=0.09)v=vertices.numpy()print(np.round(v.min(axis=0),2))# [-0.09 -0.09 -0.09]print(np.round(v.max(axis=0),2))# [2.09 1.09 1.09]
-    See theswept-volume examplefor a procedural robot arm, animated USD input, and alternative sign modes.
-    on the class to return vertices and triangle indices without creating an extractor instance (#1614):
-    array with at least two nodes on every axis. You can differentiate the extracted vertex positions with respect to field values, with mesh connectivity held fixed. Theisosurface examplehas moved into
-    This is an experimental feature. The API may change without a formal deprecation cycle.
-    Tile kernels that require multiple cooperating logical threads within a block can now produce matching results on CPU and CUDA using the same explicit
-    CPU execution defaults to one logical kernel thread per block. Cooperative CPU blocks schedule their logical threads on a single operating-system thread and can be substantially slower. They do not add CPU parallelism or vectorize execution across those logical threads. AddressSanitizer builds reject enabled CPU launches with
-    Automatic differentiation now supports assignments and updates to individual components of array elements, such as vectors and matrices. Supported patterns include
-    You no longer need to load the whole array element, modify a local copy, and write it back to differentiate a supported component assignment.
-    option. Inlining removes call overhead by inserting the function body at each call site, which can increase code size. Set
-    to let the compiler decide. The choice also applies to generated backward functions (#1849).
-    importwarpaswpimportwarp.sparseassparserows=wp.array([0,0,1],dtype=wp.int32)columns=wp.array([0,0,1],dtype=wp.int...
-  - https://github.com/NVIDIA/warp/blob/v1.18.0/docs/user_guide/programming_model/tiles.rst#cpu-tile-semantics
-    warp/docs/user_guide/programming_model/tiles.rst at v1.18.0 · NVIDIA/warp · GitHub
-    1919 lines (1426 loc) · 80.7 KB
-    Block-based programming models such as those in OpenAI Triton have proved to be effective ways of expressing high-performance kernels that can leverage cooperative operations on modern GPUs.
-    With Warp 1.5.0[1], developers now have access to new tile-based programming primitives in Warp kernels.
-    SeeBuilding with MathDxfor more details when building the Warp locally with support for
-    For guidance on MathDx LTO compile costs and development-time fallback flags,
-    Warp's execution model allows users to specify a grid of logical threads with up to 4 dimensions for kernel execution at launch time.
-    In the following example, we launch a grid of threads where each block is responsible for loading a row of data from a 2D array and computing its sum:
-    :skipif: wp.get_cuda_device_count() == 0
-    def compute(a: wp.array2d[float], b: wp.array2d[float]):
-    a_np = np.arange(N).reshape(-1, 1) * np.ones((1, 256), dtype=float)
-    b = wp.zeros((N,1), dtype=float)
-    wp.launch_tiled(compute, dim=[a.shape[0]], inputs=[a, b], block_dim=TILE_THREADS)
-    b = [   0.  256.  512.  768. 1024. 1280. 1536. 1792. 2048. 2304.]
-    element in the launch grid. Each block then loads an entire row of 256 values from the
-    cooperate to process it. A tile does not need one thread per element: in this example, 64
-    threads process a 256-element tile. Define tile dimensions explicitly and use them for
-    execution and performance choice rather than as the tile's logical extent.
-    In Warp, tile objects are arrays of data where the tile elements may be scalars, vectors, matrices, or user-defined structures. Tiles can have up to four dimensions. We can load 2D tiles directly from 2D global memory arrays as follows:
-    into 2D tiles of shape 16 x 16.
-    For example, if the block dimension at launch is set to 64, a register tile with
-    will result in each thread storing 4 elements.
-    For this reason, operations on tiles tend to be expressed as higher-level maps, reductions, and reshaping operations that may transfer values through shared memory.
-    Note that shared memory tile allocations are guaranteed to be 16-byte aligned.
-    operation that returns a new tile adds its own storage to the request:
-    TILE_DIM=32# one 32x32 float32 tile = 4,096 B@wp.kerneldefchained(a:wp.array3d[float],b:wp.array3d[float],out:wp.array3d[float]):i=wp.tid()A=wp.tile_load(a[i],shape=(TILE_DIM,TILE_DIM),storage="shared")# site 1B=wp.tile_load(b[i],shape=(TILE_DIM,TILE_DIM),storage="shared")# site 2T1=wp.tile_matmul(A,B)# site 3T2=wp.tile_matmul(T1,B)# site 4T3=wp.tile_matmul(T2,B)# site 5wp.tile_store(out[i],T3)# requests 5 x 4,096 = 20,480 B, although at most three tiles are ever live
-    @wp.kernel(enable_backward=False)defreused_forward_only(a:wp.array3d[float],b:wp.array3d[float],out:wp.array3d[float]):i=wp.tid()A=wp.tile_load(a[i],shape=(TILE_DIM,TILE_DIM),storage="shared")# site 1B=wp.tile_load(b[i],shape=(TILE_DIM,TILE_DIM),storage="shared")# site 2T=wp.tile_zeros(shape=(TILE_DIM,TILE_DIM),dtype=float,storage="shared")# site 3for_inrange(3):wp.tile_matmul(A,B,T,alpha=1.0,beta=0.0)# writes into T, no new tilewp.tile_assign(A,T)wp.tile_store(out[i],A)# requests 3 x 4,096 = 12,288 B
-    so a later call reuses the same bytes instead of adding to the request. A kernel reserves
-    a total, so a chain of nested calls adds up along the deepest path.
-    would raise the request by 1,024 B. It takes a maximum over
-    would not change it at all.
-    To bring a kernel back within the budget, start with the changes that apply to any kernel:
-    is a compile-time constant no greater than :attr:`warp.config.max_unroll` (16 by default), and
-    instead of staying flat. Measured on sm_86, a blocked multiply with two 1,024 B slices and a
-    1,024 B accumulator requests 3,072 B when the loop bound arrives as a kernel argument, and
-    17,408 B when the same loop reads
-    the request flat can change gradients while leaving the forward result intact. Roll one freely
-    tiles a kernel creates, so a smaller grid or batch leaves it unchanged.
-    - Use the in-place forms, which do not support automatic differentiation:
-    accumulate into it, instead of binding each product to a new name.
-    memory for global memory and additional launches.
-    compile time; seeShared memory overflowfor how the failure surfaces.
-    Shared Tile Load Performance
-    - Vectorized float4 (2D+ tiles):Reinterprets memory as 128-bit
-    Requires the last dimension to be float4-aligned (
-    last_dim * sizeof(T) % 16 == 0
-    source array, 16-byte aligned base address, tile in-bounds, and float4-aligned outer-dimension strides.
-    - Coalesced byte-copy (large element types, ``sizeof(T) > 16``):For types like
-- Compare 摘要: v1.17.0 -> v1.18.0
-  - commits: 178
-  - files changed: 300+ returned files (GitHub compare API file list cap)
-  - additions: 8908
-  - deletions: 5711
-  - top directories: .clang-format, .claude, .codex, .gitattributes, .github, .gitlab-ci.yml
-  - representative files:
-    - .github/workflows/ci.yml (modified, +519/-80)
-    - design/cpu-block-dim-fibers.md (added, +598/-0)
-    - .claude/skills/changelog-audit/SKILL.md (removed, +0/-531)
-    - .codex/skills/changelog-audit/SKILL.md (removed, +0/-531)
-    - .claude/skills/release-audit/references/report-template.md (removed, +0/-521)
-    - .codex/skills/release-audit/references/report-template.md (removed, +0/-521)
-    - .claude/skills/warp-release-audit/SKILL.md (added, +493/-0)
-    - .codex/skills/warp-release-audit/SKILL.md (added, +493/-0)
 
 ### v1.17.0
 - 标题: v1.17.0
@@ -182,7 +62,8 @@ A capsule query takes a start point and a direction rather than two endpoints. T
 `wp.mesh_get_bvh()` exposes a mesh's internal BVH to the general `wp.bvh_query_*()` APIs. This makes BVH-on...
 - 外链文档摘录:
   - https://github.com/NVIDIA/warp/releases
-    - v1.18.0
+    - NotificationsYou must be signed in to change notification settings
+    - Fork613
     - v1.17.0
     - v1.16.0
     - LLVM SDK 22.1.8 (llvm-sdk-22.1.8-warp.1)
@@ -192,40 +73,40 @@ A capsule query takes a start point and a direction rather than two endpoints. T
     - v1.12.1
     - v1.12.0
     - v1.11.1
-    github-actionsreleased this05 Oct 00:24
-    Warp v1.18 introduces the
-    module, with Python and kernel APIs for extracting meshes from implicit fields and sampled rigid motion, and improving 2D triangulations directly on the device. Experimental CPU block execution improves tile portability by supporting the same explicit
-    on CPU and CUDA. The release also supports automatic differentiation through vector and matrix component updates in arrays and avoids unnecessary GPU-to-CPU transfers of sparse-matrix block counts.
-    The default PyPI and nightly wheels for Linux and Windows now use CUDA Toolkit 13.4. CUDA acceleration requires an NVIDIA R580-series or newer driver and a Turing (
-    ) or newer GPU. CUDA 12 compatibility wheels remain available fromGitHub Releaseswith a
-    accepts a callable that samples a scalar field at batches of query points, so your sampler can read directly from the existing data structure. Warp builds a Lipschitz octree to prune cells away from the requested surface and runs marching cubes on the remaining cells (#1803).
-    )print(f"Mesh:{vertices.shape[0]:,}vertices,{indices.shape[0]//3:,}triangles")print(f"Sparse field evaluations:{stats['field_evaluations']:,}")print(f"Dense grid samples:{n**3:,}")
-    Mesh: 77,094 vertices, 154,184 triangles
-    Sparse field evaluations: 400,259
-    Dense grid samples: 16,974,593
-    Here, sparse extraction uses about 2.4% of the field evaluations required by dense sampling.
-    . Cell selection and mesh connectivity remain fixed during differentiation.
-    works for a true signed distance function. Fields that change faster with distance need a larger bound. Setting it too low can discard cells containing the surface.
-    updates a 2D triangle mesh's connectivity on the device after its vertices move. It flips non-Delaunay interior edges in place.
-    importwarpaswpimportwarp.geometrypositions=wp.array([[-3.0,0.0], [3.0,0.0], [0.0,1.0], [0.0,-1.0]],dtype=wp.vec2)triangles=wp.array([[0,1,2], [1,0,3]],dtype=wp.int32)flips=warp.geometry.delaunay_edge_flip(positions,triangles)neighbors,neighbor_edges=warp.geometry.tri_tri_adjacency(triangles,vertex_count=4)print(int(flips.numpy()[0]))# 1faces=triangles.numpy().tolist()print(sorted(set(faces[0])&set(faces[1])))# [2, 3]
-    The shared diagonal changes from
-    is reached. If you supply reference positions, the algorithm skips flips that would create degenerate triangles in the reference mesh. Both APIs support CUDA graph capture. Supply
-    builds a single mesh of the space occupied by a rigid assembly across sampled poses. It samples a signed distance field on a dense grid. Each grid point queries every mesh at every supplied pose, so finer grids and more pose samples increase computation. Use the result for motion visualization or as an input to robotics clearance checks (#1824).
-    importnumpyasnpimportwarpaswpimportwarp.geometrypoints=wp.array([[0,0,0], [1,0,0], [0,1,0], [0,0,1]],dtype=wp.vec3)faces=wp.array([0,2,1,0,3,2,0,1,3,1,2,3],dtype=wp.int32)mesh=wp.Mesh(points,faces,support_winding_number=True)poses=np.zeros((1,8,7),dtype=np.float32)poses[...,6]=1.0# Identity rotations, quaternion order xyzw.poses[0, :,0]=np.linspace(0.0,1.0,8)vertices,indices=warp.geometry.swept_volume_mesh(
-    [mesh],poses,voxel_size=0.1,threshold=0.09)v=vertices.numpy()print(np.round(v.min(axis=0),2))# [-0.09 -0.09 -0.09]print(np.round(v.max(axis=0),2))# [2.09 1.09 1.09]
-    See theswept-volume examplefor a procedural robot arm, animated USD input, and alternative sign modes.
-    on the class to return vertices and triangle indices without creating an extractor instance (#1614):
-    array with at least two nodes on every axis. You can differentiate the extracted vertex positions with respect to field values, with mesh connectivity held fixed. Theisosurface examplehas moved into
-    This is an experimental feature. The API may change without a formal deprecation cycle.
-    Tile kernels that require multiple cooperating logical threads within a block can now produce matching results on CPU and CUDA using the same explicit
-    CPU execution defaults to one logical kernel thread per block. Cooperative CPU blocks schedule their logical threads on a single operating-system thread and can be substantially slower. They do not add CPU parallelism or vectorize execution across those logical threads. AddressSanitizer builds reject enabled CPU launches with
-    . See [CPU tile execution](https://github.com/NVIDIA/warp/blob/v1.18.0/docs/user_guide/programming_model/tiles.rst#...
-    rickpr, pei-tian, and 7 other contributors
+    - v1.11.0
     github-actionsreleased this31 Aug 07:13
     If you are upgrading, note that implicit conversion of Python and Warp numeric scalars to composite types has been removed; seeRemovals and deprecationsfor migration guidance.
     APIs. This makes BVH-only operations such as
     Tune and inspect CUDA kernel resource use
-    CUDA kernels now have controls for register allocation and shared-memory spi...
+    CUDA kernels now have controls for register allocation and shared-memory spilling, and their resource use can be inspected before launch.
+    compiles the requested kernel variant if necessary, without launching it, and reports its per-thread register count and local-memory use (#1805).
+    importwarpaswp@wp.kernel(cuda_max_registers=64,enable_backward=False)defupdate(values:wp.array[float]):i=wp.tid()values[i]=wp.sin(values[i])+wp.cos(values[i])properties=wp.get_cuda_kernel_properties(update,device="cuda:0",block_dim=128,
+    Resource counts depend on the GPU, toolchain, compiler options, and block size. Use them to investigate occupancy and spilling, then profile the kernel before changing its configuration.
+    . Reads, writes, negative row indices, and adjoints work for tiles with one through four logical dimensions (#1028).
+    importnumpyasnpimportwarpaswpTILE_SIZE=8@wp.kerneldefextract_last_row(matrices:wp.array[wp.mat33],rows:wp.array[wp.vec3]):i=wp.tid()# Load eight 3x3 matrices into a one-dimensional tile.matrix_tile=wp.tile_load(matrices,shape=(TILE_SIZE,))# Select matrix i from the tile, then use -1 to select its last row.rows[i]=matrix_tile[i][-1]# Repeat [[1, 2, 3], [4, 5, 6], [7, 8, 9]] eight times.data=np.tile(np.arange(1.0,10.0,dtype=np.float32).reshape(3,3),
+    )matrices=wp.array(data,dtype=wp.mat33,device="cuda:0")rows=wp.zeros(TILE_SIZE,dtype=wp.vec3,device="cuda:0")wp.launch(extract_last_row,dim=TILE_SIZE,inputs=[matrices],outputs=[rows],block_dim=TILE_SIZE,device="cuda:0",
+    )print(rows.numpy()[0])# Last row of the first matrix: [7. 8. 9.]
+    CUDA workloads, including batched and matrix-free solves. The restart path also works with CUDA graph capture (#1708).
+    Batched CUDA solves also get more accurate dot products as subproblem size grows. When the largest subproblem is known, pass
+    to avoid unnecessary reduction work (#1700). Reusable CG, CR, BiCGSTAB, and GMRES states returned with
+    to assign the registration key and the base of the generated native entry-point name (#1561).
+    Names must be valid C++ identifiers. With
+    , Warp uses the custom key without a hash suffix as the base of generated entry-point names.
+    This is an experimental feature. The API may change without a formal deprecation cycle.
+    Add-on packages can now attach native C++ or CUDA headers to a Warp module and make header-defined types and functions available to Warp kernels.
+    returns artifact paths for an external build or runtime system (#1575). We have not yet validated this as a complete production workflow.
+    comes from the add-on package, not Warp. The example assumes this package layout:
+    defines the native function that the add-on exposes to Warp kernels. Warp includes its native headers first, so the add-on header can use
+    frompathlibimportPathimportwarpaswp# Resolve the header shipped with this add-on package.header=(Path(__file__).parent/"include/addon_math.h").resolve()# Map the C++ function to the name and signature used in Warp kernels.wp.build_experimental.add_builtin("addon_square",
+    {"value":wp.float32},wp.float32,native_name="addon::square",
+    )# add_builtin() registers no adjoint, so generate only the forward kernel.@wp.kernel(enable_backward=False)defsquare_kernel(values:wp.array[float],output:wp.array[float]):i=wp.tid()output[i]=wp.addon_square(values[i])build_options=wp.ModuleBuildOptions(extra_cuda_include_dirs=[header.parent],# Let #include find addon_math.h.extra_cuda_preamble='#include "addon_math.h"',# Include it in generated CUDA source.extra_build_dependencies=[header],# Recompile when the header changes.)# Apply the add-on's build inputs before compiling this kernel's module.wp.set_module_options({"extra_build_options":build_options},module=square_kernel.module)# Generate ...
+    thomasbbrunner, mehdiataei, and 2 other contributors
+    ❤️2code-with-idrees and olly-writes-code reacted with heart emoji
+    - ❤️2 reactions
+    github-actionsreleased this03 Aug 02:32
+    Warp v1.16 adds in-place rebuilding for fixed-capacity NanoVDB volumes, including during CUDA graph capture. This lets fluid simulations update sparse-grid topologies without allocating new volumes. The release also adds grouped HashGrid queries for multi-environment workloads, NumPy-style tile slicing, CPU support for JAX FFI wrappers, experimental support for replaying more operations in CPU graphs and saved
+    graphs, and CUDA profiler range controls.
+    The excerpt below follows that example's allocation, rebuild, and replay flow. It omits particle initialization, capacity estimati...
   - https://nvidia.github.io/warp/v1.17/user_guide/installation.html#building-from-source
     Installation — Warp 1.17.0
     Warp requires Python 3.10 or newer. We publish
@@ -307,6 +188,8 @@ Built from the [LLVM 22.1.8 source release](https://github.com/llvm/llvm-project
 - 外链文档摘录:
   - https://github.com/llvm/llvm-project/releases/tag/llvmorg-22.1.8
     Release LLVM 22.1.8 · llvm/llvm-project · GitHub
+    - NotificationsYou must be signed in to change notification settings
+    - Fork18.6k
     github-actionsreleased this16 Jun 13:48
     - Linux x86_64(signature)
     - Linux Arm64(signature)
@@ -319,15 +202,17 @@ Built from the [LLVM 22.1.8 source release](https://github.com/llvm/llvm-project
     and ends with the platform's name. For example,
     contains LLVM binaries for Arm64 Linux.
     In addition, source archives are available:
-    👍41Matrix3600, Lev275568, RLR64, tnodir, deadmarshal, a5632645, Safari77, 0x00MagicKey, pancaker7777, samurai-busido, and 31 more reacted with thumbs up emoji😄10RLR64, SenseiDeElite, IvyXu420, fabyr, heenaset, william9523, lin72h, FIRESTARS-ZFYX, xgupta, and HelloWorldU reacted with laugh emoji🎉150xfeeddeadbeef, franckgaga, RLR64, tnodir, uwu-420, SenseiDeElite, pedroMVicente, fabyr, muguqti, selimozturk13, and 5 more reacted with hooray emoji❤️18RLR64, tnodir, Islam-Imad, uwu-420, LB--, SenseiDeElite, lucascampolimm, ameaninglessname, KAban24, Mickey-snow, and 8 more reacted with heart emoji🚀15TotallyAaron, RLR64, marcauberer, uwu-420, hhoffstaette, SenseiDeElite, debohman, lucascampolimm, lin72h, FIRESTARS-ZFYX, and 5 more reacted with rocket emoji👀7RLR64, SenseiDeElite, brianhoy23, FIRESTARS-ZFYX, xgupta, kmplexr, and HelloWorldU reacted with eyes emoji
-    - 👍41 reactions
-    - 😄10 reactions
-    - 🎉15 reactions
-    - ❤️18 reactions
-    - 🚀15 reactions
-    - 👀7 reactions
+    👍40Matrix3600, Lev275568, RLR64, tnodir, deadmarshal, a5632645, Safari77, 0x00MagicKey, ImperSwet, samurai-busido, and 30 more reacted with thumbs up emoji😄9RLR64, SenseiDeElite, ByteFlowing1337, fabyr, heenaset, william9523, lin72h, FIRESTARS-ZFYX, and xgupta reacted with laugh emoji🎉140xfeeddeadbeef, franckgaga, RLR64, tnodir, uwu-420, SenseiDeElite, pedroMVicente, fabyr, muguqti, selimozturk13, and 4 more reacted with hooray emoji❤️17RLR64, tnodir, Islam-Imad, uwu-420, LB--, SenseiDeElite, lucascampolimm, ameaninglessname, KAban24, Mickey-snow, and 7 more reacted with heart emoji🚀14TotallyAaron, RLR64, marcauberer, uwu-420, hhoffstaette, SenseiDeElite, debohman, lucascampolimm, lin72h, FIRESTARS-ZFYX, and 4 more reacted with rocket emoji👀6RLR64, SenseiDeElite, brianhoy23, FIRESTARS-ZFYX, xgupta, and kmplexr reacted with eyes emoji
+    - 👍40 reactions
+    - 😄9 reactions
+    - 🎉14 reactions
+    - ❤️17 reactions
+    - 🚀14 reactions
+    - 👀6 reactions
   - https://github.com/NVIDIA/warp/blob/f452084886ec38662d0e32ebba8813719951a8d5/tools/llvm/README.md
     warp/tools/llvm/README.md at f452084886ec38662d0e32ebba8813719951a8d5 · NVIDIA/warp · GitHub
+    - NotificationsYou must be signed in to change notification settings
+    - Fork613
     92 lines (71 loc) · 4.17 KB
     SDKs Warp links its CPU-JIT compiler (
     Requires Python, a host C++ toolchain, and ~50 GB of disk. cmake and ninja
@@ -660,6 +545,8 @@ Saved APIC graphs can still be consumed from standalone C++ through the C API de
 - 外链文档摘录:
   - https://github.com/NVIDIA/warp/releases/tag/v1.13.0
     Release v1.13.0 · NVIDIA/warp · GitHub
+    - NotificationsYou must be signed in to change notification settings
+    - Fork613
     github-actionsreleased this04 May 04:52
     Warp v1.13 introduces experimental graph capture serialization with CPU replay, letting captured simulations roundtrip through a portable
     file and load from standalone C++ on either GPU or CPU. It also adds an experimental cuBQL BVH backend for
@@ -690,57 +577,56 @@ Saved APIC graphs can still be consumed from standalone C++ through the C API de
     importrmmimportwarpaswprmm.reinitialize(pool_allocator=True,initial_pool_size=2**30)wp.set_cuda_allocator(wp.utils.AllocatorRmm())a=wp.zeros(1024,dtype=wp.float32,device="cuda:0")# served from the RMM pool
     flag enable allocation tracking with call-site attribution and per-category reports across GPU, host, and pinned-host memory (#1269). Tracking is implemented in the C++ native layer by intercepting all
     calls, so internal allocations from BVH, hash-grid, mesh, volume, and sparse subsystems show up alongside Python-originated arrays, labeled with their subsystem (e.g.
-    importwarpaswp@wp.kerneldeffill(x:wp.array[float]):i=wp.tid()x[i]=float(i)withwp.ScopedMemoryTracker("training step"):a=wp.zeros(1_000_000,dtype=wp.float32,device="cuda:0")b=wp.zeros(2_000_000,dtype=wp.float32,device="cuda:0")wp.launch(fill,dim=a.size,inputs=[a])wp.launch(fill,dim=b.size,inputs=[b])
-    cuda:0           2 (11.44...
+    importwarpaswp@wp.kerneldeffill(x:wp.array[float]):i=wp.tid()x[i]=float(i)withwp.ScopedMemoryTracker("training step"):a=wp.zeros(1_000_000,dtype=wp.float32,device="cuda:0")b=wp.zeros(2_000_000,dtype=wp.float32,device="cuda:0")wp.launch(fill,dim=a.s...
   - https://clang.llvm.org/docs/AddressSanitizer.html
-    - Clang Compiler Userâs Manual
-    - C++ Type Aware Allocators
-    - 1. Available Checkers
-    - 2. User Docs
-    - 2.1. Command Line Usage: scan-build and CodeChecker
-    - 2.2. Configuring the Analyzer
-    - 2.3. Running the analyzer within Xcode
-    - 2.4. Filing Bugs and Feature Requests
-    - 2.5. Cross Translation Unit (CTU) Analysis
-    - 2.6. Taint Analysis Configuration
-    - 2.7. Source Annotations
-    - 2.8. FAQ and How to Deal with Common False Positives
-    - 3. Developer Docs
-    - 3.1. Debug Checks
-    - 3.2. Inlining
-    - 3.3. Initializer List
-    - 3.4. Nullability Checks
-    - 3.5. Region Store
-    - 3.6. Performance Investigation
-    - 3.7. Analysis Statistics
-    - C++ Safe Buffers
-    - 1. Source Edit Generation
-    - 2. Summary Extraction
-    - 1. Force-Linker Headers
-    - 2. How to Extend the Framework
-    - 3. Summary Extraction Internals
-    - AddressSanitizer
-    - Hardware-assisted AddressSanitizer
-    - Return Address Authentication Hardening
-    - Standard C++ Modules
-    - OpenCL Support
-    - OpenMP Support
-    - SYCL Compiler and Runtime architecture design
-    - HIP Support
-    - HLSL Support
-    - API Notes: Annotations Without Modifying Headers
-    - Debugging C++ Coroutines
-    - AMDGPU Support
-    - RISC-V Support
-    - 1. ClangIR ABI Lowering Design Document
-    - 2. ClangIR Cleanup and Exception Handling Design
-    - 3. ClangIR Code Duplication Roadmap
-    - clang - the Clang C, C++, and Objective-C compiler
-    - Clang Plugins
-    - Precompiled Header and Modules Internals
-    - Hardware-assisted AddressSanitizer Design Documentation
+    AddressSanitizer — Clang 24.0.0git documentation
     AddressSanitizer is a fast memory error detector. It consists of a compiler
     Typical slowdown introduced by AddressSanitizer is2x.
+    for the use/testing of AddressSanitizer:
+    Simply compile and link your program with
+    AddressSanitizer run-time library should be linked to the final executable, so
+    shared libraries, the AddressSanitizer run-time is not linked, so
+    may cause link errors (donât use it with AddressSanitizer). To
+    get a reasonable performance add
+    in error messages add
+    %catexample_UseAfterFree.ccint main(int argc, char **argv) {int *array = new int[100];delete [] array;return array[argc];  // BOOM}#Compileandlink%clang++-O1-g-fsanitize=address-fno-omit-frame-pointerexample_UseAfterFree.cc
+    #Compile%clang++-O1-g-fsanitize=address-fno-omit-frame-pointer-cexample_UseAfterFree.cc#Link%clang++-g-fsanitize=addressexample_UseAfterFree.o
+    exit with a non-zero exit code. AddressSanitizer exits on the first detected error.
+    This approach allows AddressSanitizer to produce faster and smaller generated code
+    Fixing bugs becomes unavoidable. AddressSanitizer does not produce
+    If your process is sandboxed and you are running on OS X 10.10 or earlier, you
+    the ASan library that is packaged with the compiler used to build the
+    To make AddressSanitizer symbolize its output
+    %ASAN_OPTIONS=symbolize=0./a.out2>log%projects/compiler-rt/lib/asan/scripts/asan_symbolize.py/<log|c++filt==9442== ERROR: AddressSanitizer heap-use-after-free on address 0x7f7ddab8c084 at pc 0x403c8c bp 0x7fff87fb82d0 sp 0x7fff87fb82c8READ of size 4 at 0x7f7ddab8c084 thread T0#00x403c8cinmainexample_UseAfterFree.cc:4#10x7f7ddabcac4din__libc_start_main??:0...
+    file:line info in the AddressSanitizer reports.
+    AddressSanitizer can optionally detect dynamic initialization order problems,
+    Note that this option is not supported on macOS.
+    AddressSanitizer can optionally detect stack use after return problems.
+    : Adds the code for detection, but it can be disabled via the
+    AddressSanitizer can detect overflows in containers with custom allocators
+    (such as std::vector) where the library developers have added calls into the
+    AddressSanitizer runtime to indicate which memory is poisoned etc.
+    If the binary is partially AddressSanitizer instrumented, these
+    For more information on leak detector in AddressSanitizer, seeLeakSanitizer. The leak detection is turned on by default on Linux,
+    however, it is not yet supported on other platforms.
+    Runtime flags can be passed to AddressSanitizer via the
+    Default options can be specified at compile/link time by defining
+    When running AddressSanitizer with integratedLeakSanitizerorUndefinedBehaviorSanitizer:
+    AddressSanitizer is not expected to produce false positives. If you see one,
+    Runtime interposition allows AddressSanitizer to find bugs in code that is
+    not being recompiled. If you run into an issue in external libraries, we
+    gets addressed. However, you can use the following suppression mechanism
+    does not work on code recompiled with AddressSanitizer. To suppress errors
+    . Supported types are:
+    Alternatively, you can provide default suppressions at compile time by defining
+    AddressSanitizer is enabled.__has_featurecan be used for
+    #if defined(__has_feature)#  if __has_feature(address_sanitizer)// code that builds only under AddressSanitizer#  endif#endif
+    Some code should not be instrumented by AddressSanitizer. One may use
+    particular function. This attribute may not be supported by other
+    compilers, so we suggest to use it together with
+    The same attribute used on a global variable prevents AddressSanitizer
+    from adding redzones around it and detecting out of bounds accesses.
+    function will not be inlined heuristically by the compiler into a sanitized function.
 - Compare 摘要: v1.13.0 -> v1.14.0
   - commits: 137
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -839,6 +725,8 @@ The following deprecations will be finalized in **Warp 1.13.0**:
 - 外链文档摘录:
   - https://github.com/NVIDIA/warp/blob/v1.12.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.12.1 · NVIDIA/warp · GitHub
+    - NotificationsYou must be signed in to change notification settings
+    - Fork613
     2390 lines (2048 loc) · 155 KB
     - Remove the Kit extensions from this repository (GH-1296).
     - Fix silent precision loss in compile-time constants passed to 64-bit scalar type constructors
@@ -884,8 +772,6 @@ The following deprecations will be finalized in **Warp 1.13.0**:
     (3D), supporting degrees 1-3. Use via
     skipping CUDA toolkit detection and
     - Remove deprecated support for constructing matrices from vectors via
-    at the Python and kernel scopes
-    : Remove the deprecated
 - Compare 摘要: v1.12.0 -> v1.12.1
   - commits: 90
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -946,6 +832,8 @@ pr...
 - 外链文档摘录:
   - https://github.com/NVIDIA/warp/blob/v1.12.0/CHANGELOG.md
     warp/CHANGELOG.md at v1.12.0 · NVIDIA/warp · GitHub
+    - NotificationsYou must be signed in to change notification settings
+    - Fork613
     2324 lines (1991 loc) · 150 KB
     - Experimental: Add
     for hardware-accelerated texture sampling on CUDA devices,
@@ -991,8 +879,6 @@ pr...
     support for assigning register tiles (e.g.,
     and fix reverse-mode gradients for overwritten destinations (GH-1232).
     causing wrong kernel execution (GH-1211).
-    - Fix generic kernels incorrectly reusing a cached module
-    - Fix crashes on Linux caused by C++ standard library symbols leaking from the Warp shared library,
 - Compare 摘要: v1.11.1 -> v1.12.0
   - commits: 440
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -1033,6 +919,8 @@ This is primarily a bugfix release with no major new features. Key fixes include
 - 外链文档摘录:
   - https://github.com/NVIDIA/warp/blob/v1.11.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.11.1 · NVIDIA/warp · GitHub
+    - NotificationsYou must be signed in to change notification settings
+    - Fork613
     2175 lines (1855 loc) · 140 KB
     - Fix
     - Fix tile * constant multiplication when one operand is a vector or matrix type (GH-1175).
@@ -1078,8 +966,6 @@ This is primarily a bugfix release with no major new features. Key fixes include
     - Drop support for Python 3.8. Python 3.9 is now the minimum supported version
     - Remove
     (deprecated since 1.8.1).
-    - Deprecate accepting integer inputs in
-    accept floating-point arguments in a future release (GH-847).
 - Compare 摘要: v1.11.0 -> v1.11.1
   - commits: 79
   - files changed: 168
@@ -1145,9 +1031,9 @@ def raycast_world(
 wp.launch(raycast_world, dim=1, i...
 - 外链文档摘录:
   - https://docs.nvidia.com/cuda/nvrtc/index.html#precompiled-headers-cuda-12-8
-    1. Introduction â NVRTC 13.4 documentation
+    1. Introduction â NVRTC 13.3 documentation
     - 1.Introduction
-    - v13.4 |PDF|ArchiveÂ
+    - v13.3 |PDF|ArchiveÂ
     NVRTC is a runtime compilation library for CUDA C++. It accepts CUDA C++ source code in
     character string form and creates handles that can be used to obtain the GPU executable code. The PTX/cubin/cuda_tile IR
     generated by NVRTC can be loaded bycuModuleLoadDataandcuModuleLoadDataEx. In addition, the PTX or cubin modules can be linked with other modules by using the nvJitLink library or usingcuLinkAddDataof the
@@ -1251,6 +1137,8 @@ The following feature is deprecated and will be removed in **v1.11** (planned fo
 - 外链文档摘录:
   - https://github.com/NVIDIA/warp/blob/v1.10.1/CHANGELOG.md
     warp/CHANGELOG.md at v1.10.1 · NVIDIA/warp · GitHub
+    - NotificationsYou must be signed in to change notification settings
+    - Fork613
     2018 lines (1714 loc) · 128 KB
     - Fix type inference errors when passing reference arguments (such as array elements) to built-in functions
     - Fix
@@ -1296,8 +1184,6 @@ The following feature is deprecated and will be removed in **v1.11** (planned fo
     - Deprecate constructing a matrix from vectors at the Python scope (e.g.
     wp.mat22(wp.vec2(1, 2), wp.vec2(3, 4))
     wp.matrix_from_rows(wp.vec2(1, 2), wp.vec2(3, 4))
-    - Breaking:Change the default implementation of
-    , but it is not supported
 - Compare 摘要: v1.10.0 -> v1.10.1
   - commits: 53
   - files changed: 69
@@ -1345,6 +1231,8 @@ Key capabilities include:
 - 外链文档摘录:
   - https://github.com/NVIDIA/warp/blob/v1.10.0/CHANGELOG.md
     warp/CHANGELOG.md at v1.10.0 · NVIDIA/warp · GitHub
+    - NotificationsYou must be signed in to change notification settings
+    - Fork613
     1982 lines (1683 loc) · 126 KB
     - Add an in-place
     captured in CUDA graphs (GH-826).
@@ -1390,5 +1278,98 @@ Key capabilities include:
     - Improve efficiency for
     This fixes a performance regression introduced in Warp 1.6.0 (GH-758).
     - Fix segmentation faults on AArch64 CPUs when using tiles. The fix uses stack memory for tile storage
-    - Fix copying and filling arrays with large strides (GH-929).
-    - Fix incorrect results when filling arrays in CUDA graphs (GH-1040).
+- Compare 摘要: v1.9.1 -> v1.10.0
+  - commits: 385
+  - files changed: 300+ returned files (GitHub compare API file list cap)
+  - additions: 13210
+  - deletions: 7381
+  - top directories: .github, .gitignore, .gitlab-ci.yml, .gitlab, .pre-commit-config.yaml, CHANGELOG.md
+  - representative files:
+    - uv.lock (added, +3823/-0)
+    - warp/__init__.pyi (modified, +2302/-307)
+    - docs/modules/functions.rst (modified, +1003/-215)
+    - warp/_src/autograd.py (added, +1077/-0)
+    - asv/benchmarks/spatial_query.py (added, +693/-0)
+    - docs/modules/interoperability.rst (modified, +535/-152)
+    - exts/omni.warp/omni/warp/nodes/_impl/OgnClothSimulate.py (removed, +0/-673)
+    - exts/omni.warp/omni/warp/nodes/_impl/OgnParticlesSimulate.py (removed, +0/-593)
+
+### v1.9.1
+- 标题: v1.9.1
+- 类型: 正式版
+- 发布时间: 2025-10-01 15:37:06 CST
+- 链接: https://github.com/NVIDIA/warp/releases/tag/v1.9.1
+- GitHub release body:
+# Warp v1.9.1
+
+Warp 1.9.1 is a bugfix release that follows our recent feature update. For a full list of changes, see the [changelog](https://github.com/NVIDIA/warp/blob/v1.9.1/CHANGELOG.md).
+
+## Highlights
+
+- **GPU Compatibility**: Support for older NVIDIA GPU architectures (Maxwell, Pascal, Volta) was unintentionally dropped in the pre-built wheels distributed for Warp 1.9.0 on PyPI. These architectures have been added back.
+- **Documentation Improvements**: We have corrected the documentation for `wp.mesh_query_aabb()` and `wp.mesh_query_aabb_next()`, added a caveat concerning the use of `__cuda_array_interface__` on a system with multiple GPUs, and fixed the labeling of built-in functions that were incorrectly labeled as differentiable.
+- **Corrected Slice Behavior**: Empty slices (e.g. `arr[i:i]`) are now handled correctly at the Python scope, returning an empty array instead of raising an error.
+- **Tile Stability and Correctness**: A critical memory management issue with shared tiles has been fixed to prevent unpredictable crashes and memory leaks. Additionally, functions like `wp.copy()` and `wp.where()` now work with tiles and compute correct gradients (adjoints).
+- **Tuple Type Hints**: Resolved a `TypeError` that occurred when using modern tuple type hints (e.g., `tuple[int, int]`) with `@wp.func`-decorated functions on Python 3.9 and 3.10.
+
+## Announcements
+
+### Known limitations
+
+- **CPU Kernels on ARM**: Launching CPU kernels on Linux ARM systems, such as NVIDIA Jetson Thor and Grace Hopper, may result in segmentation faults. A fix for this issue is planned for the v1.10 release. GPU kernels are not affected.
+
+### Upcoming removals
+
+The following features have been deprecated in prior releases and will be removed in v1.10 (early November):
+
+- `warp.sim`...
+- 外链文档摘录:
+  - https://github.com/NVIDIA/warp/blob/v1.9.1/CHANGELOG.md
+    warp/CHANGELOG.md at v1.9.1 · NVIDIA/warp · GitHub
+    - NotificationsYou must be signed in to change notification settings
+    - Fork613
+    1868 lines (1580 loc) · 117 KB
+    - Add documentation describing Python
+    - Fix crash when radix sort is used on multiple streams (e.g., when using hash grids on multiple streams)
+    - Fix empty slice operations
+    - Fix
+    with tuple type annotations on Python 3.10
+    - Fix memory management issues with shared tiles, including double frees and memory leaks
+    - Fix use of
+    - Fix invalid
+    - Restore support for older GPU architectures (Maxwell, Pascal, Volta) when building with CUDA 12
+    - Fix conditional graph compilation on newer GPU architectures by using PTX fallback when CUBIN is not supported
+    - Fix scaling not being correctly applied to rendered meshes in some cases
+    - Fix handling of generic kernels with
+    - Add support for building Warp with CUDA 13.
+    - Add
+    to extract a triangular mesh from a 3D scalar field
+    to support basic ahead-of-time compilation workflows
+    - Add support for retrieving the memory address of a Warp array in kernels as
+    - Add support for using struct types in the
+    - Add support for initializing fixed-size arrays inside kernels using
+    - Add support for
+    inside Warp kernels (GH-529).
+    for performance optimization. When set to
+    improving performance (defaults to
+    - Add optional
+    - Add support for displaying and editing Warp vector and array types in ImGui
+    - Remove support for building Warp with CUDA 11.
+    - Deprecate support for Intel-based macOS (x86_64) with removal targeted in late 2025.
+    We will continue to support Apple Silicon-based Macs with the CPU backend.
+    - Enforce strict argument matching for user-function calls from the Python scope, mirroring built-in function behavior.
+    prefix for all exported, C-style symbols to prevent name conflicts
+    in pure Warp for cross-platform support and differentiability
+    computations when beneficial (GH-838).
+    in CUDA kernels on Linux systems. This feature is not supported on Windows due to
+    CUDA-GDB Linux-target-only support (GH-795).
+    - Define and re-export Warp's public Python-scope API in
+    using typing re-export conventions to improve
+    static type checker support (GH-864).
+    - Improve error messages for MathDx-based tile operations that fail to compile (e.g.,
+    Failed to compile LTO
+    - Improve error detection and reporting in conditional graphs (GH-866).
+    - Fix ARM64 CPU kernel argument passing issues by packaging arguments into a structure to work around a
+    implementations missing for scalar types at the Python scope
+    - Fix issue with calling user functions from the Python scope with
+    - Fix 2D shared tile allocation/de-allocation bug inside Warp functions
