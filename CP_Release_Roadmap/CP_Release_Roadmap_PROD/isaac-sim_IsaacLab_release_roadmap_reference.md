@@ -4,12 +4,12 @@
 - 对应主报告: `isaac-sim_IsaacLab_release_roadmap.md`
 - 统计窗口: 最近一年
 - 生成策略: GitHub release body + 外链文档摘录 + 相邻 release tag 的 GitHub compare 摘要
-- 版本总数: 7
+- 版本总数: 8
 - 正式版数量: 4
-- 预发布版数量: 3
-- 外链文档覆盖版本数: 5
-- compare 摘要覆盖版本数: 6
-- 最新版本: v3.0.0-EA (2026-09-17 06:34:03 CST)
+- 预发布版数量: 4
+- 外链文档覆盖版本数: 6
+- compare 摘要覆盖版本数: 7
+- 最新版本: interactive-demos (2026-10-16 00:47:05 CST)
 - 最早纳入统计版本: v2.3.0 (2025-10-29 05:38:54 CST)
 
 ## 分析策略决策
@@ -23,6 +23,7 @@
   - 因此主脚本保持 L1，避免在主流程里默认引入额外源码分析成本。
 
 ## Release 时间线
+- 2026-10-16 00:47:05 CST | interactive-demos | 预发布版
 - 2026-09-17 06:34:03 CST | v3.0.0-EA | 正式版
 - 2026-07-02 12:21:18 CST | v3.0.0-beta2.patch1 | 预发布版
 - 2026-06-17 10:16:55 CST | v3.0.0-beta2 | 预发布版
@@ -32,6 +33,57 @@
 - 2025-10-29 05:38:54 CST | v2.3.0 | 正式版
 
 ## 证据附录
+
+### interactive-demos
+- 标题: Interactive browser demos
+- 类型: 预发布版
+- 发布时间: 2026-10-16 00:47:05 CST
+- 链接: https://github.com/isaac-sim/IsaacLab/releases/tag/interactive-demos
+- GitHub release body:
+Prebuilt Newton WebAssembly simulations, their browser viewer, and exporter source for Isaac Lab documentation.
+
+The documentation stages one reviewed, commit-named archive and verifies its SHA-256. This release is the permanent bundle container; updates add assets here without creating a new numbered release. Existing assets remain available for reproducible builds.
+
+[Documentation update PR #8559](https://github.com/isaac-sim/IsaacLab/pull/8559) · [Review the gallery](https://maxkra15.github.io/isaaclab-browser-demos/lab/?v=grains-v1)
+
+## Preview a bundle
+
+Download the archive selected by `.github/actions/_lib/stage-browser-demos.sh`, extract it, and enter its top-level directory. Then run:
+
+```bash
+python -m http.server 8000 --directory site
+```
+
+Open `http://localhost:8000/interactive/`. The archive includes `exporters/`, scene and rebuild instructions, licenses, and `tools/publish.py`. Running the demos needs only a browser. Rebuilding physics requires the pinned internal Newton Web compiler and Emscripten.
+
+## Publish an update
+
+Reuse the `interactive-releases` publishing branch. Commit the reviewed site, create a commit-named archive and checksum, and upload both to this same release. Update the archive URL and SHA-256 together in the docs PR. Keep earlier assets and compatibility directories.
+
+The current publishing branch is [available in the contributor fork](https://github.com/maxkra15/IsaacLab/tree/interactive-releases). Creating it in the official repository requires an administrator under the repository's branch-creation rule. Runtime bundles are hosted in this official release and served by Isaac Lab documentation.
+- 外链文档摘录:
+  - https://github.com/maxkra15/IsaacLab/tree/interactive-releases
+    GitHub - maxkra15/IsaacLab at interactive-releases · GitHub
+    . The internal Newton Web compiler is
+    In the source project, commit the reviewed changes and run:
+    python tools/publish.py --output /path/to/interactive-releases-checkout
+    git archive --format=tar --prefix="IsaacLab-$publishing_commit/""$publishing_commit"|gzip -n>"$bundle"sha256sum"$bundle"gh release upload interactive-demos"$bundle"--repo isaac-sim/IsaacLab
+    The docs PR pins the official release asset URL and SHA256. Its build extracts
+- Compare 摘要: v3.0.0-EA -> interactive-demos
+  - commits: 818
+  - files changed: 300+ returned files (GitHub compare API file list cap)
+  - additions: 16188
+  - deletions: 3769
+  - top directories: .agents, .dockerignore, .github, .gitignore, .pre-commit-config.yaml, .vscode
+  - representative files:
+    - docs/source/_static/benchmarks/coverage-data-issues.csv (added, +3927/-0)
+    - docs/source/_static/benchmarks/coverage-preset-selectors.csv (added, +1439/-0)
+    - docs/source/_static/benchmarks/coverage-configurations.csv (added, +1169/-0)
+    - docs/source/_static/css/environment-browser.js (modified, +710/-314)
+    - docs/source/_static/benchmarks/coverage-observed-profiles.csv (added, +906/-0)
+    - docs/source/_static/benchmarks/environment-performance-develop.csv (added, +906/-0)
+    - docs/source/_static/policy_deployment/01_io_descriptors/isaac_velocity_flat_g1_v0_IO_descriptors.yaml (removed, +0/-724)
+    - .github/workflows/build.yaml (modified, +437/-51)
 
 ### v3.0.0-EA
 - 标题: v3.0.0-EA
@@ -115,55 +167,6 @@ For the full Isaac Sim experience with Isaac Sim PhysX, Isaac Sim RTX rendering,
     $uvpipcompilerequirements.in\--universal\--output-filerequirements.txtResolved 43 packages in 12ms
     $uvvenvUsing CPython 3.12.3Creating virtual environment at: .venvActivate with: source .venv/bin/activate
     $uvpipsyncrequirements.txtResolved 43 packages in 11msInstalled 43 packages in 208ms+ babel==2.15.0+ black==24.4.2+ certifi==2024.7.4...
-  - https://isaac-sim.github.io/IsaacLab/release/3.0.0/source/setup/installation/index.html
-    Python environment with Isaac Sim
-    Isaac Lab Python package
-    Download Isaac Sim and use the Python interpreter included with it.
-    Provision a remote GPU workstation on a supported cloud provider.
-    Full Isaac Sim workflows require Python 3.12 on Ubuntu 22.04+ or Windows 11. Use a recent NVIDIA
-    production driver and a workstation with at least 32 GB RAM and 16 GB GPU VRAM. Rendering can
-    require additional VRAM. Confirm your machine against theIsaac Sim system requirementsandOmniverse technical requirements.
-    Isaac Sim 5.1 and older are not supported. Use Isaac Sim 6.1 with Python 3.12.
-    The CUDA 13.0 PyTorch build requires NVIDIA driver
-    or newer on Windows, as documented in thePyTorch 2.12 release announcement. CUDA 13.0 wheels support Blackwell GPUs.
-    Linux x86_64 and aarch64,
-    Linux aarch64 and DGX Spark requirements
-    DGX Spark requires CUDA 13 or newer and the corresponding PyTorch build. Install the build
-    sudoaptinstallpython3.12-devlibgl1-mesa-devlibx11-devlibxcursor-dev\libxi-devlibxinerama-devlibxrandr-dev
-    SkillGen, XR teleoperation, livestream, Hub Workstation Cache, Cosmos Transfer1, and RLinf are
-    not currently supported or validated on DGX Spark. SkillGen depends on native CUDA/C++
-    # Newton backend without Isaac Simuvrunisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=newton_mjwarp# OV PhysX backenduvrun--extraovphysxisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=ovphysx# Full Isaac Sim supportuvrun--extraisaacsimisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=isaacsim_physx# Play a policyuvrunisaaclabplay--rl_libraryrsl_rl--taskIsaac-Cartpole-Direct--viznewton
-    Linux aarch64 (DGX Spark)
-    # Newton backenduvrunisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=newton_mjwarp# OV PhysX backenduvrun--extraovphysxisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=ovphysx# Full Isaac Sim supportuvrun--extraisaacsimisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=isaacsim_physx# Play a policyuvrunisaaclabplay--rl_libraryrsl_rl--taskIsaac-Cartpole-Direct--viznewton
-    For direct Python commands that import Isaac Sim on aarch64, prefix the
-    Enable Windows long-path support before cloning. In an elevated PowerShell window, run:
-    powershell -ExecutionPolicy ByPass -c"irm https://astral.sh/uv/install.ps1 | iex"
-    :: Newton backend without Isaac Simuv run isaaclab train --rl_library rsl_rl^--task Isaac-Cartpole-Direct physics=newton_mjwarp:: OV PhysX backenduv run --extra ovphysx isaaclab train --rl_library rsl_rl^--task Isaac-Cartpole-Direct physics=ovphysx:: Full Isaac Sim supportuv run --extra isaacsim isaaclab train --rl_library rsl_rl^--task Isaac-Cartpole-Direct physics=isaacsim_physx:: Play a policyuv run isaaclab play --rl_library rsl_rl --task Isaac-Cartpole-Direct --viz newton
-    The source checkout selects PyTorch’s CUDA 13.0 build on Linux x86_64, Linux aarch64, and Windows.
-    No additional command flags are needed.
-    The published wheel pins the PyTorch versions, but downstream uv projects must configure their own
-    Kit-less installation uses a Python 3.12 environment and does not install Isaac Sim. Clone Isaac
-    uvvenv--python3.12--seedenv_isaaclabsourceenv_isaaclab/bin/activate
-    uv venv --python 3.12 --seed env_isaaclab
-    condacreate-nenv_isaaclabpython=3.12
-    conda create -n env_isaaclab python=3.12
-    python -m pip install --upgrade pip
-    Teleoperation tools (Linux x86_64).
-    OV runtime wheels. Select
-    Python environment with Isaac Sim#
-    Use this path when you want an editable Isaac Lab checkout with full Isaac Sim support and a
-    Python environment you manage yourself. Create and activate the environment before installing
-    Isaac Sim or Isaac Lab. Isaac Sim’s pip packages require GLIBC 2.35 or newer on Linux. EnableWindows long-path supportbefore installing on Windows.
-    Create and activate a Python 3.12 environment:
-    Install Isaac Sim and the CUDA 13.0 PyTorch build for your platform:
-    On aarch64 systems such as DGX Spark, install the required development packages before
-    sudoaptinstallpython3.12-devlibgl1-mesa-devlibx11-devlibxcursor-devlibxi-dev\libxinerama-devlibxrandr-dev
-    exportLD_PRELOAD=$(python-c"import sys,os;[print(os.path.join(p,'omni','client','libcarb.so')) for p in sys.path if os.path.isfile(os.path.join(p,'omni','client','libcarb.so'))]"2>/dev/null|head-1)${LD_PRELOAD:+:$LD_PRELOAD}
-    isaaclab.bat -p scripts\tutorials\00_sim\create_empty.py --viz kit
-    Isaac Lab Python package#
-    Use this path when Isaac Lab is a dependency of an external Python project. The released
-    Isaac Lab wheels are published for major releases, not every patch release.
-    resources as a released wheel:
 - Compare 摘要: v3.0.0-beta2.patch1 -> v3.0.0-EA
   - commits: 1041
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -293,8 +296,6 @@ Newton and OVPhysX support have been expanded and stabilized for larger kit-less
 - 外链文档摘录:
   - https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0-beta
     Release v3.0.0-beta · isaac-sim/IsaacLab · GitHub
-    - NotificationsYou must be signed in to change notification settings
-    - Fork3.9k
     kellyguo11released this17 Mar 06:38
     Isaac Lab 3.0 Beta 🚀
     branch is under active development and may experience breaking changes, error messages, or performance regressions in some use cases.
@@ -406,14 +407,14 @@ The new `isaaclab_newton` extension enables running Isaac Lab environments **wit
     Migration from Isaac Lab 2.x to 3.0
     Isaac Lab 3.0 separates backend-specific simulation code from the core API and introduces unified
     When you change it, update the skill so agent guidance stays in sync. SeeAgent Skills.
-    Start from a fresh Isaac Lab 3.0 checkout and Python 3.12 environment instead of upgrading the
-    packages inside an existing 2.x environment. The recommended workflow now uses
-    condacreate-nenv_isaaclabpython=3.11
+    Start from a fresh Isaac Lab 3.0 checkout. uv is the only supported installation method;
+    create a new environment instead of upgrading an existing 2.x environment.
+    Isaac Lab 3.0 removes
     for full Isaac Sim support. SeeAutomatic setup with uv (recommended)for platform-specific
     use a preset when an environment supports multiple backends.
     Isaac Lab 3.0 introduces afactory-based multi-backend architecturethat allows asset classes
     fromisaaclab.assetsimportArticulation,ArticulationCfg# The factory pattern creates the appropriate backend implementation.# No import changes are needed — the same isaaclab imports work regardless of backend.robot=Articulation(cfg=ArticulationCfg(...))
-    seeBackend Architecture. To add a new backend, seeAdd a Physics Backend.
+    seeBackend architecture. To add a new backend, seeAdd a Physics Backend.
     ``isaaclab_physx``— PhysX-specific implementations of asset and sensor classes.
     ``isaaclab_newton``— Newton-specific implementations of supported asset classes, including
     Deformable object public APIs remain in the backend-neutral
@@ -573,8 +574,6 @@ Key highlights of this release include:
 - **Mimic - Locomanipulation**: Added a new G1 humanoid environment combining RL-based locomotion with IK-based manipulation. A full robot navigation stack is integrated to...
 - 外链文档摘录:
   - https://github.com/isaac-sim/IsaacLab/blob/main/docs/licenses/dependencies/cuRobo-license.txt
-    - NotificationsYou must be signed in to change notification settings
-    - Fork3.9k
     93 lines (47 loc) · 17.1 KB
     NVIDIA ISAAC LAB ADDITIONAL SOFTWARE AND MATERIALS LICENSE
     1. License Grant. The Software made available by NVIDIA to you is licensed, not sold. Subject to the terms of this Agreement, NVIDIA grants you a limited, non-exclusive, revocable, non-transferable, and non-sublicensable (except as expressly granted in this Agreement), license to install and use copies of the Software together with NVIDIA Isaac Lab in systems with NVIDIA GPUs ("Purpose").
@@ -590,7 +589,8 @@ Key highlights of this release include:
     4. Pre-Release. Software versions identified as alpha, beta, preview, early access or otherwise as pre-release ("Pre-Release") may not be fully functional, may contain errors or design flaws, and may have reduced or different security, privacy, availability and reliability standards relative to NVIDIA commercial offerings. You use Pre-Release Software at your own risk. NVIDIA did not design or test the Software for use in production or business-critical systems. NVIDIA may choose not to make available a commercial version of Pre-Release Software. NVIDIA may also choose to abandon development and terminate the availability of Pre-Release Software at any time without liability.
     5. Updates. NVIDIA may at any time and at its option, change, discontinue, or deprecate any part, or all, of the Software, or change or remove features or functionality, or make available patches, workarounds or other updates to the Software. Unless the updates are provided with their separate governing terms, they are deemed part of the Software licensed to you under this Agreement, and your continued use of the Software is deemed acceptance of such changes.
     6. Components Under Other Licenses. The Software may include or be distributed with components provided with separate legal notices or terms that accompany the components, such as open source software licenses and other license terms ("Other Licenses"). The components are subject to the applicable Other Licenses, including any proprietary notices, disclaimers, requirements and extended use rights; except that this Agreement will prevail regarding the use of third-party open source software, unless a third-party open source software license requires its license terms to prevail. Open source software license means any software, data or documentation subject to any license identified as an open source license by the Open Source Initiative (http://opensource.org), Free Software Foundation (http://www.fsf.org) or other similar open source organization or listed by the Software Package Data Exchange (SPDX) Workgroup under the Linux Foundation (http://www.spdx.org).
-    7. Ownership. The Software, including all intellectual property rights, is and will remain the sole and exclusive property of NVIDIA or its licensors. Except as expressly granted in this Agreement, (a) NVIDIA reserves all rights, interests and remedies in connection with the Software, and (b) no other licen...
+    7. Ownership. The Software, including all intellectual property rights, is and will remain the sole and exclusive property of NVIDIA or its licensors. Except as expressly granted in this Agreement, (a) NVIDIA reserves all rights, interests and remedies in connection with the Software, and (b) no other license or right is granted to you by implication, estoppel or otherwise.
+    8. Feedback...
   - https://docs.omniverse.nvidia.com/kit/docs/omni_physics/107.3/dev_guide/guides/gripper_tuning_example.html
     Joint Parameter Tuning Example: Robotiq 2F-85 — Omni Physics
     Joint Parameter Tuning Example: Robotiq 2F-85#

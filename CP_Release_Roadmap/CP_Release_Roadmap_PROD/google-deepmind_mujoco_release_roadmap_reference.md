@@ -9,8 +9,8 @@
 - 预发布版数量: 0
 - 外链文档覆盖版本数: 13
 - compare 摘要覆盖版本数: 13
-- 最新版本: 3.15.0 (2026-10-05 22:58:18 CST)
-- 最早纳入统计版本: 3.3.7 (2025-10-15 01:38:32 CST)
+- 最新版本: 3.16.0 (2026-10-14 17:29:02 CST)
+- 最早纳入统计版本: 3.4.0 (2025-12-06 07:17:44 CST)
 
 ## 分析策略决策
 - 请求模式: `auto`
@@ -23,6 +23,7 @@
   - 因此主脚本保持 L1，避免在主流程里默认引入额外源码分析成本。
 
 ## Release 时间线
+- 2026-10-14 17:29:02 CST | 3.16.0 | 正式版
 - 2026-10-05 22:58:18 CST | 3.15.0 | 正式版
 - 2026-09-23 00:52:58 CST | 3.14.0 | 正式版
 - 2026-09-09 23:03:05 CST | 3.13.0 | 正式版
@@ -36,9 +37,129 @@
 - 2026-03-11 09:53:34 CST | 3.6.0 | 正式版
 - 2026-02-13 09:20:28 CST | 3.5.0 | 正式版
 - 2025-12-06 07:17:44 CST | 3.4.0 | 正式版
-- 2025-10-15 01:38:32 CST | 3.3.7 | 正式版
 
 ## 证据附录
+
+### 3.16.0
+- 标题: 3.16.0
+- 类型: 正式版
+- 发布时间: 2026-10-14 17:29:02 CST
+- 链接: https://github.com/google-deepmind/mujoco/releases/tag/3.16.0
+- GitHub release body:
+# Version 3.16.0 (October 14, 2026)
+
+## Significant new features
+
+1. [`cf89a6375`](https://github.com/google-deepmind/mujoco/commit/cf89a6375), [`4316935b3`](https://github.com/google-deepmind/mujoco/commit/4316935b3), [`6d98d9fab`](https://github.com/google-deepmind/mujoco/commit/6d98d9fab), [`5f17e92eb`](https://github.com/google-deepmind/mujoco/commit/5f17e92eb), [`89d59b11f`](https://github.com/google-deepmind/mujoco/commit/89d59b11f),
+   [`147dc67d0`](https://github.com/google-deepmind/mujoco/commit/147dc67d0) [Frames](https://mujoco.readthedocs.io/en/stable/XMLreference.html#frame) can now scale their contents at compile time—without modifying the
+   [`mjSpec`](https://mujoco.readthedocs.io/en/stable/APIreference/APItypes.html#mjSpec)—via the new [scale](https://mujoco.readthedocs.io/en/stable/XMLreference.html#frame-scale), [scaling](https://mujoco.readthedocs.io/en/stable/XMLreference.html#frame-scaling), and
+   [massscale](https://mujoco.readthedocs.io/en/stable/XMLreference.html#frame-massscale) attributes. The default `similar` policy scales all physical quantities so that
+   dynamics are preserved under proportionally scaled gravity, whereas `geometry` scales only spatial dimensions and
+   inertias (and supports anisotropic scaling). Masses scale with volume unless overridden by `massscale`. External
+   references to scaled elements—including actuators, tendons, constraints, sensors, keyframes, and deformable/mesh
+   assets—are scaled consistently, and [`mj_copyBack`](https://mujoco.readthedocs.io/en/stable/APIreference/functions_override.html#mj_copyBack) maps values back into unscaled spec coordinates. See
+   [frame/scale](https://mujoco.readthedocs.io/en/stable/XMLreference.html#frame-scale) for details.
+
+2. [`592c54ad3`](https://github.com/google-deep...
+- 外链文档摘录:
+  - https://mujoco.readthedocs.io/en/stable/XMLreference.html#frame
+    XML Reference - MuJoCo DocumentationSkip to content
+    - XML Reference
+    - API Reference
+    - Python
+    - API
+    - OpenUSD
+    - File Format Plugin
+    - Changelog
+    This chapter is the reference manual for the MJCF modeling language used in MuJoCo.
+    The dropdown below summarizes the XML elements and their attributes in MJCF. All information in MJCF is entered through
+    An array of N integers. If N is omitted it equals 1.
+    An array of N real-valued numbers. If N is omitted it equals 1.
+    In addition to having a data type, attributes can be required or optional. Optional attributes can have internal
+    This state is different from any valid setting that can be entered in the XML. This mechanism enables the compiler to
+    appropriate action. Some attributes have internal defaults (usually 0) which are not actually allowed by the
+    compiler. When such attributes become relevant in a given context, they must be set to allowed values.
+    MuJoCo does not fix a system of units, seeUnits are unspecified. The table below gives the physical dimension of every
+    ball joints are read in the unit set bycompiler/angle. Other angles are radians,
+    for slide joints and spatial tendons. The coordinate of afixed tendoniscoeftimes the coordinates of its joints.
+    The generalized force conjugate to\(Q\), of dimension\(M\,L^2\,T^{-2}\,Q^{-1}\): a torque when\(Q\)is an angle, a force when it is a length.
+    element, for example the outputs selected by a sensor’sdata;othermarks quantities not expressible in these
+    \(1,\ 1,\ L,\ 1,\ 1\)
+    \(1,\ 1,\ L,\ L,\ L\)
+    \(1,\ 1,\ 1,\ A\)
+    \(1,\ 1,\ Q,\ 1,\ 1\)
+    \(L\,T^{-1},\ L\,T^{-1},\ L\,T^{-1},\ A\,T^{-1},\ A\,T^{-1},\ A\,T^{-1}\)
+    \(L,\ L,\ L,\ 1,\ 1,\ 1,\ 1\)
+    \(F\,Q^{-1},\ F\,T\,Q^{-1},\ F,\ F,\ Q\,T^{-1}\)
+    The schema is also emitted as anXML Schema(XSD) document, generated from the
+    same source of truth and checked in assrc/xml/generated/mjcf.xsd.
+    To enable this in VS Code, install the Red HatXML extension(or the same extension fromOpen VSXin forks such as Cursor and VSCodium) and reference
+    <mujocoxmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/google-deepmind/mujoco/refs/heads/main/src/xml/generated/mjcf.xsd">
+    that the compiler rejects. Constraints that XSD 1.0 cannot express – child cardinality and presence constraints
+    In the remainder of this chapter we describe all valid MJCF elements and their attributes. Some elements can be used in
+    prefix in the documentation below.
+    These elements are not strictly part of the low-level MJCF format definition, but rather instruct the compiler to
+    saving the XML; the exception isframe, which is preserved. There are currently six meta-elements in
+    schema, but serve to procedurally generate other MJCF elements.
+    (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
+    offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
+    replicating 200 times, suffixes will be
+    follow the layout of the compiled model. If the enclosed tree containsattachelements, the
+    keyframes of the attached model are added once, namespaced by theattachelement only, and set the state of the
+    The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
+    replicate elements, the innermost namespace suffixes are appended first.
+    <mujoco><worldbody><replicatecount="2"offset="0 1 0"euler="90 0 0"><replicatecount="2"sep="-"offset="1 0 0"euler="0 90 0"><geomname="Alice"size=".1"/></replicate></replicate></worldbody><sensor><accelerometername="Bob"site="Alice"/></sensor></mujoco>
+    <mujoco><worldbody><geomname="Alice-00"size="0.1"/><geomname="Alice-10"size="0.1"pos="1 0 0"quat="1 0 1 0"/><geomname="Alice-01"size="0.1"pos="0 1 0"quat="1 1 0 0"/><geomname="Alice-11"size="0.1"pos="1 1 0"quat="0.5 0.5 0.5 0.5"/></worldbody><sensor><accelerometername="Bob-00"site="Alice-00"/><accelerometername="Bob-10"site="Alice-10"/><accelerometername="Bob-01"site="Alice-01"/><accelerometername="Bob-11"site="Alice-11"/></sensor></mujoco>
+    This element does not strictly belong to MJCF. Instead it is a meta-element, used to assemble multiple XML
+  - https://mujoco.readthedocs.io/en/stable/APIreference/APItypes.html#mjSpec
+    - XML Reference
+    - API Reference
+    - Python
+    - API
+    - OpenUSD
+    - File Format Plugin
+    - Changelog
+    Enums used by theclassic renderer.
+    Enums used by thefilament renderer.
+    Enums used byengine plugins.
+    Note that the API does not use these enum types directly. Instead it uses ints, and the documentation/comments state
+    that certain ints correspond to certain enum types. This is because we want the API to be compiler-independent, and
+    the C standard does not dictate how many bytes must be used to represent an enum type. Nevertheless, for improved
+    readability, we recommend using these types when calling API functions which take them as arguments.
+    Structs used by theclassic renderer.
+    Structs used by thefilament renderer.
+    Structs used byengine plugins.
+    will not change how the library was compiled, and instead will
+    result in numerous link errors. In general, the header files distributed with precompiled MuJoCo should never be
+    changed by the user.
+    // floating point data type and minval#ifndef mjUSESINGLEtypedefdoublemjtNum;#define mjMINVAL    1E-15// minimum value in any denominator#elsetypedeffloatmjtNum;#define mjMINVAL    1E-15f#endif
+    Constants which are powers of 2. They are used as bitmasks for the field
+    typedefenummjtDisableBit{// disable default feature bitflagsmjDSBL_CONSTRAINT=1<<0,// entire constraint solvermjDSBL_EQUALITY=1<<1,// equality constraintsmjDSBL_FRICTIONLOSS=1<<2,// joint and tendon frictionloss constraintsmjDSBL_LIMIT=1<<3,// joint and tendon limit constraintsmjDSBL_CONTACT=1<<4,// contact constraintsmjDSBL_SPRING=1<<5,// passive spring forcesmjDSBL_DAMPER=1<<6,// passive damping forcesmjDSBL_GRAVITY=1<<7,// gravitational forcesmjDSBL_CLAMPCTRL=1<<8,// clamp control to specified rangemjDSBL_WARMSTART=1<<9,// warmstart constraint solvermjDSBL_FILTERPARENT=1<<10,// remove collisions with parent bodymjDSBL_ACTUATION=1<<11,// apply actuation forcesmjDSBL_REFSAFE=1<<12,// integrator safety: make ref[0]>=2*timestepmjDSBL_SENSOR=1<<13,// sensorsmjDSBL_MIDPHASE=1<<14,// mid-phase collision filteringmjDSBL_EULERDAMP=1<<15,// implicit integration of joint damping in Euler integratormjDSBL_AUTORESET=1<<16,// automatic reset when numerical issues are detectedmjDSBL_NATIVECCD=1<<17,// native convex collision detectionmjDSBL_ISLAND=1<<18,// constraint island discoverymjDSBL_MULTICCD=1<<19,// multiple CCD contact pointsmjNDISABLE=20// number of disable flags}mjtDisableBit;
+    typedefenummjtEnableBit{// enable optional feature bitflagsmjENBL_OVERRIDE=1<<0,// override contact parametersmjENBL_ENERGY=1<<1,// energy computationmjENBL_FWDINV=1<<2,// record solver statisticsmjENBL_INVDISCRETE=1<<3,// discrete-time inverse dynamicsmjENBL_SLEEP=1<<4,// sleepingmjENBL_DIAGEXACT=1<<5,// exact diagonal of constraint inertiamjENBL_IPC=1<<6,// IPC flex contact mode of the discrete integratormjNENABLE=7// number of enable flags}mjtEnableBit;
+    represented as unit quaternions - which have 4 positional coordinates but 3 degrees of freedom each.
+    typedefenummjtJoint{// type of degree of freedommjJNT_FREE=0,// global position and orientation (quat)       (7)mjJNT_BALL,// orientation (quat) relative to parent        (4)mjJNT_SLIDE,// sliding distance along body-fixed axis       (1)mjJNT_HINGE// rotation angle (rad) around body-fixed axis  (1)}mjtJoint;
+    Geometric types supported by MuJoCo. The first group are “official” geom types that can be used in the model. The
+    second group are geom types that cannot be used in the model but are used by the visualizer to add decorative
+    typedefenummjtGeom{// type of geometric shape// regular geom typesmjGEOM_PLANE=0,// planemjGEOM_HFIELD,// height fieldmjGEOM_SPHERE,// spheremjGEOM_CAPSULE,// capsulemjGEOM_ELLIPSOID,// ellipsoidmjGEOM_CYLINDER,// cylindermjGEOM_BOX,// boxmjGEOM_MESH,// meshmjGEOM_SDF,// signed distance fieldmjNGEOMTYPES,// number of regular geom types// rendering-only geom types: not used in mjModel, not counted in mjNGEOMTYPESmjGEOM_ARROW=100,// arrowmjGEOM_ARROW1,// arrow without wedgesmjGEOM_ARROW2,// arrow in both directionsmjGEOM_LINE,// linemjGEOM_LINEBOX,// box with line edgesmjGEOM_FLEX,// flexmjGEOM_SKIN,// skinmjGEOM_LABEL,// text labelmjGEOM_TRIANGLE,// trianglemjGEOM_NONE=1001// missing geom type}mjtGeom;
+    typedefenummjtProjection{// type of camera projectionmjPROJ_PERSPECTIVE=0,// perspectivemjPROJ_ORTHOGRAPHIC// orthographic}mjtProjection;
+    typedefenummjtCamLight{// tracking mode for camera and lightmjCAMLIGHT_FIXED=0,// pos and rot fixed in bodymjCAMLIGHT_TRACK,// pos tracks body, rot fixed in globalmjCAMLIGHT_TRACKCOM,// pos tracks subtree com, rot fixed in bodymjCAMLIGHT_TARGETBODY,// pos fixed in body, rot tracks target bodymjCAMLIGHT_TARGETBODYCOM// pos fixed in body, rot tracks target subtree com}mjtCamLight;
+    typedefenummjtLightType{// type of lightmjLIGHT_SPOT=0,// spotmjLIGHT_DIRECTIONAL,// directionalmjLIGHT_POINT,// pointmjLIGHT_IMAGE,// image-based}mjtLightType;
+    typedefenummjtTexture{// type of texturemjTEXTURE_2D=0,// 2d texture, suitable for planes and hfieldsmjTEX...
+- Compare 摘要: 3.15.0 -> 3.16.0
+  - commits: 244
+  - files changed: 300+ returned files (GitHub compare API file list cap)
+  - additions: 13876
+  - deletions: 3673
+  - top directories: .bazelrc, .github, .readthedocs.yml, BUILD.bazel, CMakeLists.txt, MODULE.bazel
+  - representative files:
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/derivative.py (modified, +2919/-141)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/passive.py (modified, +2274/-242)
+    - doc/XMLunits.rst (added, +1550/-0)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_primitive_core.py (modified, +485/-558)
+    - doc/programming/rendering.rst (added, +912/-0)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_flex.py (modified, +311/-524)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/sensor.py (modified, +407/-366)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/constraint.py (modified, +241/-323)
 
 ### 3.15.0
 - 标题: 3.15.0
@@ -104,23 +225,23 @@
     ): Serializes the compiledmjModelin MuJoCo binary format viamj_saveModel.
     MJB files are standalone, do not refer to external files, and load faster than XML, but are version-specific and
     cannot be decompiled back to XML. Requires a compiled
+    A spec is saved as MJCF in one of two ways, selected by its compiler attributesavecompiled:
+    a geom which was fitted to a mesh with the size of the fit. The spec must have been compiled.
+    are saved in the notation in which they were written, unlesssavecanonicalis “true”. The spec need not have been compiled.
+    In both cases the saved file compiles to the same model, except where MJCF cannot say what the spec holds. For example,
+    the elements of an attached model are compiled with its own compiler settings, while the saved file has onecompilerelement. Saved as written, the angle unit and the Euler sequence of an attached model are
+    converted, and a difference in a setting which changes what compilation infers, such asinertiafromgeom, is an error which says so; saved as compiled values, such a model may
+    compile differently. What the parser does not keep in a spec is not saved: comments other than the one at the top of
+    structural edit (elements added, deleted or attached), as for compiled values. Andkeyframeswhich
+    await compilation, as they do oncemjs_attachormjs_deletechanged the kinematic tree of a spec which
     Importantly, saved XML will take into account any defined defaults. This is useful when a model has many repeated
     values, for example if loaded from URDF, which does not support defaults. In such a case one can add default classes,
     set the class of the relevant elements, and save; the resulting XML will use the defaults and be more human-readable.
     Complex MuJoCo models often consist of multiple files: a main MJCF XML file, included XML sub-trees, and external asset
     Options 2-4 exist for backwards compatibility with legacy archives and common zip packaging layouts, but are
     Adding support for new file formats can be done withmjp_registerDecoderandmjp_registerEncoder.
-    Whenmj_parseandmj_encodeare called for a non-native extension or content type, the appropriate plugins
-    are found viamjp_findDecoderandmjp_findEncoder. For further details on writing custom format plugins,
-    Here we describe the C API for procedural model editing, but it is also exposed in thePython
-    bindings. Advanced users can refer touser_api_test.ccand the MJCF parser inxml_native_reader.ccfor
-    more usage examples. After creating a newmjSpecor parsing an existing XML file to anmjSpec,
-    procedural editing corresponds to setting attributes. For example, in order to change the timestep, one can do:
-    mjSpec*spec=mj_makeSpec();spec->opt.timestep=0.01;...mjModel*model=mj_compile(spec,NULL);
-    Attributes which have variable length are C++ vectors and strings,exposed to C as opaque types.
-    In C++, one can use vectors and strings directly:
   - https://mujoco.readthedocs.io/en/stable/XMLreference.html#compiler-meshdir
-    XML Reference - MuJoCo Documentation
+    XML Reference - MuJoCo DocumentationSkip to content
     - XML Reference
     - API Reference
     - Python
@@ -136,6 +257,18 @@
     This state is different from any valid setting that can be entered in the XML. This mechanism enables the compiler to
     appropriate action. Some attributes have internal defaults (usually 0) which are not actually allowed by the
     compiler. When such attributes become relevant in a given context, they must be set to allowed values.
+    MuJoCo does not fix a system of units, seeUnits are unspecified. The table below gives the physical dimension of every
+    ball joints are read in the unit set bycompiler/angle. Other angles are radians,
+    for slide joints and spatial tendons. The coordinate of afixed tendoniscoeftimes the coordinates of its joints.
+    The generalized force conjugate to\(Q\), of dimension\(M\,L^2\,T^{-2}\,Q^{-1}\): a torque when\(Q\)is an angle, a force when it is a length.
+    element, for example the outputs selected by a sensor’sdata;othermarks quantities not expressible in these
+    \(1,\ 1,\ L,\ 1,\ 1\)
+    \(1,\ 1,\ L,\ L,\ L\)
+    \(1,\ 1,\ 1,\ A\)
+    \(1,\ 1,\ Q,\ 1,\ 1\)
+    \(L\,T^{-1},\ L\,T^{-1},\ L\,T^{-1},\ A\,T^{-1},\ A\,T^{-1},\ A\,T^{-1}\)
+    \(L,\ L,\ L,\ 1,\ 1,\ 1,\ 1\)
+    \(F\,Q^{-1},\ F\,T\,Q^{-1},\ F,\ F,\ Q\,T^{-1}\)
     The schema is also emitted as anXML Schema(XSD) document, generated from the
     same source of truth and checked in assrc/xml/generated/mjcf.xsd.
     To enable this in VS Code, install the Red HatXML extension(or the same extension fromOpen VSXin forks such as Cursor and VSCodium) and reference
@@ -149,25 +282,13 @@
     (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
+    follow the layout of the compiled model. If the enclosed tree containsattachelements, the
+    keyframes of the attached model are added once, namespaced by theattachelement only, and set the state of the
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
     replicate elements, the innermost namespace suffixes are appended first.
     <mujoco><worldbody><replicatecount="2"offset="0 1 0"euler="90 0 0"><replicatecount="2"sep="-"offset="1 0 0"euler="0 90 0"><geomname="Alice"size=".1"/></replicate></replicate></worldbody><sensor><accelerometername="Bob"site="Alice"/></sensor></mujoco>
     <mujoco><worldbody><geomname="Alice-00"size="0.1"/><geomname="Alice-10"size="0.1"pos="1 0 0"quat="1 0 1 0"/><geomname="Alice-01"size="0.1"pos="0 1 0"quat="1 1 0 0"/><geomname="Alice-11"size="0.1"pos="1 1 0"quat="0.5 0.5 0.5 0.5"/></worldbody><sensor><accelerometername="Bob-00"site="Alice-00"/><accelerometername="Bob-10"site="Alice-10"/><accelerometername="Bob-01"site="Alice-01"/><accelerometername="Bob-11"site="Alice-11"/></sensor></mujoco>
     This element does not strictly belong to MJCF. Instead it is a meta-element, used to assemble multiple XML
-    files in a single document object model (DOM) before parsing. The included file must be a valid XML file with a unique
-    top-level element. This top-level element is removed by the parser, and the elements below it are inserted at the
-    location of theincludeelement. At least one element must be inserted as a result of this procedure. Theincludeelement can be used wherever an XML element is expected in the MJCF file. Nested includes are allowed,
-    however a given XML file can be included at most once in the entire model. After all the included XML files have been
-    assembled into a single DOM, it must correspond to a valid MJCF model. Other than that, it is up to the user to decide
-    The name of the XML file to be included. The file location is relative to the directory of the main MJCF file. If the
-    file is not in the same directory, it should be prefixed with a relative path.
-    The unique top-level element, identifying the XML file as an MJCF model file.
-    adjust it properly through the XML.
-    Simulation time step in seconds. This is the single most important parameter affecting the speed-accuracy trade-off
-    real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
-    by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
-    attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
 - Compare 摘要: 3.14.0 -> 3.15.0
   - commits: 125
   - files changed: 265
@@ -212,7 +333,7 @@
 3. [`e312ce82d`...
 - 外链文档摘录:
   - https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-flag-ipc
-    XML Reference - MuJoCo Documentation
+    XML Reference - MuJoCo DocumentationSkip to content
     - XML Reference
     - API Reference
     - Python
@@ -228,6 +349,18 @@
     This state is different from any valid setting that can be entered in the XML. This mechanism enables the compiler to
     appropriate action. Some attributes have internal defaults (usually 0) which are not actually allowed by the
     compiler. When such attributes become relevant in a given context, they must be set to allowed values.
+    MuJoCo does not fix a system of units, seeUnits are unspecified. The table below gives the physical dimension of every
+    ball joints are read in the unit set bycompiler/angle. Other angles are radians,
+    for slide joints and spatial tendons. The coordinate of afixed tendoniscoeftimes the coordinates of its joints.
+    The generalized force conjugate to\(Q\), of dimension\(M\,L^2\,T^{-2}\,Q^{-1}\): a torque when\(Q\)is an angle, a force when it is a length.
+    element, for example the outputs selected by a sensor’sdata;othermarks quantities not expressible in these
+    \(1,\ 1,\ L,\ 1,\ 1\)
+    \(1,\ 1,\ L,\ L,\ L\)
+    \(1,\ 1,\ 1,\ A\)
+    \(1,\ 1,\ Q,\ 1,\ 1\)
+    \(L\,T^{-1},\ L\,T^{-1},\ L\,T^{-1},\ A\,T^{-1},\ A\,T^{-1},\ A\,T^{-1}\)
+    \(L,\ L,\ L,\ 1,\ 1,\ 1,\ 1\)
+    \(F\,Q^{-1},\ F\,T\,Q^{-1},\ F,\ F,\ Q\,T^{-1}\)
     The schema is also emitted as anXML Schema(XSD) document, generated from the
     same source of truth and checked in assrc/xml/generated/mjcf.xsd.
     To enable this in VS Code, install the Red HatXML extension(or the same extension fromOpen VSXin forks such as Cursor and VSCodium) and reference
@@ -241,25 +374,13 @@
     (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
+    follow the layout of the compiled model. If the enclosed tree containsattachelements, the
+    keyframes of the attached model are added once, namespaced by theattachelement only, and set the state of the
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
     replicate elements, the innermost namespace suffixes are appended first.
     <mujoco><worldbody><replicatecount="2"offset="0 1 0"euler="90 0 0"><replicatecount="2"sep="-"offset="1 0 0"euler="0 90 0"><geomname="Alice"size=".1"/></replicate></replicate></worldbody><sensor><accelerometername="Bob"site="Alice"/></sensor></mujoco>
     <mujoco><worldbody><geomname="Alice-00"size="0.1"/><geomname="Alice-10"size="0.1"pos="1 0 0"quat="1 0 1 0"/><geomname="Alice-01"size="0.1"pos="0 1 0"quat="1 1 0 0"/><geomname="Alice-11"size="0.1"pos="1 1 0"quat="0.5 0.5 0.5 0.5"/></worldbody><sensor><accelerometername="Bob-00"site="Alice-00"/><accelerometername="Bob-10"site="Alice-10"/><accelerometername="Bob-01"site="Alice-01"/><accelerometername="Bob-11"site="Alice-11"/></sensor></mujoco>
     This element does not strictly belong to MJCF. Instead it is a meta-element, used to assemble multiple XML
-    files in a single document object model (DOM) before parsing. The included file must be a valid XML file with a unique
-    top-level element. This top-level element is removed by the parser, and the elements below it are inserted at the
-    location of theincludeelement. At least one element must be inserted as a result of this procedure. Theincludeelement can be used wherever an XML element is expected in the MJCF file. Nested includes are allowed,
-    however a given XML file can be included at most once in the entire model. After all the included XML files have been
-    assembled into a single DOM, it must correspond to a valid MJCF model. Other than that, it is up to the user to decide
-    The name of the XML file to be included. The file location is relative to the directory of the main MJCF file. If the
-    file is not in the same directory, it should be prefixed with a relative path.
-    The unique top-level element, identifying the XML file as an MJCF model file.
-    adjust it properly through the XML.
-    Simulation time step in seconds. This is the single most important parameter affecting the speed-accuracy trade-off
-    real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
-    by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
-    attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
 - Compare 摘要: 3.13.0 -> 3.14.0
   - commits: 195
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -338,23 +459,23 @@
     ): Serializes the compiledmjModelin MuJoCo binary format viamj_saveModel.
     MJB files are standalone, do not refer to external files, and load faster than XML, but are version-specific and
     cannot be decompiled back to XML. Requires a compiled
+    A spec is saved as MJCF in one of two ways, selected by its compiler attributesavecompiled:
+    a geom which was fitted to a mesh with the size of the fit. The spec must have been compiled.
+    are saved in the notation in which they were written, unlesssavecanonicalis “true”. The spec need not have been compiled.
+    In both cases the saved file compiles to the same model, except where MJCF cannot say what the spec holds. For example,
+    the elements of an attached model are compiled with its own compiler settings, while the saved file has onecompilerelement. Saved as written, the angle unit and the Euler sequence of an attached model are
+    converted, and a difference in a setting which changes what compilation infers, such asinertiafromgeom, is an error which says so; saved as compiled values, such a model may
+    compile differently. What the parser does not keep in a spec is not saved: comments other than the one at the top of
+    structural edit (elements added, deleted or attached), as for compiled values. Andkeyframeswhich
+    await compilation, as they do oncemjs_attachormjs_deletechanged the kinematic tree of a spec which
     Importantly, saved XML will take into account any defined defaults. This is useful when a model has many repeated
     values, for example if loaded from URDF, which does not support defaults. In such a case one can add default classes,
     set the class of the relevant elements, and save; the resulting XML will use the defaults and be more human-readable.
     Complex MuJoCo models often consist of multiple files: a main MJCF XML file, included XML sub-trees, and external asset
     Options 2-4 exist for backwards compatibility with legacy archives and common zip packaging layouts, but are
     Adding support for new file formats can be done withmjp_registerDecoderandmjp_registerEncoder.
-    Whenmj_parseandmj_encodeare called for a non-native extension or content type, the appropriate plugins
-    are found viamjp_findDecoderandmjp_findEncoder. For further details on writing custom format plugins,
-    Here we describe the C API for procedural model editing, but it is also exposed in thePython
-    bindings. Advanced users can refer touser_api_test.ccand the MJCF parser inxml_native_reader.ccfor
-    more usage examples. After creating a newmjSpecor parsing an existing XML file to anmjSpec,
-    procedural editing corresponds to setting attributes. For example, in order to change the timestep, one can do:
-    mjSpec*spec=mj_makeSpec();spec->opt.timestep=0.01;...mjModel*model=mj_compile(spec,NULL);
-    Attributes which have variable length are C++ vectors and strings,exposed to C as opaque types.
-    In C++, one can use vectors and strings directly:
   - https://mujoco.readthedocs.io/en/stable/XMLreference.html#body-site-type
-    XML Reference - MuJoCo Documentation
+    XML Reference - MuJoCo DocumentationSkip to content
     - XML Reference
     - API Reference
     - Python
@@ -370,6 +491,18 @@
     This state is different from any valid setting that can be entered in the XML. This mechanism enables the compiler to
     appropriate action. Some attributes have internal defaults (usually 0) which are not actually allowed by the
     compiler. When such attributes become relevant in a given context, they must be set to allowed values.
+    MuJoCo does not fix a system of units, seeUnits are unspecified. The table below gives the physical dimension of every
+    ball joints are read in the unit set bycompiler/angle. Other angles are radians,
+    for slide joints and spatial tendons. The coordinate of afixed tendoniscoeftimes the coordinates of its joints.
+    The generalized force conjugate to\(Q\), of dimension\(M\,L^2\,T^{-2}\,Q^{-1}\): a torque when\(Q\)is an angle, a force when it is a length.
+    element, for example the outputs selected by a sensor’sdata;othermarks quantities not expressible in these
+    \(1,\ 1,\ L,\ 1,\ 1\)
+    \(1,\ 1,\ L,\ L,\ L\)
+    \(1,\ 1,\ 1,\ A\)
+    \(1,\ 1,\ Q,\ 1,\ 1\)
+    \(L\,T^{-1},\ L\,T^{-1},\ L\,T^{-1},\ A\,T^{-1},\ A\,T^{-1},\ A\,T^{-1}\)
+    \(L,\ L,\ L,\ 1,\ 1,\ 1,\ 1\)
+    \(F\,Q^{-1},\ F\,T\,Q^{-1},\ F,\ F,\ Q\,T^{-1}\)
     The schema is also emitted as anXML Schema(XSD) document, generated from the
     same source of truth and checked in assrc/xml/generated/mjcf.xsd.
     To enable this in VS Code, install the Red HatXML extension(or the same extension fromOpen VSXin forks such as Cursor and VSCodium) and reference
@@ -383,25 +516,13 @@
     (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
+    follow the layout of the compiled model. If the enclosed tree containsattachelements, the
+    keyframes of the attached model are added once, namespaced by theattachelement only, and set the state of the
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
     replicate elements, the innermost namespace suffixes are appended first.
     <mujoco><worldbody><replicatecount="2"offset="0 1 0"euler="90 0 0"><replicatecount="2"sep="-"offset="1 0 0"euler="0 90 0"><geomname="Alice"size=".1"/></replicate></replicate></worldbody><sensor><accelerometername="Bob"site="Alice"/></sensor></mujoco>
     <mujoco><worldbody><geomname="Alice-00"size="0.1"/><geomname="Alice-10"size="0.1"pos="1 0 0"quat="1 0 1 0"/><geomname="Alice-01"size="0.1"pos="0 1 0"quat="1 1 0 0"/><geomname="Alice-11"size="0.1"pos="1 1 0"quat="0.5 0.5 0.5 0.5"/></worldbody><sensor><accelerometername="Bob-00"site="Alice-00"/><accelerometername="Bob-10"site="Alice-10"/><accelerometername="Bob-01"site="Alice-01"/><accelerometername="Bob-11"site="Alice-11"/></sensor></mujoco>
     This element does not strictly belong to MJCF. Instead it is a meta-element, used to assemble multiple XML
-    files in a single document object model (DOM) before parsing. The included file must be a valid XML file with a unique
-    top-level element. This top-level element is removed by the parser, and the elements below it are inserted at the
-    location of theincludeelement. At least one element must be inserted as a result of this procedure. Theincludeelement can be used wherever an XML element is expected in the MJCF file. Nested includes are allowed,
-    however a given XML file can be included at most once in the entire model. After all the included XML files have been
-    assembled into a single DOM, it must correspond to a valid MJCF model. Other than that, it is up to the user to decide
-    The name of the XML file to be included. The file location is relative to the directory of the main MJCF file. If the
-    file is not in the same directory, it should be prefixed with a relative path.
-    The unique top-level element, identifying the XML file as an MJCF model file.
-    adjust it properly through the XML.
-    Simulation time step in seconds. This is the single most important parameter affecting the speed-accuracy trade-off
-    real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
-    by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
-    attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
 - Compare 摘要: 3.12.0 -> 3.13.0
   - commits: 171
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -439,7 +560,7 @@
 3. [279df98c](https://github.com/google-deepmind/mujoco/commit/279df98c) Added the [`pid`](https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-pid) actuator: a PID controller with real position and velocity setpoint inputs, optional integral action ([`ki`](https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-pid-ki), integrating the position error with [`imax`](https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-pid-imax) anti-windup), setpoint rate limiting ([`slewmax`](https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-pid-slewmax)), and an optional feedforward input. This subsumes the functionality of the `mujoco.pid` plugin with proper activation state: correct under all integrators and visible to keyframes and sensors. With a zero velocity setpoint it is identical to [`position`](https://mujoco.r...
 - 外链文档摘录:
   - https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-pid
-    XML Reference - MuJoCo Documentation
+    XML Reference - MuJoCo DocumentationSkip to content
     - XML Reference
     - API Reference
     - Python
@@ -455,6 +576,18 @@
     This state is different from any valid setting that can be entered in the XML. This mechanism enables the compiler to
     appropriate action. Some attributes have internal defaults (usually 0) which are not actually allowed by the
     compiler. When such attributes become relevant in a given context, they must be set to allowed values.
+    MuJoCo does not fix a system of units, seeUnits are unspecified. The table below gives the physical dimension of every
+    ball joints are read in the unit set bycompiler/angle. Other angles are radians,
+    for slide joints and spatial tendons. The coordinate of afixed tendoniscoeftimes the coordinates of its joints.
+    The generalized force conjugate to\(Q\), of dimension\(M\,L^2\,T^{-2}\,Q^{-1}\): a torque when\(Q\)is an angle, a force when it is a length.
+    element, for example the outputs selected by a sensor’sdata;othermarks quantities not expressible in these
+    \(1,\ 1,\ L,\ 1,\ 1\)
+    \(1,\ 1,\ L,\ L,\ L\)
+    \(1,\ 1,\ 1,\ A\)
+    \(1,\ 1,\ Q,\ 1,\ 1\)
+    \(L\,T^{-1},\ L\,T^{-1},\ L\,T^{-1},\ A\,T^{-1},\ A\,T^{-1},\ A\,T^{-1}\)
+    \(L,\ L,\ L,\ 1,\ 1,\ 1,\ 1\)
+    \(F\,Q^{-1},\ F\,T\,Q^{-1},\ F,\ F,\ Q\,T^{-1}\)
     The schema is also emitted as anXML Schema(XSD) document, generated from the
     same source of truth and checked in assrc/xml/generated/mjcf.xsd.
     To enable this in VS Code, install the Red HatXML extension(or the same extension fromOpen VSXin forks such as Cursor and VSCodium) and reference
@@ -468,27 +601,15 @@
     (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
+    follow the layout of the compiled model. If the enclosed tree containsattachelements, the
+    keyframes of the attached model are added once, namespaced by theattachelement only, and set the state of the
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
     replicate elements, the innermost namespace suffixes are appended first.
     <mujoco><worldbody><replicatecount="2"offset="0 1 0"euler="90 0 0"><replicatecount="2"sep="-"offset="1 0 0"euler="0 90 0"><geomname="Alice"size=".1"/></replicate></replicate></worldbody><sensor><accelerometername="Bob"site="Alice"/></sensor></mujoco>
     <mujoco><worldbody><geomname="Alice-00"size="0.1"/><geomname="Alice-10"size="0.1"pos="1 0 0"quat="1 0 1 0"/><geomname="Alice-01"size="0.1"pos="0 1 0"quat="1 1 0 0"/><geomname="Alice-11"size="0.1"pos="1 1 0"quat="0.5 0.5 0.5 0.5"/></worldbody><sensor><accelerometername="Bob-00"site="Alice-00"/><accelerometername="Bob-10"site="Alice-10"/><accelerometername="Bob-01"site="Alice-01"/><accelerometername="Bob-11"site="Alice-11"/></sensor></mujoco>
     This element does not strictly belong to MJCF. Instead it is a meta-element, used to assemble multiple XML
-    files in a single document object model (DOM) before parsing. The included file must be a valid XML file with a unique
-    top-level element. This top-level element is removed by the parser, and the elements below it are inserted at the
-    location of theincludeelement. At least one element must be inserted as a result of this procedure. Theincludeelement can be used wherever an XML element is expected in the MJCF file. Nested includes are allowed,
-    however a given XML file can be included at most once in the entire model. After all the included XML files have been
-    assembled into a single DOM, it must correspond to a valid MJCF model. Other than that, it is up to the user to decide
-    The name of the XML file to be included. The file location is relative to the directory of the main MJCF file. If the
-    file is not in the same directory, it should be prefixed with a relative path.
-    The unique top-level element, identifying the XML file as an MJCF model file.
-    adjust it properly through the XML.
-    Simulation time step in seconds. This is the single most important parameter affecting the speed-accuracy trade-off
-    real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
-    by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
-    attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
   - https://mujoco.readthedocs.io/en/stable/XMLreference.html#actuator-pid-ki
-    XML Reference - MuJoCo Documentation
+    XML Reference - MuJoCo DocumentationSkip to content
     - XML Reference
     - API Reference
     - Python
@@ -504,6 +625,18 @@
     This state is different from any valid setting that can be entered in the XML. This mechanism enables the compiler to
     appropriate action. Some attributes have internal defaults (usually 0) which are not actually allowed by the
     compiler. When such attributes become relevant in a given context, they must be set to allowed values.
+    MuJoCo does not fix a system of units, seeUnits are unspecified. The table below gives the physical dimension of every
+    ball joints are read in the unit set bycompiler/angle. Other angles are radians,
+    for slide joints and spatial tendons. The coordinate of afixed tendoniscoeftimes the coordinates of its joints.
+    The generalized force conjugate to\(Q\), of dimension\(M\,L^2\,T^{-2}\,Q^{-1}\): a torque when\(Q\)is an angle, a force when it is a length.
+    element, for example the outputs selected by a sensor’sdata;othermarks quantities not expressible in these
+    \(1,\ 1,\ L,\ 1,\ 1\)
+    \(1,\ 1,\ L,\ L,\ L\)
+    \(1,\ 1,\ 1,\ A\)
+    \(1,\ 1,\ Q,\ 1,\ 1\)
+    \(L\,T^{-1},\ L\,T^{-1},\ L\,T^{-1},\ A\,T^{-1},\ A\,T^{-1},\ A\,T^{-1}\)
+    \(L,\ L,\ L,\ 1,\ 1,\ 1,\ 1\)
+    \(F\,Q^{-1},\ F\,T\,Q^{-1},\ F,\ F,\ Q\,T^{-1}\)
     The schema is also emitted as anXML Schema(XSD) document, generated from the
     same source of truth and checked in assrc/xml/generated/mjcf.xsd.
     To enable this in VS Code, install the Red HatXML extension(or the same extension fromOpen VSXin forks such as Cursor and VSCodium) and reference
@@ -517,25 +650,13 @@
     (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
+    follow the layout of the compiled model. If the enclosed tree containsattachelements, the
+    keyframes of the attached model are added once, namespaced by theattachelement only, and set the state of the
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
     replicate elements, the innermost namespace suffixes are appended first.
     <mujoco><worldbody><replicatecount="2"offset="0 1 0"euler="90 0 0"><replicatecount="2"sep="-"offset="1 0 0"euler="0 90 0"><geomname="Alice"size=".1"/></replicate></replicate></worldbody><sensor><accelerometername="Bob"site="Alice"/></sensor></mujoco>
     <mujoco><worldbody><geomname="Alice-00"size="0.1"/><geomname="Alice-10"size="0.1"pos="1 0 0"quat="1 0 1 0"/><geomname="Alice-01"size="0.1"pos="0 1 0"quat="1 1 0 0"/><geomname="Alice-11"size="0.1"pos="1 1 0"quat="0.5 0.5 0.5 0.5"/></worldbody><sensor><accelerometername="Bob-00"site="Alice-00"/><accelerometername="Bob-10"site="Alice-10"/><accelerometername="Bob-01"site="Alice-01"/><accelerometername="Bob-11"site="Alice-11"/></sensor></mujoco>
     This element does not strictly belong to MJCF. Instead it is a meta-element, used to assemble multiple XML
-    files in a single document object model (DOM) before parsing. The included file must be a valid XML file with a unique
-    top-level element. This top-level element is removed by the parser, and the elements below it are inserted at the
-    location of theincludeelement. At least one element must be inserted as a result of this procedure. Theincludeelement can be used wherever an XML element is expected in the MJCF file. Nested includes are allowed,
-    however a given XML file can be included at most once in the entire model. After all the included XML files have been
-    assembled into a single DOM, it must correspond to a valid MJCF model. Other than that, it is up to the user to decide
-    The name of the XML file to be included. The file location is relative to the directory of the main MJCF file. If the
-    file is not in the same directory, it should be prefixed with a relative path.
-    The unique top-level element, identifying the XML file as an MJCF model file.
-    adjust it properly through the XML.
-    Simulation time step in seconds. This is the single most important parameter affecting the speed-accuracy trade-off
-    real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
-    by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
-    attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
 - Compare 摘要: 3.11.0 -> 3.12.0
   - commits: 133
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -569,7 +690,7 @@
 2. [a264d0bc](https://github.com/google-deepmind/mujoco/commit/a264d0bc) Added [geom/adhesion](https://mujoco.readthedocs.io/en/stable/XMLreference.html#body-geom-adhesion) and [pair/adhesion](https://mujoco.readthedocs.io/en/stable/XMLreference.html#contact-pair-adhesion): an adhesive force associated with a contact, useful for modeling sticky materials. Contacts can pull with up to the given force before breaking, and the friction budget becomes $\mu(f_N + \text{adhesion})$. Combined with [gap](https://mujoco.readthedocs.io/en/stable/XMLreference.html#body-geom-gap), adhesive contacts apply "adhesion a...
 - 外链文档摘录:
   - https://mujoco.readthedocs.io/en/stable/XMLreference.html#body-geom-surfacevel
-    XML Reference - MuJoCo Documentation
+    XML Reference - MuJoCo DocumentationSkip to content
     - XML Reference
     - API Reference
     - Python
@@ -585,6 +706,18 @@
     This state is different from any valid setting that can be entered in the XML. This mechanism enables the compiler to
     appropriate action. Some attributes have internal defaults (usually 0) which are not actually allowed by the
     compiler. When such attributes become relevant in a given context, they must be set to allowed values.
+    MuJoCo does not fix a system of units, seeUnits are unspecified. The table below gives the physical dimension of every
+    ball joints are read in the unit set bycompiler/angle. Other angles are radians,
+    for slide joints and spatial tendons. The coordinate of afixed tendoniscoeftimes the coordinates of its joints.
+    The generalized force conjugate to\(Q\), of dimension\(M\,L^2\,T^{-2}\,Q^{-1}\): a torque when\(Q\)is an angle, a force when it is a length.
+    element, for example the outputs selected by a sensor’sdata;othermarks quantities not expressible in these
+    \(1,\ 1,\ L,\ 1,\ 1\)
+    \(1,\ 1,\ L,\ L,\ L\)
+    \(1,\ 1,\ 1,\ A\)
+    \(1,\ 1,\ Q,\ 1,\ 1\)
+    \(L\,T^{-1},\ L\,T^{-1},\ L\,T^{-1},\ A\,T^{-1},\ A\,T^{-1},\ A\,T^{-1}\)
+    \(L,\ L,\ L,\ 1,\ 1,\ 1,\ 1\)
+    \(F\,Q^{-1},\ F\,T\,Q^{-1},\ F,\ F,\ Q\,T^{-1}\)
     The schema is also emitted as anXML Schema(XSD) document, generated from the
     same source of truth and checked in assrc/xml/generated/mjcf.xsd.
     To enable this in VS Code, install the Red HatXML extension(or the same extension fromOpen VSXin forks such as Cursor and VSCodium) and reference
@@ -598,27 +731,15 @@
     (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
+    follow the layout of the compiled model. If the enclosed tree containsattachelements, the
+    keyframes of the attached model are added once, namespaced by theattachelement only, and set the state of the
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
     replicate elements, the innermost namespace suffixes are appended first.
     <mujoco><worldbody><replicatecount="2"offset="0 1 0"euler="90 0 0"><replicatecount="2"sep="-"offset="1 0 0"euler="0 90 0"><geomname="Alice"size=".1"/></replicate></replicate></worldbody><sensor><accelerometername="Bob"site="Alice"/></sensor></mujoco>
     <mujoco><worldbody><geomname="Alice-00"size="0.1"/><geomname="Alice-10"size="0.1"pos="1 0 0"quat="1 0 1 0"/><geomname="Alice-01"size="0.1"pos="0 1 0"quat="1 1 0 0"/><geomname="Alice-11"size="0.1"pos="1 1 0"quat="0.5 0.5 0.5 0.5"/></worldbody><sensor><accelerometername="Bob-00"site="Alice-00"/><accelerometername="Bob-10"site="Alice-10"/><accelerometername="Bob-01"site="Alice-01"/><accelerometername="Bob-11"site="Alice-11"/></sensor></mujoco>
     This element does not strictly belong to MJCF. Instead it is a meta-element, used to assemble multiple XML
-    files in a single document object model (DOM) before parsing. The included file must be a valid XML file with a unique
-    top-level element. This top-level element is removed by the parser, and the elements below it are inserted at the
-    location of theincludeelement. At least one element must be inserted as a result of this procedure. Theincludeelement can be used wherever an XML element is expected in the MJCF file. Nested includes are allowed,
-    however a given XML file can be included at most once in the entire model. After all the included XML files have been
-    assembled into a single DOM, it must correspond to a valid MJCF model. Other than that, it is up to the user to decide
-    The name of the XML file to be included. The file location is relative to the directory of the main MJCF file. If the
-    file is not in the same directory, it should be prefixed with a relative path.
-    The unique top-level element, identifying the XML file as an MJCF model file.
-    adjust it properly through the XML.
-    Simulation time step in seconds. This is the single most important parameter affecting the speed-accuracy trade-off
-    real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
-    by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
-    attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
   - https://mujoco.readthedocs.io/en/stable/XMLreference.html#body-geom-adhesion
-    XML Reference - MuJoCo Documentation
+    XML Reference - MuJoCo DocumentationSkip to content
     - XML Reference
     - API Reference
     - Python
@@ -634,6 +755,18 @@
     This state is different from any valid setting that can be entered in the XML. This mechanism enables the compiler to
     appropriate action. Some attributes have internal defaults (usually 0) which are not actually allowed by the
     compiler. When such attributes become relevant in a given context, they must be set to allowed values.
+    MuJoCo does not fix a system of units, seeUnits are unspecified. The table below gives the physical dimension of every
+    ball joints are read in the unit set bycompiler/angle. Other angles are radians,
+    for slide joints and spatial tendons. The coordinate of afixed tendoniscoeftimes the coordinates of its joints.
+    The generalized force conjugate to\(Q\), of dimension\(M\,L^2\,T^{-2}\,Q^{-1}\): a torque when\(Q\)is an angle, a force when it is a length.
+    element, for example the outputs selected by a sensor’sdata;othermarks quantities not expressible in these
+    \(1,\ 1,\ L,\ 1,\ 1\)
+    \(1,\ 1,\ L,\ L,\ L\)
+    \(1,\ 1,\ 1,\ A\)
+    \(1,\ 1,\ Q,\ 1,\ 1\)
+    \(L\,T^{-1},\ L\,T^{-1},\ L\,T^{-1},\ A\,T^{-1},\ A\,T^{-1},\ A\,T^{-1}\)
+    \(L,\ L,\ L,\ 1,\ 1,\ 1,\ 1\)
+    \(F\,Q^{-1},\ F\,T\,Q^{-1},\ F,\ F,\ Q\,T^{-1}\)
     The schema is also emitted as anXML Schema(XSD) document, generated from the
     same source of truth and checked in assrc/xml/generated/mjcf.xsd.
     To enable this in VS Code, install the Red HatXML extension(or the same extension fromOpen VSXin forks such as Cursor and VSCodium) and reference
@@ -647,25 +780,13 @@
     (underworldbody). At compile time the transformation is accumulated into the frame’s direct children;
     offsets, adding namespace suffixes to avoid name collisions. Appended suffix strings are integers in the
     replicating 200 times, suffixes will be
+    follow the layout of the compiled model. If the enclosed tree containsattachelements, the
+    keyframes of the attached model are added once, namespaced by theattachelement only, and set the state of the
     The namespace separator. This optional string is prepended to the namespace suffix string. Note that for nested
     replicate elements, the innermost namespace suffixes are appended first.
     <mujoco><worldbody><replicatecount="2"offset="0 1 0"euler="90 0 0"><replicatecount="2"sep="-"offset="1 0 0"euler="0 90 0"><geomname="Alice"size=".1"/></replicate></replicate></worldbody><sensor><accelerometername="Bob"site="Alice"/></sensor></mujoco>
     <mujoco><worldbody><geomname="Alice-00"size="0.1"/><geomname="Alice-10"size="0.1"pos="1 0 0"quat="1 0 1 0"/><geomname="Alice-01"size="0.1"pos="0 1 0"quat="1 1 0 0"/><geomname="Alice-11"size="0.1"pos="1 1 0"quat="0.5 0.5 0.5 0.5"/></worldbody><sensor><accelerometername="Bob-00"site="Alice-00"/><accelerometername="Bob-10"site="Alice-10"/><accelerometername="Bob-01"site="Alice-01"/><accelerometername="Bob-11"site="Alice-11"/></sensor></mujoco>
     This element does not strictly belong to MJCF. Instead it is a meta-element, used to assemble multiple XML
-    files in a single document object model (DOM) before parsing. The included file must be a valid XML file with a unique
-    top-level element. This top-level element is removed by the parser, and the elements below it are inserted at the
-    location of theincludeelement. At least one element must be inserted as a result of this procedure. Theincludeelement can be used wherever an XML element is expected in the MJCF file. Nested includes are allowed,
-    however a given XML file can be included at most once in the entire model. After all the included XML files have been
-    assembled into a single DOM, it must correspond to a valid MJCF model. Other than that, it is up to the user to decide
-    The name of the XML file to be included. The file location is relative to the directory of the main MJCF file. If the
-    file is not in the same directory, it should be prefixed with a relative path.
-    The unique top-level element, identifying the XML file as an MJCF model file.
-    adjust it properly through the XML.
-    Simulation time step in seconds. This is the single most important parameter affecting the speed-accuracy trade-off
-    real-time performance, the time step must be larger than the CPU time per step (or 4 times larger when using the RK4
-    by the time step but also by theSolver parameters; in particular softer constraints can be simulated with larger time
-    attribute. Settings larger than 1 cause friction forces to be “harder” than normal forces, having the general effect
-    gravity:real(3), “0 0 -9.81”
 - Compare 摘要: 3.10.0 -> 3.11.0
   - commits: 226
   - files changed: 300+ returned files (GitHub compare API file list cap)
@@ -1200,76 +1321,3 @@ See the [changelog](https://mujoco.readthedocs.io/en/3.4.0/changelog.html).
     Added experimental option forpassivecontacts involving flexes.
     to the public MJX API. Add Warp support for
     Fixed a latent bug where MjData objects were not serialized correctly by the Python bindings when islanding was
-- Compare 摘要: 3.3.7 -> 3.4.0
-  - commits: 282
-  - files changed: 300+ returned files (GitHub compare API file list cap)
-  - additions: 8449
-  - deletions: 6079
-  - top directories: .github, .gitignore, .readthedocs.yml, CMakeLists.txt, README.md, STYLEGUIDE.md
-  - representative files:
-    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/io.py (modified, +1017/-1931)
-    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_primitive.py (modified, +602/-514)
-    - include/mujoco/experimental/usd/mjcPhysics/tendon.h (added, +816/-0)
-    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_convex.py (modified, +594/-204)
-    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/collision_gjk_legacy.py (removed, +0/-715)
-    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/sensor.py (modified, +241/-317)
-    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/smooth.py (modified, +212/-276)
-    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/support.py (modified, +380/-89)
-
-### 3.3.7
-- 标题: 3.3.7
-- 类型: 正式版
-- 发布时间: 2025-10-15 01:38:32 CST
-- 链接: https://github.com/google-deepmind/mujoco/releases/tag/3.3.7
-- GitHub release body:
-See the [changelog](https://mujoco.readthedocs.io/en/3.3.7/changelog.html).
-- 外链文档摘录:
-  - https://mujoco.readthedocs.io/en/3.3.7/changelog.html
-    Changelog - MuJoCo Documentation
-    - XML Reference
-    - API Reference
-    - Python
-    - API
-    - OpenUSD
-    - File Format Plugin
-    - Changelog
-    Version 3.3.7 (October 13, 2025)#
-    The mjSpec C API fieldsmeshdirandtexturedirhave been
-    moved tocompiler.meshdirandcompiler.texturedirrespectively. For backwards compatibility, the old fields are still available in the Python API but will be
-    removed in a future release.
-    Addedmju_getXMLDependenciesfor computing a list of unique asset dependencies from an MJCF file.
-    Added the code sample
-    which provides command line utility for printing the result ofmju_getXMLDependencies.
-    The minimum C++ standard required to compile MuJoCo is now C++20, this has been the case within Google since 2023
-    was unused and has been removed.
-    Fix#2508,
-    Fix#2881,fitaabbwas adding an offset to the mesh and applying an incorrect frame
-    Version 3.3.6 (September 15, 2025)#
-    a strict improvement over the monolithic constraint solver, please let us know if you experience any issues.
-    Contact sensorsubtree1/subtree2specification is now available for any body, not
-    was moved from the end of the solver call (mj_fwdConstraint) to
-    the end ofmj_step, and is now updated with all other state variables. This change makesmj_forwardfully idempotent.
-    Before this change, callingmj_forwardrepeatedly would make the constraint solver converge,
-    Migration:If your code depended on this behavior, you can recover it by updating manually after eachmj_forward:
-    Furthermore, this change has a numerical impact on the output of theRK4integrator.
-    Before this change, due to the
-    the solver convergence of RK4 was faster, at the cost of unprincipled integration. This change makes the RK4
-    integration principled and well-defined. Since this change to RK4 is effectively a bug fix, migration to the
-    flag for disabling passive forces was removed and replaced bymjDSBL_SPRINGandmjDSBL_DAMPERwith correspondingmjcfattributes. Each flag disables only joint and tendon
-    compensation, fluid forces, forces computed by themjcb_passivecallback, and forces computed bypluginswhen passed themjPLUGIN_PASSIVEcapability flag.
-    Added support for shells with a curved reference configuration. See thisexample.
-    Added experimental option forpassivecontacts involving flexes.
-    to the public MJX API. Add Warp support for
-    Fixed a latent bug where MjData objects were not serialized correctly by the Python bindings when islanding was
-    Version 3.3.5 (August 8, 2025)#
-    Added theinsidesitesensor, for checking if an object is inside the volume of a site.
-    Added thecontactsensor, for reporting contact information according to user-defined
-    The purpose of thecontactsensor is to report contact-related information in a fixed-size array. This is
-    Added thetactilesensor, for measuring the penetration depth between two objects at given
-    points and the sliding velocities in the tangent frame. The sensor reports tactile data only when colliding with
-    Removed the SdfLib plugin and the dependency onSdfLib. SDFs are now
-    supported natively in mjModel.
-    Added the functionality to create a builtin meshes, seemesh/builtin.
-    combines the Composite Rigid Body algorithm inmj_crband additional terms related totendon armature. Code that usesmj_crbto compute the inertia should now usemj_makeMinstead.
-    Fixed a bug that caused object lists in the child to have missing elements after attaching an mjSpec. This was
-    caused by adding to the lists only the objects that belong to the tree of the requested body, but this causes to
