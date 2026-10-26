@@ -2,32 +2,38 @@
 
 - 仓库: `isaac-sim/IsaacLab`
 - 统计窗口: 最近一年
-- 最新版本: interactive-demos (2026-10-16 00:47:05 CST)
+- 最新版本: v3.0.0 (2026-10-20 10:05:51 CST)
 - 纳入统计的最早版本: v2.3.0 (2025-10-29 05:38:54 CST)
-- 版本概况: 最近一年共 8 个版本，其中正式版 4 个、预发布版 4 个
+- 版本概况: 最近一年共 9 个版本，其中正式版 5 个、预发布版 4 个
 - 详细证据索引: `isaac-sim_IsaacLab_release_roadmap_reference.md`
 
 ## 核心判断
 
-- **interactive-demos 是 3.0 EA 之后新增的文档侧交付物，而非新的代码版本。** 它提供预构建的 Newton WebAssembly 仿真、浏览器查看器与导出器源码，用于 Isaac Lab 文档中的交互式演示。其定位是“永久打包容器”：后续更新在同一 release 下追加资产，不产生新的编号版本，已有资产保持可用以支持可复现构建。
+- **v3.0.0 正式发布，3.0 从 EA 转为推荐基线。** 官方明确 `v3.0.0` 是 Isaac Lab 3.0 的正式版本，也是新项目与 2.x 迁移的推荐基线，EA 阶段“只做缺陷修复与稳定性改进”的承诺已兑现为 GA。
 
-- **演示运行门槛被压到“只需浏览器”。** 官方说明运行演示仅需浏览器，解压归档后通过本地静态服务器打开 `interactive/` 页面即可；重建物理仿真才需要固定版本的内置 Newton Web 编译器与 Emscripten。这把 3.0 的能力展示从“装环境”降为“开网页”。
+- **“一套任务 API、多后端”从主张变为可交付形态。** Newton 作为 Warp 原生物理后端提供 MuJoCo-Warp、VBD、MPM 多条求解路径，覆盖刚体、形变体与粒子；OV 库把 `OVPhysX` 与 `OVRTX` 拆为独立库；Isaac Sim 保留为需要完整 PhysX/RTX、ROS bridge、XR、livestream 或 Kit 工具链时的可选路径。
 
-- **发布链路被显式工程化：文档只引用经过评审、以提交命名的归档，并校验 SHA-256。** 发布流程要求复用 `interactive-releases` 分支、提交评审后的站点、生成提交命名归档与校验和、上传到同一 release，并在文档 PR 中同步更新归档 URL 与 SHA-256，同时保留历史资产与兼容目录。
+- **安装与运行路径以 `uv` 为中心收敛为三条命令。** 默认环境为 Newton + PyTorch 训练环境，Isaac Sim 变为可选附加；`--extra ovphysx` 与 `--extra isaacsim` 分别对应 OV PhysX 与完整 Isaac Sim，`--viz newton_gl` 用于策略回放。
 
-- **与 3.0 EA 的 kit-less 主线一致，但证据范围有限。** 该 release 的说明聚焦于演示打包与发布流程，未给出与具体 Isaac Lab 版本的功能绑定关系；除文档站点与浏览器演示外，对训练、评估、部署工作流的影响细节证据不足。
+- **平台与依赖基线进一步收紧。** Python 3.12、Warp 1.17、默认 PyTorch CUDA 13.0；支持 Ubuntu 22.04+ x86_64、Linux aarch64（含 DGX Spark）与 Windows 11 x86_64；Isaac Sim 5.1 及更早版本不再受支持，Isaac Sim 侧 wheel 在 Linux 上要求 GLIBC 2.35+。
 
 ## 产品演进主线
 
-- **3.0 的“无 Kit 运行”主张延伸到展示层。** EA 已把 kit-less Newton 工作流作为首个示例，interactive-demos 进一步把 Newton 仿真编译为 WebAssembly 并在浏览器中运行，使同一技术路径同时覆盖训练环境与文档演示。
+- **3.0 主线由“架构定型”进入“正式交付”。** EA 确立的多后端任务 API、kit-less 执行、Warp 原生数据路径与统一工作流，在 GA 中成为推荐默认，而非可选实验路径。
 
-- **文档从静态说明转向可交互验证。** 新增的浏览器查看器与演示归档让用户在本地环境之外直接查看仿真效果，文档站点成为演示的分发入口，运行时包由官方 release 托管。
+- **物理后端从单一引擎扩展为求解器组合。** Newton 同时承载 MuJoCo-Warp、VBD、MPM，使刚体、形变体与粒子任务共用同一任务 API；OV 库则把 PhysX 与 RTX 渲染从 Kit 中解耦为可独立安装的组件。
 
-- **发布运营从“版本号驱动”扩展为“资产驱动”。** 该 release 明确不产生新的编号版本，更新以追加资产的方式进行，并要求保留旧资产与兼容目录，说明 3.0 之后的交付节奏中已包含长期可复现的资产容器。
+- **Isaac Sim 的角色从“必需运行时”转为“按需能力包”。** 需要完整 PhysX/RTX 栈、ROS bridge、XR、livestream 或 Kit 工具链的工作流仍走 Isaac Sim，但默认安装不再包含它。
 
-- **其余主线（多后端架构、三条安装路径、工具链与平台基线）由 v3.0.0-EA 确立，本次新增版本未改变这些结论。**
+- **文档与演示资产继续作为独立交付线存在。** interactive-demos 的浏览器演示容器与 v3.0.0 的正式版本并行，前者不改变运行时依赖，后者定义新的安装与迁移基线。
 
 ## 版本演进解读
+
+### v3.0.0（2026-10-20）
+
+- 正式发布 Isaac Lab 3.0：一套任务 API 跨多种物理、渲染与可视化后端；Newton 后端提供 MuJoCo-Warp、VBD、MPM 多条求解路径，覆盖刚体、形变体与粒子；`OVPhysX` 与 `OVRTX` 作为独立库提供；Isaac Sim 变为可选，仅在需要完整 PhysX/RTX、ROS bridge、XR、livestream 或 Kit 工具链时安装。
+- 对产品与用户价值在于迁移目标确定：官方将 `v3.0.0` 定位为新项目与 2.x 迁移的推荐基线，安装路径收敛为默认 Newton 训练环境、`--extra ovphysx` 与 `--extra isaacsim` 三条，训练、回放与可视化统一由 `isaaclab train` / `isaaclab play` 驱动。
+- 迁移与兼容注意：需 Python 3.12、Warp 1.17 与默认 PyTorch CUDA 13.0（要求 Turing 及以上、compute capability 7.5+）；支持 Ubuntu 22.04+ x86_64、Linux aarch64（含 DGX Spark）与 Windows 11 x86_64；Isaac Sim 5.1 及更早版本不再受支持，Isaac Sim 侧 wheel 在 Linux 上要求 GLIBC 2.35+，x86_64 工作站建议至少 32 GB 内存与 16 GB 显存；DGX Spark 需 CUDA 13 或更新版本，且 SkillGen、XR 遥操作、livestream、Hub Workstation Cache、Cosmos Transfer1 与 RLinf 尚未在该平台支持或验证。
 
 ### interactive-demos（2026-10-16）
 
@@ -97,10 +103,10 @@
 
 ## 采用与规划提示
 
-- **把 interactive-demos 当作文档与演示资产，而非升级目标。** 它不改变 Isaac Lab 的运行时依赖或 API，团队无需为其调整环境；需要本地复现演示时按归档内说明启动静态服务器即可。
+- **新项目与 2.x 迁移直接以 v3.0.0 为目标基线。** 官方已将其定位为推荐版本，EA 到 GA 的稳定性窗口结束，继续停留在 EA 或 beta 不再有收益。
 
-- **3.0 的迁移窗口判断不变。** v3.0.0-EA 仍是当前可用的 3.0 基线，官方承诺 EA 到 GA 期间只做缺陷修复、稳定性、兼容性与文档改进，GA 目标为 2026 年 10 月底；计划落地 3.0 的团队应在此窗口内完成环境搭建、后端选型与关键任务验证。
+- **按工作流选择安装路径，而非默认全量安装。** 纯 Newton 训练与回放不需要 Isaac Sim；需要 ROS bridge、XR、livestream 或 Kit 工具链时再加 `--extra isaacsim`，需要 PhysX 但不要 Kit 时用 `--extra ovphysx`。
 
-- **生产环境继续以 v2.3.2 为稳定基线，直到 3.0 GA。** 对确定性输出要求高的项目保留 2.x 稳定版本，同时在隔离环境验证 3.0 的后端切换、kit-less 运行与传感器覆盖度。
+- **迁移前先核对平台与驱动基线。** 确认 Python 3.12、CUDA 13 驱动与 GPU 计算能力满足要求；aarch64 与 DGX Spark 用户需单独核对 PyTorch 构建与不受支持的功能清单；Windows 用户需先启用长路径支持。
 
-- **关注演示资产的发布纪律。** 若团队需要引用或自建浏览器演示，应遵循官方流程：复用 `interactive-releases` 分支、生成提交命名归档与校验和、在文档中同步 URL 与 SHA-256，并保留旧资产以维持可复现构建；在官方仓库创建该分支需要管理员权限。
+- **interactive-demos 仍按文档资产对待。** 它不改变 v3.0.0 的运行时依赖或 API，团队无需为其调整环境；引用或自建浏览器演示时沿用其提交命名归档与 SHA-256 校验的发布纪律。

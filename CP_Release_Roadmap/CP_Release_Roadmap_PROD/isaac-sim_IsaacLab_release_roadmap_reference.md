@@ -4,12 +4,12 @@
 - 对应主报告: `isaac-sim_IsaacLab_release_roadmap.md`
 - 统计窗口: 最近一年
 - 生成策略: GitHub release body + 外链文档摘录 + 相邻 release tag 的 GitHub compare 摘要
-- 版本总数: 8
-- 正式版数量: 4
+- 版本总数: 9
+- 正式版数量: 5
 - 预发布版数量: 4
-- 外链文档覆盖版本数: 6
-- compare 摘要覆盖版本数: 7
-- 最新版本: interactive-demos (2026-10-16 00:47:05 CST)
+- 外链文档覆盖版本数: 7
+- compare 摘要覆盖版本数: 8
+- 最新版本: v3.0.0 (2026-10-20 10:05:51 CST)
 - 最早纳入统计版本: v2.3.0 (2025-10-29 05:38:54 CST)
 
 ## 分析策略决策
@@ -23,6 +23,7 @@
   - 因此主脚本保持 L1，避免在主流程里默认引入额外源码分析成本。
 
 ## Release 时间线
+- 2026-10-20 10:05:51 CST | v3.0.0 | 正式版
 - 2026-10-16 00:47:05 CST | interactive-demos | 预发布版
 - 2026-09-17 06:34:03 CST | v3.0.0-EA | 正式版
 - 2026-07-02 12:21:18 CST | v3.0.0-beta2.patch1 | 预发布版
@@ -33,6 +34,140 @@
 - 2025-10-29 05:38:54 CST | v2.3.0 | 正式版
 
 ## 证据附录
+
+### v3.0.0
+- 标题: v3.0.0
+- 类型: 正式版
+- 发布时间: 2026-10-20 10:05:51 CST
+- 链接: https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0
+- GitHub release body:
+# Isaac Lab 3.0
+
+**Isaac Lab 3.0 is now generally available.**
+
+`v3.0.0` is the official Isaac Lab 3.0 release and the recommended baseline for new projects and migrations from Isaac Lab 2.x.
+
+Isaac Lab 3.0 establishes the foundation for the next generation of robot learning in Isaac Lab: one task API across multiple physics, rendering, and visualization backends; kit-less execution with Newton and OV library backends; Warp-native data paths; and unified workflows from installation through training, evaluation, and deployment.
+
+- **Newton** is a Warp-native physics backend with multiple solver paths, including MuJoCo-Warp, VBD, and MPM. It lets Isaac Lab support rigid bodies, deformables, and particles without tying tasks to one physics engine.
+- **OV Libraries** provide `OVPhysX` for PhysX and `OVRTX` for RTX rendering as standalone libraries.
+- **Isaac Sim** remains the complete path when a workflow needs the full PhysX/RTX stack, ROS bridge, XR, livestreaming, or Kit tooling, but now fully optional.
+
+<table>
+  <tr>
+    <td align="center">
+      <img width="320" height="146" alt="MicroDuck Rendering" src="https://github.com/user-attachments/assets/3ba7db60-723e-4c5b-b07e-b78a3d98336d" />
+      <br><sub><b>MicroDuck rendering</b></sub>
+    </td>
+    <td align="center">
+      <img width="320" height="146" alt="VBD Cable Insertion" src="https://github.com/user-attachments/assets/983c8869-b9a2-4e05-be7f-0e91efdece9a" />
+      <br><sub><b>VBD cable insertion</b></sub>
+    </td>
+    <td align="center">
+      <img width="320" height="146" alt="MPM Liquid Pouring" src="https://github.com/user-attachments/assets/3b502d80-bdb8-4a4b-a0ca-1ab39f4e5898" />
+      <br><sub><b>MPM liquid pouring</b></sub>
+    </td>
+  </tr>
+</table>
+
+One task API; install and run only the capabilit...
+- 外链文档摘录:
+  - https://docs.astral.sh/uv/
+    An extremely fast Python package and project manager, written in Rust.
+    - 10-100x fasterthan
+    - Runs scripts, with support forinline dependency metadata.
+    - Installs and managesPython versions.
+    - Runs and installstools published as Python packages.
+    - Includes apip-compatible interfacefor a performance boost with a familiar
+    - Supports Cargo-styleworkspacesfor scalable projects.
+    - Installable without Rust or Python via
+    - Supports macOS, Linux, and Windows.
+    PS>powershell-ExecutionPolicyByPass-c"irm https://astral.sh/uv/install.ps1 | iex"
+    uv manages project dependencies and environments, with support for lockfiles, workspaces, and more,
+    $uvinitexampleInitialized project `example` at `/home/user/example`$cdexample$uvaddruffCreating virtual environment at: .venvResolved 2 packages in 170msBuilt example @ file:///home/user/examplePrepared 2 packages in 627msInstalled 2 packages in 1ms+ example==0.1.0 (from file:///home/user/example)+ ruff==0.5.4$uvrunruffcheckAll checks passed!$uvlockResolved 2 packages in 0.33ms$uvsyncResolved 2 packages in 0.70msChecked 1 package in 0.02ms
+    uv also supports building and publishing projects, even if they're not managed with uv. See thepackaging guideto learn more.
+    Create a new script and add inline metadata declaring its dependencies:
+    $echo'import requests; print(requests.get("https://astral.sh"))'>example.py$uvadd--scriptexample.pyrequestsUpdated `example.py`
+    $uvrunexample.pyReading inline script metadata from: example.pyInstalled 5 packages in 12ms<Response [200]>
+    uv executes and installs command-line tools provided by Python packages, similar to
+    $uvxpycowsay'hello world!'Resolved 1 package in 167msInstalled 1 package in 9ms+ pycowsay==0.0.0.2"""------------< hello world! >------------\   ^__^\  (oo)\_______(__)\       )\/\||----w |||     ||
+    $uvtoolinstallruffResolved 1 package in 6msInstalled 1 package in 2ms+ ruff==0.5.4Installed 1 executable: ruff$ruff--versionruff 0.5.4
+    uv installs Python and allows quickly switching between versions.
+    Install multiple Python versions:
+    Download Python versions as needed:
+    Use a specific Python version in the current directory:
+    $uvpythonpin3.11Pinned `.python-version` to `3.11`
+    See theinstalling Python guideto get started.
+    platform-independent resolutions, reproducible resolutions, alternative resolution strategies, and
+    Migrate to uv without changing your existing workflows — and experience a 10-100x speedup — with the
+    Compile requirements into a platform-independent requirements file:
+    $uvpipcompilerequirements.in\--universal\--output-filerequirements.txtResolved 43 packages in 12ms
+    $uvvenvUsing CPython 3.12.3Creating virtual environment at: .venvActivate with: source .venv/bin/activate
+    $uvpipsyncrequirements.txtResolved 43 packages in 11msInstalled 43 packages in 208ms+ babel==2.15.0+ black==24.4.2+ certifi==2024.7.4...
+  - https://isaac-sim.github.io/IsaacLab/v3.0.0/source/isaaclab/installation.html
+    add Isaac Sim or other optional backends when your workflow needs them. Start with the automatic
+    Python environment with Isaac Sim
+    Isaac Lab Python package
+    Download Isaac Sim and use the Python interpreter included with it.
+    Provision a remote GPU workstation on a supported cloud provider.
+    cover the default Newton and PyTorch training environment; Isaac Sim is an optional addition.
+    Python 3.12. The automatic
+    Ubuntu 22.04+ on x86_64, Linux aarch64 (including DGX Spark), or Windows 11 on x86_64.
+    A CUDA-capable NVIDIA GPU supported by the selected Newton solver and PyTorch.
+    The default CUDA 13 stack requires Turing or newer (compute capability 7.5+).
+    This release uses Warp 1.17. Its prebuilt wheels include the CUDA components needed by Warp,
+    so a separate CUDA Toolkit installation is not needed for standard wheel-based use. SeeWarp installationandcompatibilityfor its
+    platform and GPU requirements.
+    The default environment also installsPyTorch with CUDA 13.0, which sets the driver
+    minimum above. Warp 1.17’s CUDA 12 wheels alone can run with older drivers; meeting only
+    Warp’s minimum is not enough for the default GPU training environment. See thePyTorch CUDA 13.0 requirements.
+    extra for Isaac Sim 6.2 / PhysX workflows. On Linux,
+    its wheels require GLIBC 2.35+. For x86_64 workstations, plan for at least 32 GB RAM,
+    16 GB VRAM, and a supported RTX GPU; training and rendering may need more. Check theIsaac Sim requirementsfor supported GPUs, tested drivers, and DGX Spark support. Isaac Sim 5.1 and older are unsupported.
+    Rendering:Headless Newton simulation does not require RTX hardware. Add the requirements
+    of your chosenrendererorvisualizerwhen you need camera images or an interactive
+    Linux aarch64 and DGX Spark requirements
+    DGX Spark requires CUDA 13 or newer and the corresponding PyTorch build. Install the build
+    sudoaptinstallpython3.12-devlibgl1-mesa-devlibx11-devlibxcursor-dev\libxi-devlibxinerama-devlibxrandr-dev
+    SkillGen, XR teleoperation, livestream, Hub Workstation Cache, Cosmos Transfer1, and RLinf are
+    not currently supported or validated on DGX Spark. SkillGen depends on native CUDA/C++
+    # Newton backend without Isaac Simuvrunisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=newton_mjwarp# OV PhysX backenduvrun--extraovphysxisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=ovphysx# Full Isaac Sim supportuvrun--extraisaacsimisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=isaacsim_physx# Play a policyuvrunisaaclabplay--rl_libraryrsl_rl--taskIsaac-Cartpole-Direct--viznewton_gl
+    Linux aarch64 (DGX Spark)
+    # Newton backenduvrunisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=newton_mjwarp# OV PhysX backenduvrun--extraovphysxisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=ovphysx# Full Isaac Sim supportuvrun--extraisaacsimisaaclabtrain--rl_libraryrsl_rl\--taskIsaac-Cartpole-Directphysics=isaacsim_physx# Play a policyuvrunisaaclabplay--rl_libraryrsl_rl--taskIsaac-Cartpole-Direct--viznewton_gl
+    For direct Python commands that import Isaac Sim on aarch64, prefix the
+    Enable Windows long-path support before cloning. In an elevated PowerShell window, run:
+    powershell -ExecutionPolicy ByPass -c"irm https://astral.sh/uv/install.ps1 | iex"
+    :: Newton backend without Isaac Simuv run isaaclab train --rl_library rsl_rl^--task Isaac-Cartpole-Direct physics=newton_mjwarp:: OV PhysX backenduv run --extra ovphysx isaaclab train --rl_library rsl_rl^--task Isaac-Cartpole-Direct physics=ovphysx:: Full Isaac Sim supportuv run --extra isaacsim isaaclab train --rl_library rsl_rl^--task Isaac-Cartpole-Direct physics=isaacsim_physx:: Play a policyuv run isaaclab play --rl_library rsl_rl --task Isaac-Cartpole-Direct --viz newton_gl
+    The source checkout selects PyTorch’s CUDA 13.0 build on Linux x86_64, Linux aarch64, and Windows.
+    No additional command flags are needed.
+    The aggregate wheel pins the PyTorch versions using registry-compatible metadata. Its published-wheel
+    commands select the CUDA 13.0 build at install time. The wheel supports Python 3.12, matching the source
+    Kit-less installation uses a Python 3.12 environment and does not install Isaac Sim. Clone Isaac
+    uvvenv--python3.12--seedenv_isaaclabsourceenv_isaaclab/bin/activate
+    uv venv --python 3.12 --seed env_isaaclab
+    condacreate-nenv_isaaclabpython=3.12
+    conda create -n env_isaaclab python=3.12
+    python -m pip install --upgrade pip
+    Teleoperation tools (Linux x86_64).
+    OV runtime wheels. Select
+    Python environment with Isaac Sim#
+    Use this path when you want an editable Isaac Lab checkout with full Isaac Sim support and a
+    Python environment you manage yourself. Create and activate the environment before installing
+- Compare 摘要: interactive-demos -> v3.0.0
+  - commits: 617
+  - files changed: 300+ returned files (GitHub compare API file list cap)
+  - additions: 13905
+  - deletions: 1446
+  - top directories: .agents, .dockerignore, .github, .gitignore, .vscode, AGENTS.md
+  - representative files:
+    - docs/licenses/dependencies/cuda-toolkit-license.txt (added, +1568/-0)
+    - .github/scripts/resolve_backport_conflicts.py (added, +425/-0)
+    - docs/licenses/assets/galbot-one-charlie-license.txt (added, +395/-0)
+    - .github/workflows/backport-release-3.0.yml (added, +390/-0)
+    - docs/licenses/assets/unitree-isaac-sim-license.txt (added, +373/-0)
+    - .github/actions/_lib/test_registry_credential_fallback.py (added, +330/-0)
+    - .github/workflows/daily-compatibility.yml (removed, +0/-308)
+    - .github/scripts/backport.py (added, +276/-0)
 
 ### interactive-demos
 - 标题: Interactive browser demos
@@ -397,54 +532,8 @@ The new `isaaclab_newton` extension enables running Isaac Lab environments **wit
 - CUDA graph support for high-thro...
 - 外链文档摘录:
   - https://isaac-sim.github.io/IsaacLab/develop/source/migration/migrating_to_isaaclab_3-0.html
-    Migrating To 3.0 — Isaac Lab Documentation
-    Choose the path that matches the code you are starting from. The Isaac Lab 2.x path is organized in
-    the order most projects should migrate: install the new release, configure a backend, update task APIs,
-    Migration from Isaac Lab 2.x to 3.0– update an existing
-    Isaac Lab project for the new installation, APIs, and multi-backend architecture.
-    Migration from Isaac Gym and IsaacGymEnvs– port an Isaac Gym
-    Migration of deformables– move from the old soft-body API to
-    Migration from Isaac Lab 2.x to 3.0
-    Isaac Lab 3.0 separates backend-specific simulation code from the core API and introduces unified
-    When you change it, update the skill so agent guidance stays in sync. SeeAgent Skills.
-    Start from a fresh Isaac Lab 3.0 checkout. uv is the only supported installation method;
-    create a new environment instead of upgrading an existing 2.x environment.
-    Isaac Lab 3.0 removes
-    for full Isaac Sim support. SeeAutomatic setup with uv (recommended)for platform-specific
-    use a preset when an environment supports multiple backends.
-    Isaac Lab 3.0 introduces afactory-based multi-backend architecturethat allows asset classes
-    fromisaaclab.assetsimportArticulation,ArticulationCfg# The factory pattern creates the appropriate backend implementation.# No import changes are needed — the same isaaclab imports work regardless of backend.robot=Articulation(cfg=ArticulationCfg(...))
-    seeBackend architecture. To add a new backend, seeAdd a Physics Backend.
-    ``isaaclab_physx``— PhysX-specific implementations of asset and sensor classes.
-    ``isaaclab_newton``— Newton-specific implementations of supported asset classes, including
-    Deformable object public APIs remain in the backend-neutral
-    extension is installed automatically with Isaac Lab. No additional
-    The following sensor classes also remain in the
-    package with unchanged imports:
-    These sensor classes now use factory patterns that automatically instantiate the appropriate backend
-    sensor in Isaac Lab 3.0 isnotthe same as the
-    sensor in 2.x.
-    (full state sensor) has been renamed to
-    is a lightweight sensor that only provides angular velocity
-    and linear acceleration. SeeIMU Sensor Renamed to PVA; New Lightweight IMU Sensorbelow for details.
-    If you need to import the PhysX sensor implementations directly (e.g., for type hints or subclassing),
-    # Direct PhysX implementation importsfromisaaclab_physx.sensorsimportContactSensor,ContactSensorDatafromisaaclab_physx.sensorsimportImu,ImuDatafromisaaclab_physx.sensorsimportPva,PvaDatafromisaaclab_physx.sensorsimportFrameTransformer,FrameTransformerDatafromisaaclab_physx.sensorsimportJointWrenchSensor,JointWrenchSensorData
-    ensuring a consistent API across backends. They use the same warp-based data conventions
-    In Isaac Lab 3.0, the spawner schema cfg classes are split into solver-commonbase classes(in
-    the same asset cfg portable across PhysX and Newton backends, and adds slots
-    now deprecated in favor of schema fragments, and will be removed in 3.2. Read
-    this subsection to understand where a 2.x name went, then migrate to the
-    The following 2.x class names are kept as deprecated aliases. They forward to
-    the new location and will be removed in 3.2.
-    Existing 2.x code continues to work via the deprecation aliases (with a
-    ; removed in 3.2):
-    # Isaac Lab 2.ximportisaaclab.simassim_utilsrigid_props=sim_utils.RigidBodyPropertiesCfg(disable_gravity=True,linear_damping=0.1)
-    Recommended 3.0 pattern when targeting PhysX:
-    # Isaac Lab 3.0 — PhysX backendfromisaaclab_physx.sim.schemasimportPhysxRigidBodyPropertiesCfgrigid_props=PhysxRigidBodyPropertiesCfg(disable_gravity=True,linear_damping=0.1)
-    Backend-portable 3.0 pattern (universal-physics fields only):
-    # Isaac Lab 3.0 — backend-portablefromisaaclab.sim.schemasimportRigidBodyBaseCfgrigid_props=RigidBodyBaseCfg(rigid_body_enabled=True,disable_gravity=True)
-    USD camelCase attribute names. The old names remain as deprecated dataclass
-    scheduled for removal in 4.0.
+    Page moved
+    This page moved tosource/isaaclab/migrating.
 - Compare 摘要: v2.3.2 -> v3.0.0-beta
   - commits: 309
   - files changed: 300+ returned files (GitHub compare API file list cap)

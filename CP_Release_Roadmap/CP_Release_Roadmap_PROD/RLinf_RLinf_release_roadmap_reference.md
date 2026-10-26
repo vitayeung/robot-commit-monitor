@@ -4,30 +4,114 @@
 - 对应主报告: `RLinf_RLinf_release_roadmap.md`
 - 统计窗口: 最近一年
 - 生成策略: GitHub release body + 外链文档摘录 + 相邻 release tag 的 GitHub compare 摘要 + tagged README/docs/examples/configs/高信号源码证据
-- 版本总数: 3
-- 正式版数量: 3
+- 版本总数: 4
+- 正式版数量: 4
 - 预发布版数量: 0
-- 外链文档覆盖版本数: 3
-- compare 摘要覆盖版本数: 2
-- 最新版本: v0.3 (2026-07-15 21:33:16 CST)
+- 外链文档覆盖版本数: 4
+- compare 摘要覆盖版本数: 3
+- 最新版本: v0.4 (2026-10-20 18:46:17 CST)
 - 最早纳入统计版本: v0.1 (2025-12-17 20:01:25 CST)
 
 ## 分析策略决策
 - 请求模式: `auto`
 - 最终策略: `L2: Source-enhanced`
 - 证据充分性评分: 1/6
-- 触发规则: release_count_low
+- 触发规则: migration_risk_high
 - 决策说明:
   - 仓库最近一年 release 偏少，且高价值产品信息大量分布在 README/docs/源码信号里，默认启用源码增强。
-  - 证据充分性评分 1/6，触发规则: release_count_low。
+  - 证据充分性评分 1/6，触发规则: migration_risk_high。
   - 因此主脚本自动升级为 L2，补充 tagged README/docs/examples/configs/高信号源码证据。
 
 ## Release 时间线
+- 2026-10-20 18:46:17 CST | v0.4 | 正式版
 - 2026-07-15 21:33:16 CST | v0.3 | 正式版
 - 2026-03-26 23:06:12 CST | v0.2 | 正式版
 - 2025-12-17 20:01:25 CST | v0.1 | 正式版
 
 ## 证据附录
+
+### v0.4
+- 标题: RLinf v0.4 Release
+- 类型: 正式版
+- 发布时间: 2026-10-20 18:46:17 CST
+- 链接: https://github.com/RLinf/RLinf/releases/tag/v0.4
+- GitHub release body:
+🚀 RLinf v0.4 is here. Reinforcement learning steps out of simulation and into agile control of the physical world.
+
+v0.3 connected the path from simulation to real robots. v0.4 is the step toward deploying embodied RL at real-world scale. The release rebuilds the stack around three pillars: a modular real-robot system, high-efficiency real-robot algorithms, and full-modality models on a heterogeneous compute base.
+
+- 🧩 **Modular real-robot system** (`rlinf.robotics`): arms, dexterous hands, cameras, mobile bases, and teleoperation devices become composable blocks. Hardware drivers are fully decoupled from task logic, so changing a robot body, a configuration, or a cross-node deployment does not require changes to task or policy code.
+- ⚡ **Real-robot SOTA post-training**: representation-decoupled online RL (RLT), label-free self-supervised offline RL (STEAM), on-policy distillation (OPD) that reaches 96%+ success in 30 steps, and asynchronous real-time control (RTC) that compresses inference wait to about 2 ms. Together they address expensive real-robot samples, costly labels, and inference stutter.
+- 🌐 **Full-modality models**: a PyTorch-native OpenPI (π₀ / π₀.₅) rewritten to match official JAX numerics operator by operator; NVIDIA Cosmos3, FastWAM, π₀-FAST, Evo-1, and MolmoAct2; and the first extension of RL to SD3 / Wan2.2 visual generation.
+- 🤝 **Eight accelerator backends and the open ecosystem**: Kunlunxin, Biren, MetaX, and Intel XPU join the stack. Huawei Ascend and Moore Threads reach up to 2.78× throughput, with convergence aligned to A100. RLinf joins the PyTorch Ecosystem, ships as the RL training engine in NVIDIA Isaac Lab v3.0, and publishes joint practices with SGLang and AMD.
+
+Training and evaluation recipes covered by this release are validated for c...
+- 外链文档摘录:
+  - https://rlinf.readthedocs.io/en/latest/rst_source/concepts/robotics.html
+    complete call sequence, then shows how stable part paths support composition and
+    unchanged, a backend or placement can change without changing the caller.
+    robot, select any parts needed for setup, connect and exchange data, then release
+    fromrlinf.roboticsimportArm,Camera,build_robotrobot=build_robot("Franka",robot_ip="10.0.0.1",node_rank=1)# Safe before the robot is powered or reachable.print(robot.describe())arm=robot.child("arm",Arm)cameras=robot.parts_of_type(Camera)robot.connect()try:ifnotarm.is_robot_up():raiseRuntimeError("The arm is connected but not ready.")ifnotall(camera.is_ready()forcameraincameras.values()):raiseRuntimeError("A camera is not delivering frames.")observation=robot.get_observation()tcp_pose=observation["arm"]["tcp_pose"]gripper_state=observation["end_effector"]["state"]applied=robot.send_action({"arm":{"tcp_pose":target},"end_effector":{"target":width},})finally:robot.disconnect()
+    The lifecycle is the same for every robot. What changes between robots is the
+    ├── arm           FrankaROSArm         node=1     via FrankaROSArm#1
+    └── end_effector  FrankaGripper        node=1     via FrankaGripper#2
+    top-level names therefore address two independently managed parts.
+    SO-101 represents the other case. Its five arm joints and gripper use one servo
+    └── arm               SO101Arm             node=0     via SO101Arm#1
+    └── end_effector  MethodEndEffector    node=0     via SO101Arm#1
+    The nested action is not a second API: it is the same
+    children appear below it automatically, which is why the SO-101 gripper is
+    adds one more named level. A dual-arm robot can therefore place
+    There are no fixed
+    placement change without reaching task code.
+    actors, RPCs, serial ports, or vendor sessions. Moving a connection changes its
+    and placement, while a task can change its policy-facing schema without changing
+    Continue from the boundary you need to change:
+    To add a task on supported physical hardware, continue withNew Real-World Tasks.
+    To add one local sensor or actuator, continue withAdding a Robot.
+  - https://rlinf.readthedocs.io/en/latest/rst_source/concepts/robotics_architecture.html
+    adds it directly to the public
+    interchangeable. They separate as soon as one hardware session backs several
+    Device categories add operations that callers can rely on across backends.
+    reports readiness, clears errors, and supports a named joint-reset
+    Resolving a class is enough for a direct constructor. A family adds a builder
+    Each driver owns its registration; adding a transport needs no brand table in
+    and adds finger labels to diagnostic state. Both flags default
+    importnumpyasnpfromrlinf.roboticsimportFrankaRobotfromrlinf.robotics.parts.end_effectorsimportEndEffector,RuiyanHand@EndEffector.register("gentle_tool")classGentleHand(RuiyanHand):"""Ruiyan hand with a lower default motor current."""def__init__(self,**settings):super().__init__(**{"default_current":400,**settings})robot=FrankaRobot.build(robot_ip="172.16.0.2",node_rank=0,end_effector_type="gentle_tool",end_effector_config={"port":"/dev/ttyUSB0"},)try:robot.connect()tool=robot.child("end_effector",EndEffector)target=np.full(tool.action_dim,0.5,dtype=np.float32)robot.send_action({"end_effector":{"target":target}})positions=robot.get_observation()["end_effector"]["state"]finally:robot.disconnect()
+    A driver that supports hardware enumeration can also declare its vendor module
+    connection=ExampleArm("10.0.0.2",node_rank=1,worker_name="ExampleArm-0-0",)robot=Robot(arm=connection)robot.children# {"arm": <ExampleArm>}robot.child("arm").children# {"end_effector": <MethodEndEffector>}robot.get_observation()["arm"]# the arm's fields, plus "end_effector"
+    backs. A coupled Turtle2 controller follows that form:
+    ROS 1 is the case that shows up here: a process gets one node, so an arm and a
+    has no supported way to bring a node back up
+    already opened adds subscriptions rather than competing for anything. These
+    adds a node to that owner without changing the part path or category seen by a
+    class changes while it is connected. Task code therefore never branches on
+    one machine. That is exactly right when they address different endpoints, which
+    ports. It goes wrong when two parts address the same endpoint, and the failure
+    ├── arm           FrankaROSArm         node=1     via FrankaROSArm#1
+    └── end_effector  FrankaGripper        node=1     via FrankaGripper#2
+    inAdding a Robotto validate those schemas after opening the
+    The matched pair handles normal shutdown. Partial failure adds one boundary:
+    to close in that case. After fixing the hardware, you can call
+    them: Franky, Franka ROS, GimArm, SO-101, Piper, and the coupled
+    category and mobile-platform drivers.
+    Adding a Robotapplies these pieces in order.
+    bindings on the environment side.
+- Compare 摘要: v0.3 -> v0.4
+  - commits: 174
+  - files changed: 300+ returned files (GitHub compare API file list cap)
+  - additions: 11315
+  - deletions: 5409
+  - top directories: .agents, .claude, .codex, .cursor, .dockerignore, .github
+  - representative files:
+    - docs/source-en/rst_source/examples/embodied/franka.rst (modified, +670/-483)
+    - .agents/skills/create-pr/lint_pr.py (added, +998/-0)
+    - .github/workflows/embodied-e2e-tests.yml (modified, +819/-71)
+    - docs/source-en/rst_source/concepts/robotics_architecture.rst (added, +735/-0)
+    - docs/source-en/rst_source/examples/embodied/dual_franka_pico_dagger.rst (added, +653/-0)
+    - docs/source-en/rst_source/examples/embodied/dual_franka_openpi_pytorch.rst (added, +555/-0)
+    - .codex/skills/test-install/driver.py (removed, +0/-430)
+    - .cursor/skills/test-install/driver.py (removed, +0/-430)
 
 ### v0.3
 - 标题: RLinf v0.3 Release
@@ -278,10 +362,358 @@ Built on robust system-level scheduling and communication components, RLinf is a
 - 外链文档摘录:
   - https://github.com/RLinf/RLinf/tree/release/v0.1/examples/embodiment
     RLinf/examples/embodiment at release/v0.1 · RLinf/RLinf · GitHub
-    - NotificationsYou must be signed in to change notification settings
-    - Fork602
 
 # Tagged Repository Source Evidence
+
+## v0.4
+- README / repo positioning excerpt:
+<div align="center">
+<img src="https://github.com/RLinf/misc/raw/main/pic/logo_white.svg" alt="RLinf-logo" width="600"/>
+</div>
+<div align="center">
+<a href="https://arxiv.org/abs/2509.15965"><img src="https://img.shields.io/badge/arXiv-Paper-red?logo=arxiv"></a>
+<a href="https://huggingface.co/RLinf"><img src="https://img.shields.io/badge/HuggingFace-yellow?logo=huggingface&logoColor=white" alt="Hugging Face"></a>
+<a href="https://rlinf.readthedocs.io/en/latest/"><img src="https://img.shields.io/badge/Documentation-Purple?color=8A2BE2&logo=readthedocs"></a>
+<a href="https://rlinf.readthedocs.io/zh-cn/latest/"><img src="https://img.shields.io/badge/中文文档-red?logo=readthedocs"></a>
+<a href="https://deepwiki.com/RLinf/RLinf"><img src="https://img.shields.io/badge/Ask%20DeepWiki-1DA1F2?logo=databricks&logoColor=white&color=00ADEF" alt="Ask DeepWiki"></a>
+<a href="https://github.com/RLinf/misc/blob/main/pic/wechat.jpg?raw=true"><img src="https://img.shields.io/badge/WeChat%20Group-green?logo=wechat&amp"></a>
+[![English](https://img.shields.io/badge/lang-English-blue.svg)](README.md)
+[![简体中文](https://img.shields.io/badge/语言-简体中文-red.svg)](README.zh-CN.md)
+<h1 align="center">
+<sub>RLinf: Reinforcement Learning Infrastructure for Embodied and Agentic AI</sub>
+</h1>
+RLinf is a flexible and scalable open-source RL infrastructure designed for Embodied and Agentic AI. The 'inf' in RLinf stands for `Infrastructure`, highlighting its role as a robust backbone for next-generation training. It also stands for `Infinite`, symbolizing the system’s support for open-ended learning, continuous generalization, and limitless possibilities in intelligence development.
+## What's NEW!
+- [2026/09] 🔥 RLinf supports ApxInf-accelerated evaluation of π₀.₅ on LIBERO. RLinf keeps the native OpenPI t...
+- High-signal repository paths at this tag:
+  - docs/README.md
+  - docs/source-en/rst_source/examples/sft_index.rst
+  - docs/source-zh/rst_source/examples/sft_index.rst
+  - docs/source-en/rst_source/examples/real_world_index.rst
+  - docs/source-zh/rst_source/examples/real_world_index.rst
+  - docs/assistant/README.md
+  - examples/sft/train_vla_sft.py
+  - examples/sft/train_vlm_sft.py
+  - examples/embodiment/collect_real_data.py
+  - examples/reward/eval_realworld_teleop.py
+  - examples/reward/realworld_collect_process_dataset.py
+  - docs/source-en/rst_source/examples/embodied/franka.rst
+- Changed high-signal files against previous included release:
+  - [M] docs/source-en/rst_source/examples/real_world_index.rst
+    Excerpt:
+    RL with Real-World Robots
+    =========================
+    Use this section when your starting point is physical robot hardware. Start with Franka if you use a Franka arm or a Franka-based rig; use the other robot pages for GimArm, XSquare Turtle2, Dexmal DOS-W1, AgileX Piper, and SO101.
+    Choose a guide for hardware checks, teleoperation, data collection, sim-to-real transfer, deployment, or online RL.
+    .. raw:: html
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: flex-start; justify-items: center; max-width: 980px; margin: 0 auto;">
+    <div style="flex: 1 1 30%; max-width: 300px; text-align: center;">
+    <a href="embodied/franka_index.html" style="display: block;"><img src="https://raw.githubusercontent.com/RLinf/misc/main/pic/franka_arm_small.jpg"
+    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" /></a>
+    <p style="margin-top: 8px; font-size: 14px; line-height: 1.4;">
+    <a href="embodied/franka_index.html" style="text-decoration: underline; color: blue;">
+    <b>Single-Arm Franka</b>
+    Use the single-arm Franka section for real-world RL, reward models, data collection, dexterous hands, SFT, and deployment
+    <div style="flex: 1 1 30%; max-width: 300px; text-align: center;">
+    <a href="embodied/dual_franka_index.html" style="display: block;"><img src="https://raw.githubusercontent.com/RLinf/misc/main/pic/dual-franka.jpg"
+    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" /></a>
+    <p style="margin-top: 8px; font-size: 14px; line-height: 1.4;">
+    <a href="embodied/dual_franka_index.html" style="text-decoration: underline; color: blue;">
+    <b>Dual-Arm Franka</b>
+    Use the dual-arm Franka section for collection, SFT, deployment,...
+  - [M] docs/source-en/rst_source/examples/sft_index.rst
+    Excerpt:
+    SFT for VLA / WAM Models
+    ========================
+    Supervised fine-tuning (SFT) is the standard cold-start step before embodied RL: a strong SFT checkpoint dramatically reduces RL exploration time and improves final policy quality. This category lists RLinf's recipes for full-parameter and LoRA SFT on VLA / WAM models, plus VLM SFT for multimodal post-training.
+    After running SFT here, continue to :doc:`vla_wam_index` (model-centric RL) or :doc:`simulators_index` (benchmark-centric RL) to fine-tune the resulting checkpoint with RL.
+    .. raw:: html
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: flex-start; justify-items: center; max-width: 980px; margin: 0 auto;">
+    <div style="flex: 1 1 30%; max-width: 300px; text-align: center;">
+    <!-- TODO(thumbnail): replace placeholder cover image URL for sft_openpi -->
+    <a href="embodied/sft_openpi.html" style="display: block;"><img src="https://raw.githubusercontent.com/RLinf/misc/main/pic/pi0_icon.jpg"
+    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" /></a>
+    <p style="margin-top: 8px; font-size: 14px; line-height: 1.4;">
+    <a href="embodied/sft_openpi.html" style="text-decoration: underline; color: blue;">
+    Run full-parameter and LoRA SFT for OpenPI before RL fine-tuning
+    <div style="flex: 1 1 30%; max-width: 300px; text-align: center;">
+    <a href="embodied/sft_dreamzero.html" style="display: block;"><img src="https://dreamzero0.github.io/images/project_overview.png"
+    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" /></a>
+    <p style="margin-top: 8px; font-size: 14px; line-height: 1.4;">
+    <a href="embodied/sft_dreamzero.html" style="text-decoration: underline; co...
+  - [M] docs/source-zh/rst_source/examples/real_world_index.rst
+    Excerpt:
+    真实机器人强化学习
+    ========================================
+    按机器人硬件选择配置与使用指南。Franka 机械臂及其组合设备请从 Franka 页面开始；GimArm、XSquare Turtle2、Dexmal DOS-W1、AgileX Piper 和 SO101 请进入对应页面。
+    根据硬件检查、遥操作、数据采集、Sim-to-Real 迁移、部署或在线 RL 的需求，选择相应指南。
+    .. raw:: html
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: flex-start; justify-items: center; max-width: 980px; margin: 0 auto;">
+    <div style="flex: 1 1 30%; max-width: 300px; text-align: center;">
+    <a href="embodied/franka_index.html" style="display: block;"><img src="https://raw.githubusercontent.com/RLinf/misc/main/pic/franka_arm_small.jpg"
+    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" /></a>
+    <p style="margin-top: 8px; font-size: 14px; line-height: 1.4;">
+    <a href="embodied/franka_index.html" style="text-decoration: underline; color: blue;">
+    <b>单臂 Franka</b>
+    查看单臂 Franka 的真机强化学习、遥操作与数据采集、奖励模型、灵巧手、SFT 和部署指南
+    <div style="flex: 1 1 30%; max-width: 300px; text-align: center;">
+    <a href="embodied/dual_franka_index.html" style="display: block;"><img src="https://raw.githubusercontent.com/RLinf/misc/main/pic/dual-franka.jpg"
+    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" /></a>
+    <p style="margin-top: 8px; font-size: 14px; line-height: 1.4;">
+    <a href="embodied/dual_franka_index.html" style="text-decoration: underline; color: blue;">
+    <b>双臂 Franka</b>
+    查看双臂 Franka 的数据采集、SFT、部署与 PICO 辅助 HG-DAgger 指南
+    <div style="flex: 1 1 30%; max-width: 300px; text-align: center;">
+    <a href="embodied/gim_arm.html" style="display: block;"><img src="https://raw.githubusercontent.com/RLinf/misc/main/pic/gim-arm.png"
+    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow:...
+  - [M] docs/source-zh/rst_source/examples/sft_index.rst
+    Excerpt:
+    VLA / WAM 模型监督微调
+    ========================================
+    监督微调（SFT）是具身强化学习的标准冷启动步骤：一个良好的 SFT 检查点能显著缩短 RL 探索时间并提升最终策略效果。本类示例汇总了 RLinf 在 VLA / WAM 模型上的全量与 LoRA SFT 配方，以及面向多模态后训练的 VLM SFT。
+    完成本节的 SFT 后，可继续阅读 :doc:`vla_wam_index`\ （以模型为主线的 RL 微调）或 :doc:`simulators_index`\ （以基准为主线的 RL 微调）以进一步用 RL 提升所得检查点。
+    .. raw:: html
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: flex-start; justify-items: center; max-width: 980px; margin: 0 auto;">
+    <div style="flex: 1 1 30%; max-width: 300px; text-align: center;">
+    <!-- TODO(thumbnail): replace placeholder cover image URL for sft_openpi -->
+    <a href="embodied/sft_openpi.html" style="display: block;"><img src="https://raw.githubusercontent.com/RLinf/misc/main/pic/pi0_icon.jpg"
+    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" /></a>
+    <p style="margin-top: 8px; font-size: 14px; line-height: 1.4;">
+    <a href="embodied/sft_openpi.html" style="text-decoration: underline; color: blue;">
+    支持 OpenPI 全量 SFT 与 LoRA 微调，作为强化学习前置阶段
+    <div style="flex: 1 1 30%; max-width: 300px; text-align: center;">
+    <a href="embodied/sft_dreamzero.html" style="display: block;"><img src="https://dreamzero0.github.io/images/project_overview.png"
+    style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" /></a>
+    <p style="margin-top: 8px; font-size: 14px; line-height: 1.4;">
+    <a href="embodied/sft_dreamzero.html" style="text-decoration: underline; color: blue;">
+    面向 DreamZero 的全量与 mixture SFT（WAN2.1 / WAN2.2 主干）
+    <div style="flex: 1 1 30%; max-width: 300px; text-align: center;">
+    <a href="embodied/sft_fastwam.html" style="display: block;"><img src="https://yuantianyuan01.github.io/FastWAM/static/images/teaser_...
+  - [M] docs/source-en/rst_source/examples/embodied/dual_franka.rst
+    Excerpt:
+    Using Dual Franka
+    =================
+    .. figure:: https://raw.githubusercontent.com/RLinf/misc/main/pic/dual-franka-deploy.jpg
+    :align: center
+    :width: 80%
+    :alt: Dual-Franka deployment
+    Dual-Franka data collection, fine-tuning, and deployment workflow.
+    Run the supported dual-Franka workflow: collect joint-space demonstrations with GELLO, convert them to tcp_rot6d data, fine-tune OpenPI π₀.₅, and deploy the checkpoint back to the robot nodes.
+    Build a dual-arm dataset, train π₀.₅, and deploy on a two-node Franka rig.
+    .. grid:: 2 4 4 4
+    :gutter: 2
+    OpenPI π₀.₅
+    SFT · eval-only deployment
+    2× Franka · 2 robot nodes · GELLO
+    | **You'll do:** install franky deps → collect GELLO demos → convert rot6d data → run SFT → deploy eval config.
+    | **Prerequisites:** :doc:`franka` · :doc:`franka_gello` · two Franka arms · OpenPI assets.
+    :header-rows: 1
+    :widths: 24 24 24
+    - Config / entry point
+    - Description
+    - ``realworld_collect_data_gello_joint_dual_franka``
+    - Collect dual-arm joint trajectories.
+    * - SFT
+    - ``realworld_sft_openpi_dual_franka_tcp_rot6d``
+    - Fine-tune π₀.₅ on tcp_rot6d actions.
+    - ``realworld_eval_dual_franka``
+    - Run eval-only deployment on the robot nodes.
+    :header-rows: 1
+    :widths: 24 24
+    - Description
+    - Wrist/global camera views plus dual-arm robot state.
+    - Dual-arm tcp_rot6d: ``[L_xyz, L_rot6d, L_grip, R_xyz, R_rot6d, R_grip]``.
+    - Evaluation success signal or operator-gated deployment outcome.
+    - Task text in the OpenPI data/config metadata.
+    Robot Nodes
+    Run the robot-node installation on both ``node 0`` and ``node 1``. Dual-arm
+    Franka always drives the arms through Franky, the backend that the default
+    ``franka`` environment installs. The installer downloads a prebuilt Franky wheel
+    with libfranka bundled; these wheels exist only for libfranka ``0.15.0`` and
+    ``0.19.0`` (the default)...
+  - [A] docs/source-en/rst_source/examples/embodied/dual_franka_index.rst
+    Excerpt:
+    Dual-Arm Franka
+    ===============
+    .. figure:: https://raw.githubusercontent.com/RLinf/misc/main/pic/dual-franka.jpg
+    :align: center
+    :width: 80%
+    :alt: Dual-Arm Franka
+    Dual-Franka robot platform.
+    This section collects RLinf workflows for dual-Franka data collection,
+    .. grid:: 1 2 3 3
+    :gutter: 3
+    .. grid-item-card:: Collection / SFT / Deployment
+    :link: dual_franka
+    :link: dual_franka_pico_dagger
+    .. grid-item-card:: Collection / SFT / Deployment (OpenPI PyTorch)
+    :link: dual_franka_openpi_pytorch
+    Fine-tune and deploy a dual-Franka policy with OpenPI PyTorch.
+    :maxdepth: 1
+    Collection / SFT / Deployment <dual_franka>
+    VR HG-DAgger <dual_franka_pico_dagger>
+    Collection / SFT / Deployment (OpenPI PyTorch) <dual_franka_openpi_pytorch>
+  - [A] docs/source-en/rst_source/examples/embodied/dual_franka_openpi_pytorch.rst
+    Excerpt:
+    Using Dual Franka with OpenPI PyTorch
+    =====================================
+    .. figure:: https://raw.githubusercontent.com/RLinf/misc/main/pic/dual-franka-deploy-rlinf.jpg
+    :align: center
+    :width: 80%
+    :alt: RLinf PyTorch dual-Franka deployment
+    Fine-tune and deploy a dual-Franka policy with RLinf PyTorch.
+    Run the supported dual-Franka workflow: collect joint-space demonstrations with GELLO, convert them to tcp_rot6d data, fine-tune OpenPI π₀.₅, and deploy the checkpoint back to the robot nodes.
+    Build a dual-arm dataset, train π₀.₅, and deploy on a two-node Franka rig.
+    .. grid:: 2 4 4 4
+    :gutter: 2
+    OpenPI π₀.₅
+    SFT · eval-only deployment
+    2× Franka · 2 robot nodes · GELLO
+    | **You'll do:** install franky deps → collect GELLO demos → convert rot6d data → run SFT → deploy eval config.
+    | **Prerequisites:** :doc:`franka` · :doc:`franka_gello` · two Franka arms · OpenPI assets.
+    :header-rows: 1
+    :widths: 24 24 24
+    - Config / entry point
+    - Description
+    - ``realworld_collect_data_gello_joint_dual_franka``
+    - Collect dual-arm joint trajectories.
+    * - SFT
+    - ``realworld_sft_openpi_dual_franka_tcp_rot6d``
+    - Fine-tune π₀.₅ on tcp_rot6d actions.
+    - ``realworld_eval_dual_franka``
+    - Run eval-only deployment on the robot nodes.
+    :header-rows: 1
+    :widths: 24 24
+    - Description
+    - Wrist/global camera views plus dual-arm robot state.
+    - Dual-arm tcp_rot6d: ``[L_xyz, L_rot6d, L_grip, R_xyz, R_rot6d, R_grip]``.
+    - Evaluation success signal or operator-gated deployment outcome.
+    - Task text in the OpenPI data/config metadata.
+    Robot Nodes
+    Run the robot-node installation on both ``node 0`` and ``node 1``. Dual-arm
+    Franka always drives the arms through Franky, the backend that the default
+    ``franka`` environment installs. The installer downloads a prebuilt Franky wheel
+    with libfranka bundled; these wheels exist only...
+  - [A] docs/source-en/rst_source/examples/embodied/dual_franka_pico_dagger.rst
+    Excerpt:
+    .. _dual-franka-pico-dagger-en:
+    Dual Franka PICO Collection and DAgger
+    ======================================
+    .. figure:: https://raw.githubusercontent.com/RLinf/misc/main/pic/dual-franka-vr.jpg
+    :align: center
+    :width: 80%
+    :alt: Dual-Franka VR teleoperation
+    Collect dual-Franka teleoperation data with VR / PICO.
+    This guide explains how to use PICO to collect demonstrations in the dual-Franka
+    TCP-rot6d environment, then run online Human-Gated DAgger with PICO human
+    with :doc:`dual_franka`; for the PICO / XRoboToolkit data publishing pipeline,
+    see :doc:`franka_vr`; for the single-arm HG-DAgger workflow, see
+    Use the left and right PICO controllers to control the two Franka arms. First
+    collect tcp_rot6d LeRobot data, then prepare the OpenPI π₀.₅ student checkpoint
+    by following :doc:`dual_franka`, and finally launch online HG-DAgger on the real
+    robot.
+    .. grid:: 2 4 4 4
+    :gutter: 2
+    OpenPI π₀.₅
+    SFT · HG-DAgger
+    2× Franka · PICO · 3 cameras
+    | **You'll do:** start the PICO publisher → collect dual-arm tcp_rot6d demos → reuse the dual-arm SFT checkpoint flow → run online HG-DAgger.
+    | **Prerequisites:** :doc:`dual_franka` · :doc:`franka_vr` · OpenPI π₀.₅ checkpoint · Ray cluster.
+    :header-rows: 1
+    :widths: 24 30 46
+    - Config / entry point
+    - Description
+    - ``vr_data_publisher``
+    - Publish headset, controller, and button data from PICO / XRoboToolkit.
+    - ``realworld_dual_franka_collect_data_pico``
+    - Collect tcp_rot6d LeRobot data with two-hand PICO teleoperation.
+    - ``realworld_dual_franka_dagger_openpi``
+    - Let the policy act autonomously with per-arm PICO intervention, archive complete successful trajectories, and train on fully intervened action chunks.
+    :header-rows: 1
+    :widths: 24 24
+    - Description
+    - Left wrist, right wrist, and global camera views plus dual-arm TCP / gripper state.
+    - Dual...
+  - [M] docs/source-en/rst_source/examples/embodied/franka.rst
+    Excerpt:
+    Real-World RL with Franka
+    ============================
+    This page walks you through training a CNN policy on a Franka arm with RLinf,
+    from demonstration collection to online RLPD training. The default setup uses
+    one x86-64 computer with an NVIDIA GPU running Ubuntu 20.04 or 22.04. Franky
+    controls the arm through Python bindings to libfranka, and the same computer
+    runs rollout and training. You first prepare that host
+    (firmware check, real-time kernel, GPU driver for that kernel), install RLinf
+    natively or with Docker, then run the peg-insertion example. The later sections cover a
+    other Franka workflows.
+    .. figure:: https://raw.githubusercontent.com/RLinf/misc/main/pic/franka_arm_small.jpg
+    :width: 80%
+    :alt: Franka arm used for real-world reinforcement learning
+    Franka arm used for real-world reinforcement learning.
+    The policy learns from camera images and robot state. Successful demonstrations
+    .. grid:: 2 4 4 4
+    :gutter: 2
+    Franka · RealSense · NVIDIA GPU
+    :header-rows: 1
+    :widths: 20 40 40
+    - Config
+    - Description
+    - ``realworld_collect_data``, ``realworld_peginsertion_rlpd_cnn_async``
+    - Collect SpaceMouse demonstrations, then train asynchronously on
+    demonstrations and live robot experience. The SpaceMouse also provides
+    :header-rows: 1
+    :widths: 25 75
+    - Description
+    - RGB images from the first configured camera (``wrist_1``) and robot state.
+    - Six Cartesian position and rotation deltas; the gripper stays closed.
+    - Success when the end-effector pose reaches the configured target tolerance.
+    You need a Franka arm, a RealSense camera, a SpaceMouse, and an x86-64 computer
+    layout; the multi-node layout reuses its steps and is described in
+    `Multi-Node Setup`_.
+    :header-rows: 1
+    :widths: 20 45 35
+    - Machines
+    - When to use it
+    - One Ubuntu 20.04 or 22.04 GPU host runs Franky robot control,...
+  - [M] docs/source-en/rst_source/examples/embodied/franka_dexhand.rst
+    Excerpt:
+    Using Dexterous Hand with Franka
+    ================================
+    .. figure:: https://raw.githubusercontent.com/RLinf/misc/main/pic/dexhand.jpg
+    :align: center
+    :width: 80%
+    Franka arm paired with a Ruiyan five-finger dexterous hand for real-world manipulation.
+    Adapt the Franka real-world workflow to a Ruiyan five-finger dexterous hand. You'll keep the same cluster and reward-model flow, then change the end effector, teleoperation input, action layout, and dex-hand configs.
+    Overview
+    Run the Franka real-world recipe with a dexterous hand end effector.
+    .. grid:: 2 4 4 4
+    :gutter: 2
+    Franka · Ruiyan dex hand · glove
+    | **You'll do:** install Franka deps → install dex-hand deps → configure glove/hand → collect data → train.
+    | **Prerequisites:** :doc:`franka` · :doc:`franka_reward_model` · Ruiyan hand driver · glove device.
+    :header-rows: 1
+    :widths: 24 24 24
+    - Config / entry point
+    - Description
+    - ``realworld_collect_dexhand_data``
+    - Collect dexterous-hand demonstrations.
+    - ``realworld_dexpnp_rlpd_cnn_async``
+    - Train a CNN policy with dex-hand actions.
+    - Franka reward-model workflow
+    - Reuse the reward-model path for dexterous manipulation.
+    :header-rows: 1
+    :widths: 24 24
+    - Description
+    - Franka camera frames plus dex-hand/glove state when configured.
+    - Arm action plus dexterous-hand joint or command vector.
+    - Task completion or reward-model prediction.
+    - Task text from the real-world env config.
+    Install the base Franka dependencies from :doc:`franka`, then install the dexterous-hand runtime in the workflow below.
+    - SpaceMouse for 6-D arm motion
+    - a data glove for 6-D finger control
+    - the SpaceMouse left button to enable relative glove control
+    The reward-model path is the same as the Franka real-world reward-model workflow described in :doc:`franka_reward_model`.
+    - the default rewar...
 
 ## v0.3
 - README / repo positioning excerpt:
@@ -529,367 +961,4 @@ RLinf is a flexible and scalable open-source RL infrastructure designed for Embo
     | **You'll do:** install controller deps → collect demos → start Ray → launch real-world training → watch ``env/reward`` and videos.
     | **Prerequisites:** :doc:`Installation </rst_source/start/installation>` · Franka firmware/libfranka match · local network · safety operator.
     :header-rows: 1
-    :widths: 24 24 24
-    - Config / entry point
-    - Description
-    - ``realworld_peginsertion_rlpd_cnn_async``
-    - Insert a peg at a target end-effector pose.
-    - ``realworld_charger_sac_cnn_async``
-    - Align and insert a charger...
-  - [A] docs/source-en/rst_source/examples/embodied/franka_dexhand.rst
-    Excerpt:
-    Using Dexterous Hand with Franka
-    ================================
-    .. figure:: https://raw.githubusercontent.com/RLinf/misc/main/pic/dexhand.jpg
-    :align: center
-    :width: 80%
-    Franka arm paired with a Ruiyan five-finger dexterous hand for real-world manipulation.
-    Adapt the Franka real-world workflow to a Ruiyan five-finger dexterous hand. You'll keep the same cluster and reward-model flow, then change the end effector, teleoperation input, action layout, and dex-hand configs.
-    Overview
-    Run the Franka real-world recipe with a dexterous hand end effector.
-    .. grid:: 2 4 4 4
-    :gutter: 2
-    Franka · Ruiyan dex hand · glove
-    | **You'll do:** install Franka deps → install dex-hand deps → configure glove/hand → collect data → train.
-    | **Prerequisites:** :doc:`franka` · :doc:`franka_reward_model` · Ruiyan hand driver · glove device.
-    :header-rows: 1
-    :widths: 24 24 24
-    - Config / entry point
-    - Description
-    - ``realworld_collect_dexhand_data``
-    - Collect dexterous-hand demonstrations.
-    - ``realworld_dexpnp_rlpd_cnn_async``
-    - Train a CNN policy with dex-hand actions.
-    - Franka reward-model workflow
-    - Reuse the reward-model path for dexterous manipulation.
-    :header-rows: 1
-    :widths: 24 24
-    - Description
-    - Franka camera frames plus dex-hand/glove state when configured.
-    - Arm action plus dexterous-hand joint or command vector.
-    - Task completion or reward-model prediction.
-    - Task text from the real-world env config.
-    Install the base Franka dependencies from :doc:`franka`, then install the dexterous-hand runtime in the workflow below.
-    - SpaceMouse for 6-D arm motion
-    - a data glove for 6-D finger control
-    - the SpaceMouse left button to enable relative glove control
-    The reward-model path is the same as the Franka real-world reward-model workflow described in :doc:`franka_reward_model`.
-    - the default rewar...
-  - [A] docs/source-en/rst_source/examples/embodied/franka_gello.rst
-    Excerpt:
-    Using GELLO with Franka
-    =======================
-    .. figure:: https://raw.githubusercontent.com/RLinf/misc/main/pic/gello.jpeg
-    :align: center
-    :width: 80%
-    GELLO joint-level teleoperation device used to collect Franka demonstrations.
-    Use GELLO as a joint-level teleoperation device for Franka data collection. You'll install ``gello_teleop``, verify the serial device, update collection configs, and monitor saved episodes.
-    Overview
-    Collect Franka demonstrations with joint-level GELLO control instead of SpaceMouse.
-    .. grid:: 2 4 4 4
-    :gutter: 2
-    Teleop collection · SFT/RL downstream
-    Franka demonstration collection
-    Franka · GELLO · gripper
-    | **Prerequisites:** :doc:`franka` · GELLO hardware · Dynamixel permissions.
-    :header-rows: 1
-    :widths: 24 24 24
-    - Config / entry point
-    - Description
-    - ``gello_expert``
-    - Verify live joint and gripper readings.
-    - ``realworld_collect_data_gello``
-    - Save successful demonstrations from GELLO teleoperation.
-    - ``collect_monitor.py``
-    - Follow Ray worker collection progress from logs.
-    :header-rows: 1
-    :widths: 24 24
-    - Description
-    - Same camera/state layout as the target Franka collection config.
-    - GELLO joint readings converted to Franka target pose or joint action.
-    - Collection success flag or downstream task reward.
-    - Inherited from the downstream Franka task config.
-    1. ``gello`` — the low-level driver from `gello_software <https://github.com/wuphilipp/gello_software>`_.
-    2. ``gello-teleop`` — the forward-kinematics and teleoperation agent used by RLinf.
-    1. Install ``gello`` (gello_software)
-    large repository of robot MJCF assets used only by the upstream mujoco
-    ``gello-teleop`` which ships its own Franka MJCF, so the menagerie
-    inside the GELLO device. Without it, the ``GelloAgent`` will not be able
-    For additional hardware configuration (e.g. setting u...
-
-## v0.2
-- README / repo positioning excerpt:
-<div align="center">
-<img src="https://github.com/RLinf/misc/raw/main/pic/logo_white.svg" alt="RLinf-logo" width="600"/>
-</div>
-<div align="center">
-<a href="https://arxiv.org/abs/2509.15965"><img src="https://img.shields.io/badge/arXiv-Paper-red?logo=arxiv"></a>
-<a href="https://huggingface.co/RLinf"><img src="https://img.shields.io/badge/HuggingFace-yellow?logo=huggingface&logoColor=white" alt="Hugging Face"></a>
-<a href="https://rlinf.readthedocs.io/en/latest/"><img src="https://img.shields.io/badge/Documentation-Purple?color=8A2BE2&logo=readthedocs"></a>
-<a href="https://rlinf.readthedocs.io/zh-cn/latest/"><img src="https://img.shields.io/badge/中文文档-red?logo=readthedocs"></a>
-<a href="https://deepwiki.com/RLinf/RLinf"><img src="https://img.shields.io/badge/Ask%20DeepWiki-1DA1F2?logo=databricks&logoColor=white&color=00ADEF" alt="Ask DeepWiki"></a>
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](README.md)
-[![简体中文](https://img.shields.io/badge/语言-简体中文-red.svg)](README.zh-CN.md)
-<h1 align="center">
-<sub>RLinf: Reinforcement Learning Infrastructure for Embodied and Agentic AI</sub>
-</h1>
-RLinf is a flexible and scalable open-source RL infrastructure designed for Embodied and Agentic AI. The 'inf' in RLinf stands for `Infrastructure`, highlighting its role as a robust backbone for next-generation training. It also stands for `Infinite`, symbolizing the system’s support for open-ended learning, continuous generalization, and limitless possibilities in intelligence development.
-## What's NEW!
-- [2026/03] 🔥 RLinf supports [FUSCO](https://github.com/infinigence/FUSCO) to accelerate the MoE All-to-All communication used in Megatron. Doc: [FUSCO](https://rlinf.readthedocs.io/en/latest/rst_source/examples/system/fusco.html), paper: [FUSCO: High-Performance D...
-- High-signal repository paths at this tag:
-  - docs/README.md
-  - examples/sft/train_vla_sft.py
-  - examples/sft/train_vlm_sft.py
-  - examples/embodiment/collect_real_data.py
-  - docs/source-en/rst_source/examples/embodied/franka.rst
-  - docs/source-zh/rst_source/examples/embodied/franka.rst
-  - docs/source-en/rst_source/examples/embodied/sft_vlm.rst
-  - docs/source-zh/rst_source/examples/embodied/sft_vlm.rst
-  - docs/source-en/rst_source/examples/embodied/opensora.rst
-  - docs/source-en/rst_source/examples/embodied/robotwin.rst
-  - docs/source-zh/rst_source/examples/embodied/opensora.rst
-  - docs/source-zh/rst_source/examples/embodied/robotwin.rst
-- Changed high-signal files against previous included release:
-  - [M] docs/README.md
-    Excerpt:
-    # RLinf Documentations
-    Welcome to the documentation for RLinf! This README provides detailed instructions on how to generate the project documentation locally using Sphinx. It covers the entire process, from setting up your environment to building and viewing the documentation. Additionally, it includes information on cleaning the build directory and an introduction to Sphinx and reStructuredText (RST).
-    ---
-    ## Setting Up Your Environment
-    ### Step 1: Set Environment Variables
-    Every time you open a new terminal session to work on the documentation, run these commands to set the locale for Sphinx:
-    ```bash
-    export LC_ALL=C.UTF-8
-    export LANG=C.UTF-8
-    These ensure proper character encoding with the `C.UTF-8` locale.
-    ### Step 2: Install Dependencies
-    bash requirements/install.sh docs --venv .docs-venv
-    source .docs-venv/bin/activate
-    ## Building the Documentation
-    You can simply run the following command to build the English docs and open a server for preview and live reloading:
-    To build the Chinese docs, run this:
-    sphinx-build source-en build/html # change to source-zh for Chinese docs
-    ## Viewing the Documentation
-    ### With `sphinx-build`
-    1. Go to the `build/html` directory.
-    2. Open `index.html` in your browser.
-    python -m http.server 8000
-    Visit `http://localhost:8000` in your browser.
-    ### With `sphinx-autobuild`
-    Running `sphinx-autobuild` automatically hosts the documentation at `http://localhost:8000`. Open this URL to view it with live reloading.
-    ## Cleaning the Build Directory
-    ## Writing reStructuredText (RST)
-    [RST grammer](https://zh-sphinx-doc.readthedocs.io/en/latest/rest.html)
-  - [A] docs/source-en/rst_source/examples/embodied/franka.rst
-    Excerpt:
-    Real-World RL with Franka
-    ============================
-    .. |huggingface| image:: /_static/svg/hf-logo.svg
-    :width: 16px
-    :height: 16px
-    :class: inline-icon
-    This document provides a comprehensive guide to launching and managing the
-    a CNN policy training task within the RLinf framework,
-    focusing on training a ResNet-based CNN policy from scratch for robotic manipulation in the real world setup.
-    The primary objective is to develop a model capable of performing robotic manipulation by:
-    1. **Visual Understanding**: Processing RGB images from the robot's camera.
-    2. **Action Generation**: Producing precise robotic actions (position, rotation), possibly with gripper control.
-    3. **Reinforcement Learning**: Optimizing the policy via the SAC with environment feedback.
-    **Real World Environment**
-    - **Environment**: Real world setup.
-    - Franka Emika Panda robotic arm
-    - Realsense cameras
-    - Possibly use spacemouse for teleoperation data collection or human intervention.
-    - **Task**: Currently we support the peg-insertion task and the charger task.
-    - **Observation**:
-    - RGB images (128x128) from a wrist camera or a third-person camera.
-    - **Action Space**: 6 or 7-dimensional continuous actions, depending on whether gripper control is included:
-    - 3D position control (x, y, z)
-    - 3D rotation control (roll, pitch, yaw)
-    - Gripper control (open/close)
-    - **Images**: RGB tensors ``[batch_size, 128, 128, 3]``
-    - **Actions**: Normalized continuous values ``[-1, 1]`` for each action dimension
-    - **Rewards**: Step-level rewards based on task completion
-    1. **SAC (Soft Actor-Critic)**
-    - Learning Q-values by Bellman backups and entropy regularization.
-    - Learning policy to maximize entropy-regularized Q.
-    - Learning temperature parameter for exploration-exploitation trade-off.
-    2. **Cross-Q**
-    - A variant of SAC...
-  - [A] docs/source-en/rst_source/examples/embodied/frankasim.rst
-    Excerpt:
-    RL with Franka-Sim Benchmark
-    ======================================================
-    .. |huggingface| image:: /_static/svg/hf-logo.svg
-    :width: 16px
-    :height: 16px
-    :class: inline-icon
-    This document provides a complete guide to launching and managing
-    **Vision-Language-Action Models (VLAs)** training tasks in the **RLinf** framework.
-    It also explains how to fine-tune a VLA model in the **Franka-Sim** simulation environment
-    to perform robotic manipulation tasks.
-    1. **Visual understanding**: process RGB images captured from robot cameras;
-    2. **Language understanding**: interpret natural language task descriptions;
-    3. **Action generation**: produce accurate robot actions (position, rotation, gripper control);
-    4. **Reinforcement learning**: optimize policies with PPO using environment feedback.
-    The Franka-Sim environments are built on top of the
-    `serl <https://rail-berkeley.github.io/serl/docs/sim_quick_start.html>`_ project.
-    Two minimal Franka-Sim simulation tasks are provided:
-    - ``PandaPickCube-v0``
-    - ``PandaPickCubeVision-v0``
-    - **Task**: control a Franka Panda robot arm to pick up a cube and move it to a target position;
-    - **Observation**:
-    - ``PandaPickCube-v0``: proprioceptive states + target position;
-    - ``PandaPickCubeVision-v0``: multi-view RGB images (third-person + wrist camera) + proprioceptive states;
-    - **Action Space**: 4D continuous actions
-    - 3D end-effector position control (x, y, z)
-    - gripper control (open/close)
-    ``PandaPickCube-v0``
-    - **States**: proprioceptive states and target location
-    - end-effector 3D position
-    - end-effector 3D velocity
-    - gripper open/close state (1D)
-    - cube 3D position
-    ``PandaPickCubeVision-v0``
-    - **Images**: RGB tensors from a third-person view and a wrist camera view
-    - **States**: proprioceptive states
-    - end-effector 3D position
-    - end-e...
-  - [A] docs/source-en/rst_source/examples/embodied/opensora.rst
-    Excerpt:
-    RL with OpenSora World Model
-    ======================================
-    .. |huggingface| image:: /_static/svg/hf-logo.svg
-    :width: 16px
-    :height: 16px
-    :class: inline-icon
-    This document provides a comprehensive guide to launching and managing the
-    Vision-Language-Action Models (VLAs) training task within the RLinf framework,
-    using the **Action-conditioned OpenSora World Model** (hereafter referred to as OpenSora)
-    The primary objective is to train the policy in a closed-loop fashion without requiring real robots
-    reinforcement learning training tasks in the OpenSora-based simulation environment,
-    OpenSora aims to endow the model with the following capabilities:
-    1. **Visual Understanding**: OpenSora generates future video frames from current observations and given action sequences, providing continuous visual feedback to the policy, enabling it to process RGB images from real robot cameras.
-    2. **Language Comprehension**: Understanding natural-language task descriptions.
-    3. **Action Generation**: Producing precise robotic actions (position, rotation, gripper control).
-    4. **Policy Improvement**: Leveraging "imagined" trajectories generated by OpenSora to optimize the VLA policy using reinforcement learning methods such as PPO.
-    As a world model, OpenSora can theoretically fit any environment for any task while maintaining a consistent interface. Using the **LIBERO environment** as an example, the environment interfaces and definitions are as follows:
-    **OpenSora Simulating LIBERO Environment**
-    - **Environment**: Visual generation model
-    - **Task**: Command a 7-DoF robotic arm to perform a variety of household manipulation skills (pick-and-place, stacking, opening drawers, spatial rearrangement)
-    - **Observation**: Images returned by the visual generation model
-    - **Action Space**: 7-di...
-  - [A] docs/source-en/rst_source/examples/embodied/robotwin.rst
-    Excerpt:
-    RL with RoboTwin Benchmark
-    ===========================
-    .. |huggingface| image:: /_static/svg/hf-logo.svg
-    :width: 16px
-    :height: 16px
-    :class: inline-icon
-    This document provides a comprehensive guide to launching and managing
-    **Vision-Language-Action Models (VLAs)** training tasks within the RLinf framework,
-    focusing on finetuning a VLA model for robotic manipulation in the RoboTwin environment.
-    The primary objective is to develop a model capable of performing robotic manipulation by:
-    1. **Visual Understanding**: Processing RGB images from the robot's camera.
-    2. **Language Comprehension**: Interpreting natural-language task descriptions.
-    3. **Action Generation**: Producing precise robotic actions (position, rotation, gripper control).
-    4. **Reinforcement Learning**: Optimizing the policy via PPO and GRPO with environment feedback.
-    RoboTwinEnv Environment
-    **RoboTwinEnv Environment**
-    - **Environment**: RLinf framework provides the RoboTwinEnv environment for reinforcement learning training based on the RoboTwin 2.0 simulation platform.
-    - **Task**: Control a robotic arm to perform various manipulation tasks. RLinf RoboTwinEnv currently supports **46 tasks**, and users can select tasks for training as needed.
-    - ``adjust_bottle``: Pick up the bottle on the table headup with the correct arm.
-    - ``place_a2b_left``: Use appropriate arm to place object A on the left of object B.
-    - ``place_a2b_right``: Use appropriate arm to place object A on the right of object B.
-    - ``place_bread_basket``: If there is one bread on the table, use one arm to grab the bread and put it in the basket, if there are two breads on the table, use two arms to simultaneously grab up two breads and put them in the basket.
-    - ``place_bread_skillet``: Use one arm to grab the bread on the table and put it into th...
-  - [A] docs/source-en/rst_source/examples/embodied/sft_openpi.rst
-    Excerpt:
-    Supervised Fine-Tuning
-    =======================
-    .. |huggingface| image:: /_static/svg/hf-logo.svg
-    :width: 16px
-    :height: 16px
-    :class: inline-icon
-    This page explains how to run **full-parameter supervised fine-tuning (SFT)** and **LoRA fine-tuning** with the RLinf framework. SFT is typically the first stage before reinforcement learning: the model imitates high-quality examples so RL can continue optimization with a strong prior.
-    Contents
-    - How to configure full-parameter SFT and LoRA SFT in RLinf
-    - How to launch training on a single machine or multi-node cluster
-    - How to monitor and evaluate results
-    Supported datasets
-    RLinf currently supports datasets in the LeRobot format, selected via **config_type**.
-    Supported formats include:
-    - pi0_maniskill
-    - pi0_libero
-    - pi0_aloha_robotwin
-    - pi05_libero
-    - pi05_maniskill
-    - pi05_metaworld
-    - pi05_calvin
-    1. In ``examples/sft/config/custom_sft_openpi.yaml``, set the data format.
-    config_name: "pi0_custom"
-    2. In ``rlinf/models/embodiment/openpi/__init__.py``, set the data format to ``pi0_custom``.
-    TrainConfig(
-    name="pi0_custom",
-    model=pi0_config.Pi0Config(),
-    data=CustomDataConfig(
-    base_config=DataConfig(
-    assets=AssetsConfig(assets_dir="checkpoints/torch/pi0_base/assets"),
-    action_train_with_rotation_6d=False,  # User can add extra config in custom dataset
-    pytorch_weight_path="checkpoints/torch/pi0_base",
-    3. In ``rlinf/models/embodiment/openpi/dataconfig/custom_dataconfig.py``, define the custom dataset config.
-    class CustomDataConfig(DataConfig):
-    self.base_config = DataConfig(
-    self.assets = AssetsConfig(assets_dir="checkpoints/torch/pi0_base/assets")
-    self.action_train_with_rotation_6d = False
-    Training configuration
-    A full example lives in ``examples/sft/config/libero_sft_openpi.yaml``. Key fields:
-    num_nodes: 1                 # number of...
-  - [A] docs/source-en/rst_source/examples/embodied/sft_vlm.rst
-    Excerpt:
-    VLM Supervised Fine-Tuning
-    ================================
-    This document explains how to run **full-parameter supervised fine-tuning (Full-parameter SFT)** for VLM models in RLinf.
-    This tutorial mainly focuses on two files:
-    - Launch script: ``examples/sft/run_vlm_sft.sh``
-    - Training config: ``examples/sft/config/qwen2_5_sft_vlm.yaml``
-    Launch Script: ``examples/sft/run_vlm_sft.sh``
-    - The script uses ``examples/sft/config/qwen2_5_sft_vlm.yaml`` by default.
-    - Logs are redirected to: ``<repo>/logs/<timestamp>/``
-    - Actual command:
-    python examples/sft/train_vlm_sft.py \
-    --config-path examples/sft/config/ \
-    --config-name <your_config_name> \
-    Config Template: ``examples/sft/config/qwen2_5_sft_vlm.yaml``
-    If you intend to train models such as **qwen3_vl** or **qwen3_vl_moe**, please ensure that the version of `transformers` in your current environment is **greater than or equal to 4.57.1**.
-    The VLM config structure is similar to other RLinf training configs.
-    You mainly need to adapt ``data`` and ``actor.model`` for your VLM use case.
-    1. Prepare the environment. Pull the RLinf Docker image:
-    ``rlinf/rlinf:math-rlinf0.2-torch2.6.0-sglang0.4.6.post5-vllm0.8.5-megatron0.13.0-te2.1``.
-    2. Prepare model weights:
-    ``https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct``.
-    3. Prepare Robo2VLM dataset:
-    ``https://huggingface.co/datasets/keplerccc/Robo2VLM-1``.
-    4. Edit ``examples/sft/config/qwen2_5_sft_vlm.yaml`` and run
-    ``examples/sft/run_vlm_sft.sh``.
-    Example of Qwen2_5_VL_3B SFT
-    Important note: after downloading Robo2VLM, train and eval parquet files are mixed in one directory
-    (e.g., ``train-00000-of-00262.parquet`` and ``test-0000X-of-00003.parquet``).
-    In the example below, fields you must modify are already commented.
-    - override hydra/job_logging: stdout
-    num_nodes: 1
-    task_type: sft
-    exper...
-  - [A] docs/source-en/rst_source/examples/embodied/xsquare_turtle2.rst
-    Excerpt:
-    Real-World RL with XSquare Turtle2
-    ====================================
-    This document provides a comprehensive guide to launching real-world reinforcement
-    learning training on the **XSquare Turtle2** dual-arm robot platform using the
-    RLinf framework.
-    The primary objective is to train a ResNet-based CNN policy from scratch for robotic
-    manipulation tasks on a real robot by:
-    1. **Visual Understanding**: Processing RGB images from up to three onboard cameras.
-    2. **Action Generation**: Producing precise delta end-effector actions (position, rotation, and gripper) for one or two arms.
-    3. **Reinforcement Learning**: Optimizing the policy via SAC with real-env...
+    :widths: 24 2...

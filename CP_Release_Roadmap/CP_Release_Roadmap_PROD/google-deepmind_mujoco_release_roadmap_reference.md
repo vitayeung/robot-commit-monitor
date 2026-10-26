@@ -4,12 +4,12 @@
 - 对应主报告: `google-deepmind_mujoco_release_roadmap.md`
 - 统计窗口: 最近一年
 - 生成策略: GitHub release body + 外链文档摘录 + 相邻 release tag 的 GitHub compare 摘要
-- 版本总数: 14
-- 正式版数量: 14
+- 版本总数: 15
+- 正式版数量: 15
 - 预发布版数量: 0
-- 外链文档覆盖版本数: 13
-- compare 摘要覆盖版本数: 13
-- 最新版本: 3.16.0 (2026-10-14 17:29:02 CST)
+- 外链文档覆盖版本数: 14
+- compare 摘要覆盖版本数: 14
+- 最新版本: 3.17.0 (2026-10-23 05:45:20 CST)
 - 最早纳入统计版本: 3.4.0 (2025-12-06 07:17:44 CST)
 
 ## 分析策略决策
@@ -23,6 +23,7 @@
   - 因此主脚本保持 L1，避免在主流程里默认引入额外源码分析成本。
 
 ## Release 时间线
+- 2026-10-23 05:45:20 CST | 3.17.0 | 正式版
 - 2026-10-14 17:29:02 CST | 3.16.0 | 正式版
 - 2026-10-05 22:58:18 CST | 3.15.0 | 正式版
 - 2026-09-23 00:52:58 CST | 3.14.0 | 正式版
@@ -39,6 +40,142 @@
 - 2025-12-06 07:17:44 CST | 3.4.0 | 正式版
 
 ## 证据附录
+
+### 3.17.0
+- 标题: 3.17.0
+- 类型: 正式版
+- 发布时间: 2026-10-23 05:45:20 CST
+- 链接: https://github.com/google-deepmind/mujoco/releases/tag/3.17.0
+- GitHub release body:
+# Version 3.17.0 (October 22, 2026)
+
+## Significant new features
+
+1. [`c00ed8153`](https://github.com/google-deepmind/mujoco/commit/c00ed8153) Added a [batch API](https://mujoco.readthedocs.io/en/stable/programming/simulation.html#siBatch) in `mujoco/mjbatch.h` (in Python as
+   [mujoco.batch](https://mujoco.readthedocs.io/en/stable/python.html#PyBatch)): many simulations of one model stepped on a thread pool of its own, each held as its
+   integration state and loaded into an `mjData` for each call, so memory scales with threads and results are
+   bit-identical to a plain loop at any thread count. It supports per-simulation model and option fields or models of
+   the caller's, observations of the state after a step, recorded trajectories, persistent simulations (required for
+   sleep), and arbitrary per-simulation functions. Follows the design of
+   [mjbatch](https://github.com/kevinzakka/mjbatch) by [@kevinzakka](https://github.com/kevinzakka).
+
+## Engine
+
+2. Flex improvements:
+
+   - [`94483e166`](https://github.com/google-deepmind/mujoco/commit/94483e166) Added bending [elasticity](https://mujoco.readthedocs.io/en/stable/XMLreference.html#flex-elasticity) for 1D flexes, using a twist-free isotropic
+     discrete elastic rod model. The cross-section is selected with the new [section](https://mujoco.readthedocs.io/en/stable/XMLreference.html#flex-elasticity-section)
+     attribute: a circle of the flex radius, or a box with half-sizes [sectionsize](https://mujoco.readthedocs.io/en/stable/XMLreference.html#flex-elasticity-sectionsize)
+     that uses the stiffness of its weak axis. It is enabled by a positive [young](https://mujoco.readthedocs.io/en/stable/XMLreference.html#flex-elasticity-young) modulus,
+     requires a straight reference configuration (curved initial...
+- 外链文档摘录:
+  - https://mujoco.readthedocs.io/en/stable/programming/simulation.html#siBatch
+    - XML Reference
+    - API Reference
+    - Python
+    - API
+    - OpenUSD
+    - File Format Plugin
+    - Changelog
+    initialized by the corresponding API functions. These are very elaborate data structures, containing (arrays of) other
+    done for speed, avoidance of memory fragmentation, GPU portability, and ease of managing the state of the entire
+    // option 1: parse and compile XML from filemjModel*m=mj_loadXML("mymodel.xml",NULL,errstr,errstr_sz);// option 2: parse and compile XML from virtual file systemmjModel*m=mj_loadXML("mymodel.xml",vfs,errstr,errstr_sz);// option 3: load precompiled model from MJB filemjModel*m=mj_loadModel("mymodel.mjb",NULL);// option 4: load precompiled model from virtual file systemmjModel*m=mj_loadModel("mymodel.mjb",vfs);// option 5: deep copy from existing mjModelmjModel*m=mj_copyModel(NULL,mexisting);// option 6: compile model from mjSpecmjModel*m=mj_compile(spec,vfs);
+    All these functions return a NULL pointer if there is an error or warning. In the case of XML parsing and model
+    argument to all API functions that need model access. Note that most functions treat this pointer as
+    In addition to mjModel which holds the model description, we also need mjData which is the workspace where all
+    computations are performed. Note that mjData is specific to a given mjModel. The API functions generally assume that
+    users know what they are doing, and perform minimal argument checking. If the mjModel and mjData passed to any API
+    // option 1: create mjData corresponding to given mjModelmjData*d=mj_makeData(m);// option 2: deep copy from existing mjDatamjData*d=mj_copyData(NULL,m,dexisting);
+    // simulate until t = 10 secondswhile(d->time<10)mj_step(m,d);
+    // simple controller applying damping to each DOFvoidmycontroller(constmjModel*m,mjData*d){if(m->nu==m->nv)mju_scl(d->ctrl,d->qvel,-0.1,m->nv);}
+    while(d->time<10){// set d->ctrl or d->qfrc_applied or d->xfrc_appliedmj_step(m,d);}
+    The same effect can be achieved without using a control callback. This is done by breaking
+    while(d->time<10){mj_step1(m,d);// set d->ctrl or d->qfrc_applied or d->xfrc_appliedmj_step2(m,d);}
+    intomj_step1andmj_step2is sufficient to provide the control law with
+    To make the above discussion clearer, we provide the internal implementation ofmj_step,mj_step1andmj_step2, omitting some code that computes timing diagnostics. The main simulation function is
+    voidmj_step(constmjModel*m,mjData*d){// common to all integratorsmj_checkPos(m,d);mj_checkVel(m,d);mj_forward(m,d);mj_checkAcc(m,d);// use selected integratorswitch((mjtIntegrator)m->opt.integrator){casemjINT_EULER:mj_Euler(m,d);break;casemjINT_RK4:mj_RungeKutta(m,d,4);break;casemjINT_IMPLICIT:casemjINT_IMPLICITFAST:mj_implicit(m,d);break;default:mjERROR("invalid integrator");}}
+    we have essentially unpacked the forward dynamics function. Note also that we always call a single-step integrator inmj_step2; if RK4 is selected, the integrator will default to Euler.
+    voidmj_step1(constmjModel*m,mjData*d){mj_checkPos(m,d);mj_checkVel(m,d);mj_fwdPosition(m,d);mj_sensorPos(m,d);mj_energyPos(m,d);mj_fwdVelocity(m,d);mj_sensorVel(m,d);mj_energyVel(m,d);// if we had a callback we would be using mj_step, but call it anywayif(mjcb_control)mjcb_control(m,d);}voidmj_step2(constmjModel*m,mjData*d){mj_fwdActuation(m,d);mj_fwdAcceleration(m,d);mj_fwdConstraint(m,d);mj_sensorAcc(m,d);mj_checkAcc(m,d);// integrate with Euler or implicit; RK4 defaults to Eulerif(m->opt.integrator==mjINT_IMPLICIT||m->opt.integrator==mjINT_IMPLICITFAST)mj_implicit(m,d);elsemj_Euler(m,d);}
+    control or sensor values. SeeDelaysfor details.
+    in time. It is thePhysics stateand two additional components:
+    are states declared byengine plugins. Please see thePlugin statesection for more details.
+    untouched by the simulator. All input fields except for MoCap poses default to 0. A general property of allUser
+    is a fixed-size memory block (allocated by settingnuserdata) meant to serve the user for any purpose, and can be used to store various state-like
+    Controls are defined by theactuatorsection of the XML.
+    6D poses from a motion-capture device. The default values set bymj_resetDataare the poses of the bodies at
+    which can be set in XML using theactiveattribute ofequality constraints.
+    solverlike PGS, these can speed up simulation by reducing the number of iterations required for convergence.
+    Note however that the default Newton solver converges so quickly (usually 2-3 iterations), that warmstarts often have
+    a negligible effect on speed and can bedisabled.
+    Because our optimization problem isstrictly convexwith a single global minimum, different solver
+    significant if numerical convergence is not achieved, either due to slow convergence or ifiterationsortoleranceare capped, as is sometimes done inMJX.
+    equal to the corresponding fixed body
+    poses from mjModel; and all other state and control variables to 0. When some trees areinitialized asleep, this
+    to simulate the dynamics, including active contacts and other constraints, joint-space inertia and its\(L^TDL\)...
+  - https://mujoco.readthedocs.io/en/stable/python.html#PyBatch
+    Python - MuJoCo DocumentationSkip to content
+    - XML Reference
+    - API Reference
+    - Python
+    - API
+    - OpenUSD
+    - File Format Plugin
+    - Changelog
+    MuJoCo comes with native Python bindings that are developed in C++ usingpybind11. The Python API is consistent with the underlying C API. This leads to
+    some non-Pythonic code structure (e.g. order of function arguments), but it has the benefit that theAPI documentationis applicable to both languages.
+    The Python bindings are distributed as the
+    low-level bindings that are meant to give as close to a direct access to the MuJoCo library as possible. However, in
+    order to provide an API and semantics that developers would expect in a typical Python library, the bindings
+    deliberately diverge from the raw MuJoCo API in a number of places, which are documented throughout this page.
+    package and continues to be supported by Google DeepMind. For code that depends on dm_control versions
+    prior to 1.0.0, consult themigration guide.
+    For mujoco-py users, we includemigration notesbelow.
+    A MuJoCo tutorial using the Python bindings is available here:
+    An interactive GUI viewer is provided as part of the Python package in the
+    use cases are supported:managed viewer,standalone app, andpassive
+    function launches the interactive viewer andblocks user codewhich is useful to support precise
+    pluginsorphysics callbacks, and is called by MuJoCo duringmj_step.
+    Python package uses the
+    needed to circumvent a platform limitation which requires the main thread to be one that does the rendering. The
+    command and supports an identical set of command line flags and arguments. For example, a script can
+    , and an IPython shell can be launched via
+    faster, but would not pick up arbitrary changes as in the default case. Changes made via the GUI are picked up in
+    in order for the viewer to reflect physics state changes. The
+    : anmjvSceneobject that allows users to add change rendering flags and add custom
+    render the final scene, and is entirely under the user’s control. User scripts can call e.g.mjv_initGeomormjv_connectorto add visualization geoms to
+    will incorporate these geoms to future rendered images. Similarly, user scripts can make changes to
+    call also copies changes to rendering flags
+    withmujoco.viewer.launch_passive(m,d,key_callback=key_callback)asviewer:# Enable wireframe rendering of the entire scene.viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_WIREFRAME]=1viewer.sync()whileviewer.is_running():...# Step the physics.mujoco.mj_step(m,d)# Add a 3x3x3 grid of variously colored spheres to the middle of the scene.viewer.user_scn.ngeom=0i=0forx,y,zinitertools.product(*((range(-1,2),)*3)):mujoco.mjv_initGeom(viewer.user_scn.geoms[i],type=mujoco.mjtGeom.mjGEOM_SPHERE,size=[0.02,0,0],pos=0.1*np.array([x,y,z]),mat=np.eye(3).flatten(),rgba=0.5*np.array([x+1,y+1,z+1,2]))i+=1viewer.user_scn.ngeom=iviewer.sync()...
+    The bindings include Python classes that expose MuJoCo data structures. For maximum performance, these classes provide
+    access to the raw memory used by MuJoCo without copying or buffering. This means that some MuJoCo functions (e.g.,mj_step) change the content of fieldsin place. The user is therefore advised to create copies where required.
+    will have been changed.
+    In order to conform toPEP 8naming guidelines, struct names begin with a capital letter, for example
+    have constructors in Python. For structs that have an
+    initialization function, the Python constructor calls the default initializer automatically, so for example
+    Otherwise, the Python constructor zero-initializes the underlying C struct.
+    -style initialization function have corresponding constructor overloads in Python,
+    in Python creates a new
+    is automatically called when the Python
+    class does not have a Python constructor. Instead, we provide three static factory functions
+    . The first function accepts a model XML as a string, while the latter two
+    functions accept the path to either an XML or MJB model file. All three functions optionally accept a Python
+    Assigning to a struct attribute writes into the underlying C memory rather than rebinding the attribute. For array
+    MuJoCo functions are exposed as Python functions of the same name. Unlike with structs, we do not attempt to make
+- Compare 摘要: 3.16.0 -> 3.17.0
+  - commits: 172
+  - files changed: 300+ returned files (GitHub compare API file list cap)
+  - additions: 51597
+  - deletions: 2641
+  - top directories: .bazelversion, .github, BUILD.bazel, CMakeLists.txt, MODULE.bazel, STYLEGUIDE.md
+  - representative files:
+    - doc/images/XMLreference/tactile_laplacian_dark.svg (added, +20348/-0)
+    - doc/images/XMLreference/tactile_laplacian_light.svg (added, +20345/-0)
+    - python/mujoco/batch_test.py (added, +1146/-0)
+    - python/mujoco/batch.py (added, +930/-0)
+    - python/mujoco/BUILD.bazel (added, +652/-0)
+    - python/mujoco/batch.cc (added, +613/-0)
+    - mjx/mujoco/mjx/third_party/mujoco_warp/_src/passive.py (modified, +496/-83)
+    - python/mujoco/experimental/studio/hot_reload.py (added, +548/-0)
 
 ### 3.16.0
 - 标题: 3.16.0
