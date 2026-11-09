@@ -2,32 +2,40 @@
 
 - 仓库: `NVIDIA/warp`
 - 统计窗口: 最近一年
-- 最新版本: v1.18.0 (2026-10-05 08:24:57 CST)
-- 纳入统计的最早版本: v1.10.0 (2025-11-02 22:11:50 CST)
+- 最新版本: v1.19.0 (2026-11-02 13:20:44 CST)
+- 纳入统计的最早版本: v1.10.1 (2025-12-01 21:13:27 CST)
 - 版本概况: 最近一年共 13 个版本，其中正式版 13 个、预发布版 0 个
 - 详细证据索引: `NVIDIA_warp_release_roadmap_reference.md`
 
 ## 核心判断
 
-- **Warp 正在从单一 GPU 计算库演变为可序列化、跨平台的计算图运行时。** 过去一年，v1.13 引入的实验性图捕获序列化（`.wrp` 格式）和 CPU 回放是架构级变化。v1.14 和 v1.15 持续扩展了可捕获的操作范围（反向传播、tiled 内核、结构化参数），并增加了确定性执行和托管内存分配。v1.16 进一步扩展了 CPU 图和已保存 `.wrp` 图的回放操作范围。v1.17 为 CG 和 CR 求解器增加了周期性重启路径，且该路径支持 CUDA 图捕获。v1.18 新增的 `warp.geometry` 模块中，`delaunay_edge_flip()` 与 `tri_tri_adjacency()` 均支持 CUDA 图捕获。这意味着 Warp 正在为离线部署、跨进程复用和确定性仿真铺平道路，而不仅仅是 JIT 内核执行。
+- **Warp 正在从单一 GPU 计算库演变为可序列化、跨平台的计算图运行时。** 过去一年，v1.13 引入的实验性图捕获序列化（`.wrp` 格式）和 CPU 回放是架构级变化。v1.14 和 v1.15 持续扩展了可捕获的操作范围（反向传播、tiled 内核、结构化参数），并增加了确定性执行和托管内存分配。v1.16 进一步扩展了 CPU 图和已保存 `.wrp` 图的回放操作范围。v1.17 为 CG 和 CR 求解器增加了周期性重启路径，且该路径支持 CUDA 图捕获。v1.18 新增的 `warp.geometry` 模块中，`delaunay_edge_flip()` 与 `tri_tri_adjacency()` 均支持 CUDA 图捕获。v1.19 将可复用稀疏装配（`BsrTripletMap`）引入 FEM 与稀疏矩阵工作流，使固定拓扑下的重复装配不再每次重建非零模式。这意味着 Warp 正在为离线部署、跨进程复用和确定性仿真铺平道路，而不仅仅是 JIT 内核执行。
 
-- **物理仿真模块 `warp.sim` 已被移除，生态重心转向 Newton 和 JAX 集成。** v1.10.0 正式移除了 `warp.sim`（自 v1.8 起弃用），由独立的 Newton 物理引擎替代。同时，v1.10 到 v1.14 持续强化了 JAX 互操作性，包括自动微分支持、`jax.vmap`、`jax.pmap()` 兼容性以及稳定的 JAX FFI API。v1.16 为 JAX FFI 包装器增加了 CPU 支持，使同一 JIT 函数可在 CPU 和 CUDA 设备上运行。v1.18 新增的 `warp.geometry` 模块（稀疏 marching cubes、扫掠体积网格、2D 三角剖分）进一步强化了 Warp 作为几何与仿真底层计算后端的定位。这表明 Warp 的战略定位是成为更广泛 AI/物理融合生态的底层计算后端，而非独立的物理引擎。
+- **物理仿真模块 `warp.sim` 已被移除，生态重心转向 Newton 和 JAX 集成。** v1.10.0 正式移除了 `warp.sim`（自 v1.8 起弃用），由独立的 Newton 物理引擎替代。同时，v1.10 到 v1.14 持续强化了 JAX 互操作性，包括自动微分支持、`jax.vmap`、`jax.pmap()` 兼容性以及稳定的 JAX FFI API。v1.16 为 JAX FFI 包装器增加了 CPU 支持，使同一 JIT 函数可在 CPU 和 CUDA 设备上运行。v1.18 新增的 `warp.geometry` 模块（稀疏 marching cubes、扫掠体积网格、2D 三角剖分）进一步强化了 Warp 作为几何与仿真底层计算后端的定位。v1.19 新增 Surface Nets 网格化、稀疏预条件子（`warp._src/optim/fsai.py`）和可复用稀疏装配，继续把 FEM 与几何处理能力沉淀为底层计算基础设施。这表明 Warp 的战略定位是成为更广泛 AI/物理融合生态的底层计算后端，而非独立的物理引擎。
 
-- **平台兼容性正在收紧：放弃旧版 Python 和 CUDA，拥抱新硬件特性。** v1.11 放弃 Python 3.8，v1.12 弃用 Python 3.9（v1.13 正式移除），v1.9 起要求 CUDA 12.x+。v1.17 要求 Python 3.10+，并支持从源码在 Windows ARM64 上构建时原生 CPU 执行。v1.18 将 Linux 和 Windows 的默认 PyPI 与 nightly wheel 切换到 CUDA Toolkit 13.4，CUDA 加速要求 NVIDIA R580 系列或更新驱动以及 Turing（`sm_75`）或更新 GPU；CUDA 12 兼容 wheel 仍以 `+cu12` 后缀在 GitHub Releases 提供。产品团队应规划 Python 3.10+ 和 CUDA 12.x+ 的基础环境，并针对 v1.18 的默认 CUDA 13.4 切换评估驱动与 GPU 基线。
+- **平台兼容性正在收紧：放弃旧版 Python 和 CUDA，拥抱新硬件特性。** v1.11 放弃 Python 3.8，v1.12 弃用 Python 3.9（v1.13 正式移除），v1.9 起要求 CUDA 12.x+。v1.17 要求 Python 3.10+，并支持从源码在 Windows ARM64 上构建时原生 CPU 执行。v1.18 将 Linux 和 Windows 的默认 PyPI 与 nightly wheel 切换到 CUDA Toolkit 13.4，CUDA 加速要求 NVIDIA R580 系列或更新驱动以及 Turing（`sm_75`）或更新 GPU；CUDA 12 兼容 wheel 仍以 `+cu12` 后缀在 GitHub Releases 提供。v1.19 起 PyPI 正式版与候选版开始提供 Windows on Arm wheel（nightly 不提供），Windows on Arm 支持 CPU 执行和实验性 CUDA 加速。产品团队应规划 Python 3.10+ 和 CUDA 12.x+ 的基础环境，并针对 v1.18 起的默认 CUDA 13.4 切换评估驱动与 GPU 基线。
 
-- **CPU 与 CUDA 的执行语义正在收敛，Tile 编程的跨设备可移植性提升。** v1.18 引入实验性 CPU block 执行，使需要块内多逻辑线程协作的 tile 内核可在 CPU 和 CUDA 上使用相同的显式 `block_dim` 得到一致结果。CPU 执行默认每块一个逻辑内核线程；协作式 CPU 块将逻辑线程调度在单个操作系统线程上，可能显著变慢，且不增加 CPU 并行度或对逻辑线程做向量化。AddressSanitizer 构建会拒绝启用该模式的 CPU 启动。该功能为实验性，API 可能无正式弃用周期即变更。
+- **CPU 与 CUDA 的执行语义正在收敛，Tile 编程的跨设备可移植性提升。** v1.18 引入实验性 CPU block 执行，使需要块内多逻辑线程协作的 tile 内核可在 CPU 和 CUDA 上使用相同的显式 `block_dim` 得到一致结果。CPU 执行默认每块一个逻辑内核线程；协作式 CPU 块将逻辑线程调度在单个操作系统线程上，可能显著变慢，且不增加 CPU 并行度或对逻辑线程做向量化。AddressSanitizer 构建会拒绝启用该模式的 CPU 启动。该功能为实验性，API 可能无正式弃用周期即变更。v1.19 继续带来 CPU 性能改进，并新增实验性纹理采样梯度。
 
 ## 产品演进主线
 
-- **从即时编译到可序列化计算图：** v1.13 引入实验性图捕获序列化（APIC 格式），支持将 CUDA 图操作保存为 `.wrp` 文件并在 CPU 或 GPU 上回放。v1.14 扩展了可捕获的操作（反向传播、tiled 内核、`@wp.struct` 参数），v1.15 进一步支持 CPU 图和已保存 CUDA 图的更广泛回放，v1.16 继续扩展 CPU 图和已保存 `.wrp` 图的回放操作范围，v1.17 为 CG 和 CR 求解器增加周期性重启路径并支持 CUDA 图捕获，v1.18 的 `warp.geometry` 三角剖分 API 同样支持 CUDA 图捕获。这条主线使 Warp 从进程内 JIT 执行走向跨进程、跨语言、跨设备的计算图复用，对离线推理、确定性仿真和 CI/CD 测试有重大价值。
+- **从即时编译到可序列化计算图：** v1.13 引入实验性图捕获序列化（APIC 格式），支持将 CUDA 图操作保存为 `.wrp` 文件并在 CPU 或 GPU 上回放。v1.14 扩展了可捕获的操作（反向传播、tiled 内核、`@wp.struct` 参数），v1.15 进一步支持 CPU 图和已保存 CUDA 图的更广泛回放，v1.16 继续扩展 CPU 图和已保存 `.wrp` 图的回放操作范围，v1.17 为 CG 和 CR 求解器增加周期性重启路径并支持 CUDA 图捕获，v1.18 的 `warp.geometry` 三角剖分 API 同样支持 CUDA 图捕获。v1.19 的可复用稀疏装配在固定拓扑下避免重复排序与合并行列索引，为时间步进和非线性 FEM 求解的图化与重复执行减少装配开销。这条主线使 Warp 从进程内 JIT 执行走向跨进程、跨语言、跨设备的计算图复用，对离线推理、确定性仿真和 CI/CD 测试有重大价值。
 
-- **物理仿真模块剥离与外部生态整合：** v1.10.0 正式移除 `warp.sim` 模块，由 Newton 物理引擎接替。同时，JAX 集成从 v1.10 的实验性自动微分，发展到 v1.12 的 `jax.vmap` 支持，再到 v1.14 的稳定 JAX FFI API，v1.16 为 JAX FFI 包装器增加 CPU 支持。v1.17 引入实验性原生构建钩子，允许外部 C++ 和 CUDA 集成附加原生头文件到 Warp 模块。v1.18 新增 `warp.geometry` 模块，提供从隐式场和采样刚体运动提取网格的 Python 与内核 API。Warp 正在从"自带物理引擎"转向"为 AI/物理融合提供底层计算基础设施"，与 PyTorch、JAX、RAPIDS 等框架的互操作性成为核心能力。
+- **物理仿真模块剥离与外部生态整合：** v1.10.0 正式移除 `warp.sim` 模块，由 Newton 物理引擎接替。同时，JAX 集成从 v1.10 的实验性自动微分，发展到 v1.12 的 `jax.vmap` 支持，再到 v1.14 的稳定 JAX FFI API，v1.16 为 JAX FFI 包装器增加 CPU 支持。v1.17 引入实验性原生构建钩子，允许外部 C++ 和 CUDA 集成附加原生头文件到 Warp 模块。v1.18 新增 `warp.geometry` 模块，提供从隐式场和采样刚体运动提取网格的 Python 与内核 API。v1.19 新增 Surface Nets 网格化、稀疏预条件子和可复用稀疏装配，并引入数组子类兼容性说明。Warp 正在从"自带物理引擎"转向"为 AI/物理融合提供底层计算基础设施"，与 PyTorch、JAX、RAPIDS 等框架的互操作性成为核心能力。
 
-- **确定性执行与可复现性成为一等公民：** v1.15 引入的确定性模式（`RUN_TO_RUN` 和 `GPU_TO_GPU`）是仿真和回归测试场景的关键能力。它通过重写原子操作模式（累加、槽分配、输出写回）来保证位精确的重复结果，尽管会带来性能权衡。v1.17 为 CUDA 内核增加寄存器分配和共享内存溢出的控制与检查能力，帮助开发者优化占用率和性能。v1.18 支持对数组元素中向量和矩阵分量赋值与更新的自动微分，并避免稀疏矩阵块计数不必要的 GPU 到 CPU 传输。这标志着 Warp 从"追求性能"到"在可控性能代价下提供确定性"的成熟度提升，对需要可复现结果的科学计算和验证工作流至关重要。
+- **确定性执行与可复现性成为一等公民：** v1.15 引入的确定性模式（`RUN_TO_RUN` 和 `GPU_TO_GPU`）是仿真和回归测试场景的关键能力。它通过重写原子操作模式（累加、槽分配、输出写回）来保证位精确的重复结果，尽管会带来性能权衡。v1.17 为 CUDA 内核增加寄存器分配和共享内存溢出的控制与检查能力，帮助开发者优化占用率和性能。v1.18 支持对数组元素中向量和矩阵分量赋值与更新的自动微分，并避免稀疏矩阵块计数不必要的 GPU 到 CPU 传输。v1.19 的可复用稀疏装配默认使用 gather 归约以避免原子操作，而 `reduction="atomic"` 允许的累加顺序在多次运行间可能变化，这使确定性选择成为装配策略的一部分。这标志着 Warp 从"追求性能"到"在可控性能代价下提供确定性"的成熟度提升，对需要可复现结果的科学计算和验证工作流至关重要。
 
-- **几何查询、Tile 编程模型和 FEM 持续扩展：** 从 v1.9 的可微 Marching Cubes 和 AOT 编译，到 v1.12 的硬件加速纹理和可微 FFT，再到 v1.14 的多环境 FEM 和可复用批处理线性求解器，Warp 的 tile 编程模型和有限元方法（FEM）能力不断深化。v1.15 进一步为 tile 操作添加了 struct 支持，并允许稀疏矩阵预留 BSR 行容量。v1.16 新增 NanoVDB 体积原地重建和分组 HashGrid 查询。v1.17 新增球体和胶囊体 BVH 查询、精确球体-网格三角形查询、直接访问网格 BVH，以及 tile 矩阵行索引。v1.18 新增 `warp.geometry` 模块，覆盖稀疏 marching cubes、扫掠体积网格和 2D Delaunay 边翻转，并让 tile 内核在 CPU 与 CUDA 上使用相同 `block_dim` 得到一致结果。这条主线使 Warp 在高性能仿真和科学计算领域的能力边界持续扩展。
+- **几何查询、Tile 编程模型和 FEM 持续扩展：** 从 v1.9 的可微 Marching Cubes 和 AOT 编译，到 v1.12 的硬件加速纹理和可微 FFT，再到 v1.14 的多环境 FEM 和可复用批处理线性求解器，Warp 的 tile 编程模型和有限元方法（FEM）能力不断深化。v1.15 进一步为 tile 操作添加了 struct 支持，并允许稀疏矩阵预留 BSR 行容量。v1.16 新增 NanoVDB 体积原地重建和分组 HashGrid 查询。v1.17 新增球体和胶囊体 BVH 查询、精确球体-网格三角形查询、直接访问网格 BVH，以及 tile 矩阵行索引。v1.18 新增 `warp.geometry` 模块，覆盖稀疏 marching cubes、扫掠体积网格和 2D Delaunay 边翻转，并让 tile 内核在 CPU 与 CUDA 上使用相同 `block_dim` 得到一致结果。v1.19 新增 Surface Nets 网格化、稀疏预条件子、可复用稀疏装配和实验性纹理采样梯度。这条主线使 Warp 在高性能仿真和科学计算领域的能力边界持续扩展。
 
 ## 版本演进解读
+
+### v1.19.0（2026-11-02）
+
+- **可复用稀疏装配与新增稀疏预条件子：** `warp.sparse.bsr_set_from_triplets(..., build_mapping=True)` 返回 `BsrTripletMap`，后续可用 `bsr_set_from_mapped_values()` 仅更新数值，避免在时间步进或非线性 FEM 求解中每次装配都重新排序与合并行列索引。映射需在紧凑拓扑且 `prune_numerical_zeros=False` 下构建，并保持目标拓扑不变；默认 gather 归约避免原子操作，`reduction="atomic"` 允许的累加顺序在多次运行间可能变化。`warp.fem.integrate()` 新增 `assembly`、`add`、`bsr_options` 等参数以配合重复 FEM 双线性装配。对固定网格连通性的仿真工作流，这直接降低每步装配开销。
+
+- **Surface Nets 网格化与实验性纹理采样梯度：** 新增 `warp._src/geometry/surface_nets.py` 对应的 Surface Nets 网格化能力，扩展了从隐式场提取网格的几何工具集，与 v1.18 的稀疏 marching cubes 形成互补。新增实验性纹理采样梯度，使纹理采样可参与自动微分工作流。这两项分别服务于几何提取和可微渲染/采样场景，具体 API 细节证据不足。
+
+- **CPU 性能改进与 Windows on Arm wheel：** 该版本包含 CPU 性能改进。自 v1.19.0 起，PyPI 正式版与候选版提供 Windows on Arm wheel（nightly 不提供），Windows on Arm 支持 CPU 执行和实验性 CUDA 加速。迁移注意：Windows on Arm 的 CUDA 加速仍为实验性；可复用稀疏装配的映射在空间、限制或求积拓扑变化后需重新构建，非映射的 FEM 写入会使缓存映射失效，而自定义内核或外部库的就地修改无法被检测。
 
 ### v1.18.0（2026-10-05）
 
@@ -159,10 +167,10 @@
 
 ## 采用与规划提示
 
-- **评估 v1.18 的 `warp.geometry` 模块，如果您的管线需要从隐式场或稀疏体积提取网格。** `sparse_marching_cubes()` 允许采样器直接读取现有数据结构，避免稠密网格转换；官方示例中字段求值次数约为稠密采样的 2.4%。`swept_volume_mesh()` 适用于机器人间隙检查和运动可视化，但计算量随网格精度和位姿采样数增加。`delaunay_edge_flip()` 与 `tri_tri_adjacency()` 支持 CUDA 图捕获，适合纳入图回放工作流。注意这些 API 为实验性，且稀疏 marching cubes 的 Lipschitz 界需按场的性质调整。
+- **如果您的 FEM 或时间步进工作流拓扑固定，优先评估 v1.19 的可复用稀疏装配。** 使用 `bsr_set_from_triplets(..., build_mapping=True)` 构建 `BsrTripletMap` 后，用 `bsr_set_from_mapped_values()` 更新数值，可避免每步重复排序与合并索引。注意映射需在紧凑拓扑且 `prune_numerical_zeros=False` 下构建，目标拓扑必须保持不变；空间、限制或求积拓扑变化后需重建映射。若需要可复现结果，避免使用 `reduction="atomic"`，因其累加顺序在多次运行间可能变化。
 
-- **在升级到 v1.18 前确认驱动与 GPU 基线。** 默认 PyPI 与 nightly wheel 已切换到 CUDA Toolkit 13.4，CUDA 加速要求 NVIDIA R580 系列或更新驱动以及 Turing（`sm_75`）或更新 GPU。若现有环境无法满足，应改用 GitHub Releases 上带 `+cu12` 后缀的 CUDA 12 兼容 wheel。同时确认 Python 3.10+ 基线（v1.17 起要求）。
+- **评估 v1.18 的 `warp.geometry` 模块与 v1.19 的 Surface Nets，如果您的管线需要从隐式场或稀疏体积提取网格。** `sparse_marching_cubes()` 允许采样器直接读取现有数据结构，避免稠密网格转换；官方示例中字段求值次数约为稠密采样的 2.4%。`swept_volume_mesh()` 适用于机器人间隙检查和运动可视化，但计算量随网格精度和位姿采样数增加。`delaunay_edge_flip()` 与 `tri_tri_adjacency()` 支持 CUDA 图捕获，适合纳入图回放工作流。注意这些 API 为实验性，且稀疏 marching cubes 的 Lipschitz 界需按场的性质调整。
 
-- **如果您的团队需要可复现仿真或回归测试，立即评估 v1.15 的确定性执行模式。** 该功能是实验性的，但提供了明确的 API 和文档。注意性能权衡：高竞争累加可能更快，稀疏累加通常变慢。不支持 `wp.atomic_cas()` 和 tile 原子操作。建议在关键仿真路径上先做基准测试，再决定是否全局启用。
+- **在升级到 v1.18 及以上版本前确认驱动与 GPU 基线。** 默认 PyPI 与 nightly wheel 已切换到 CUDA Toolkit 13.4，CUDA 加速要求 NVIDIA R580 系列或更新驱动以及 Turing（`sm_75`）或更新 GPU。若现有环境无法满足，应改用 GitHub Releases 上带 `+cu12` 后缀的 CUDA 12 兼容 wheel。同时确认 Python 3.10+ 基线（v1.17 起要求）。若目标平台为 Windows on Arm，v1.19 起可从 PyPI 获取 wheel，但 CUDA 加速仍为实验性。
 
-- **关注图捕获序列化（`.wrp` 格式）的成熟度，规划跨进程/跨语言部署场景。** 该功能从 v1.13 的实验性阶段，到 v1.14 扩展操作范围，再到 v1.15 增加确定性执行，v1.16 继续扩展回放操作范围，v1.17 为求解器重启路径增加 CUDA 图捕获支持，v1.18 的几何三角剖分 API 同样支持图捕获，正在快速成熟。如果您的场景需要离线部署仿真图、跨语言（Python/C++）复用计算逻辑、或 CI/CD 中的确定性测试，建议在 v1.18 上开始原型验证。注意 APIC 格式版本可能随升级变化（v1.13 到 v1.14 格式不兼容）。
+- **关注图捕获序列化（`.wrp` 格式）与确定性执行的成熟度，规划跨进程/跨语言部署场景。** 该功能从 v1.13 的实验性阶段，到 v1.14 扩展操作范围，再到 v1.15 增加确定性执行，v1.16 继续扩展回放操作范围，v1.17 为求解器重启路径增加 CUDA 图捕获支持，v1.18 的几何三角剖分 API 同样支持图捕获，v1.19 的可复用稀疏装配进一步降低重复装配开销。如果您的场景需要离线部署仿真图、跨语言（Python/C++）复用计算逻辑、或 CI/CD 中的确定性测试，建议在 v1.19 上开始原型验证。注意 APIC 格式版本可能随升级变化（v1.13 到 v1.14 格式不兼容）。

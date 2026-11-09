@@ -1,0 +1,168 @@
+# NVIDIA/warp Release Roadmap
+
+- 仓库: `NVIDIA/warp`
+- 统计窗口: 最近一年
+- 最新版本: v1.18.0 (2026-10-05 08:24:57 CST)
+- 纳入统计的最早版本: v1.10.0 (2025-11-02 22:11:50 CST)
+- 版本概况: 最近一年共 13 个版本，其中正式版 13 个、预发布版 0 个
+- 详细证据索引: `NVIDIA_warp_release_roadmap_reference.md`
+
+## 核心判断
+
+- **Warp 正在从单一 GPU 计算库演变为可序列化、跨平台的计算图运行时。** 过去一年，v1.13 引入的实验性图捕获序列化（`.wrp` 格式）和 CPU 回放是架构级变化。v1.14 和 v1.15 持续扩展了可捕获的操作范围（反向传播、tiled 内核、结构化参数），并增加了确定性执行和托管内存分配。v1.16 进一步扩展了 CPU 图和已保存 `.wrp` 图的回放操作范围。v1.17 为 CG 和 CR 求解器增加了周期性重启路径，且该路径支持 CUDA 图捕获。v1.18 新增的 `warp.geometry` 模块中，`delaunay_edge_flip()` 与 `tri_tri_adjacency()` 均支持 CUDA 图捕获。这意味着 Warp 正在为离线部署、跨进程复用和确定性仿真铺平道路，而不仅仅是 JIT 内核执行。
+
+- **物理仿真模块 `warp.sim` 已被移除，生态重心转向 Newton 和 JAX 集成。** v1.10.0 正式移除了 `warp.sim`（自 v1.8 起弃用），由独立的 Newton 物理引擎替代。同时，v1.10 到 v1.14 持续强化了 JAX 互操作性，包括自动微分支持、`jax.vmap`、`jax.pmap()` 兼容性以及稳定的 JAX FFI API。v1.16 为 JAX FFI 包装器增加了 CPU 支持，使同一 JIT 函数可在 CPU 和 CUDA 设备上运行。v1.18 新增的 `warp.geometry` 模块（稀疏 marching cubes、扫掠体积网格、2D 三角剖分）进一步强化了 Warp 作为几何与仿真底层计算后端的定位。这表明 Warp 的战略定位是成为更广泛 AI/物理融合生态的底层计算后端，而非独立的物理引擎。
+
+- **平台兼容性正在收紧：放弃旧版 Python 和 CUDA，拥抱新硬件特性。** v1.11 放弃 Python 3.8，v1.12 弃用 Python 3.9（v1.13 正式移除），v1.9 起要求 CUDA 12.x+。v1.17 要求 Python 3.10+，并支持从源码在 Windows ARM64 上构建时原生 CPU 执行。v1.18 将 Linux 和 Windows 的默认 PyPI 与 nightly wheel 切换到 CUDA Toolkit 13.4，CUDA 加速要求 NVIDIA R580 系列或更新驱动以及 Turing（`sm_75`）或更新 GPU；CUDA 12 兼容 wheel 仍以 `+cu12` 后缀在 GitHub Releases 提供。产品团队应规划 Python 3.10+ 和 CUDA 12.x+ 的基础环境，并针对 v1.18 的默认 CUDA 13.4 切换评估驱动与 GPU 基线。
+
+- **CPU 与 CUDA 的执行语义正在收敛，Tile 编程的跨设备可移植性提升。** v1.18 引入实验性 CPU block 执行，使需要块内多逻辑线程协作的 tile 内核可在 CPU 和 CUDA 上使用相同的显式 `block_dim` 得到一致结果。CPU 执行默认每块一个逻辑内核线程；协作式 CPU 块将逻辑线程调度在单个操作系统线程上，可能显著变慢，且不增加 CPU 并行度或对逻辑线程做向量化。AddressSanitizer 构建会拒绝启用该模式的 CPU 启动。该功能为实验性，API 可能无正式弃用周期即变更。
+
+## 产品演进主线
+
+- **从即时编译到可序列化计算图：** v1.13 引入实验性图捕获序列化（APIC 格式），支持将 CUDA 图操作保存为 `.wrp` 文件并在 CPU 或 GPU 上回放。v1.14 扩展了可捕获的操作（反向传播、tiled 内核、`@wp.struct` 参数），v1.15 进一步支持 CPU 图和已保存 CUDA 图的更广泛回放，v1.16 继续扩展 CPU 图和已保存 `.wrp` 图的回放操作范围，v1.17 为 CG 和 CR 求解器增加周期性重启路径并支持 CUDA 图捕获，v1.18 的 `warp.geometry` 三角剖分 API 同样支持 CUDA 图捕获。这条主线使 Warp 从进程内 JIT 执行走向跨进程、跨语言、跨设备的计算图复用，对离线推理、确定性仿真和 CI/CD 测试有重大价值。
+
+- **物理仿真模块剥离与外部生态整合：** v1.10.0 正式移除 `warp.sim` 模块，由 Newton 物理引擎接替。同时，JAX 集成从 v1.10 的实验性自动微分，发展到 v1.12 的 `jax.vmap` 支持，再到 v1.14 的稳定 JAX FFI API，v1.16 为 JAX FFI 包装器增加 CPU 支持。v1.17 引入实验性原生构建钩子，允许外部 C++ 和 CUDA 集成附加原生头文件到 Warp 模块。v1.18 新增 `warp.geometry` 模块，提供从隐式场和采样刚体运动提取网格的 Python 与内核 API。Warp 正在从"自带物理引擎"转向"为 AI/物理融合提供底层计算基础设施"，与 PyTorch、JAX、RAPIDS 等框架的互操作性成为核心能力。
+
+- **确定性执行与可复现性成为一等公民：** v1.15 引入的确定性模式（`RUN_TO_RUN` 和 `GPU_TO_GPU`）是仿真和回归测试场景的关键能力。它通过重写原子操作模式（累加、槽分配、输出写回）来保证位精确的重复结果，尽管会带来性能权衡。v1.17 为 CUDA 内核增加寄存器分配和共享内存溢出的控制与检查能力，帮助开发者优化占用率和性能。v1.18 支持对数组元素中向量和矩阵分量赋值与更新的自动微分，并避免稀疏矩阵块计数不必要的 GPU 到 CPU 传输。这标志着 Warp 从"追求性能"到"在可控性能代价下提供确定性"的成熟度提升，对需要可复现结果的科学计算和验证工作流至关重要。
+
+- **几何查询、Tile 编程模型和 FEM 持续扩展：** 从 v1.9 的可微 Marching Cubes 和 AOT 编译，到 v1.12 的硬件加速纹理和可微 FFT，再到 v1.14 的多环境 FEM 和可复用批处理线性求解器，Warp 的 tile 编程模型和有限元方法（FEM）能力不断深化。v1.15 进一步为 tile 操作添加了 struct 支持，并允许稀疏矩阵预留 BSR 行容量。v1.16 新增 NanoVDB 体积原地重建和分组 HashGrid 查询。v1.17 新增球体和胶囊体 BVH 查询、精确球体-网格三角形查询、直接访问网格 BVH，以及 tile 矩阵行索引。v1.18 新增 `warp.geometry` 模块，覆盖稀疏 marching cubes、扫掠体积网格和 2D Delaunay 边翻转，并让 tile 内核在 CPU 与 CUDA 上使用相同 `block_dim` 得到一致结果。这条主线使 Warp 在高性能仿真和科学计算领域的能力边界持续扩展。
+
+## 版本演进解读
+
+### v1.18.0（2026-10-05）
+
+- **新增 `warp.geometry` 模块：** 提供 `sparse_marching_cubes()`，接受一个在批量查询点上采样标量场的可调用对象，直接从现有数据结构读取，无需转换为稠密网格；Warp 构建 Lipschitz 八叉树裁剪远离目标表面的单元，再对剩余单元运行 marching cubes。`nx`、`ny`、`nz` 指定网格节点数，字段可调用对象接受批量 `wp.vec3` 查询点并返回同设备上的 `wp.float32` 值，输出为 `wp.vec3` 顶点和每面三个索引的扁平三角形索引。官方示例中稀疏提取的字段求值次数约为稠密采样的 2.4%。`swept_volume_mesh()` 在采样位姿上构建刚体装配所占空间的单一网格，可用于运动可视化或机器人间隙检查。`delaunay_edge_flip()` 在设备上原地翻转非 Delaunay 内部边以更新 2D 三角网格连通性，`tri_tri_adjacency()` 提供三角形邻接信息，两者均支持 CUDA 图捕获。对隐式几何、机器人运动规划和网格处理工作流，这减少了稠密网格转换和主机往返开销。
+
+- **实验性 CPU block 执行与自动微分增强：** 需要块内多逻辑线程协作的 tile 内核现在可在 CPU 和 CUDA 上使用相同的显式 `block_dim` 产生一致结果，提升 tile 代码的跨设备可移植性。自动微分现支持对数组元素中向量和矩阵分量赋值与更新的求导，无需再加载整个数组元素、修改本地副本再写回。稀疏矩阵块计数不再进行不必要的 GPU 到 CPU 传输。此外新增函数内联选项，可移除调用开销但会增加代码体积，该选择同样适用于生成的反向函数。
+
+- **迁移注意：默认 wheel 切换到 CUDA Toolkit 13.4。** Linux 和 Windows 的默认 PyPI 与 nightly wheel 现使用 CUDA Toolkit 13.4，CUDA 加速要求 NVIDIA R580 系列或更新驱动以及 Turing（`sm_75`）或更新 GPU。CUDA 12 兼容 wheel 仍以 `+cu12` 版本后缀在 GitHub Releases 提供。稀疏 marching cubes 的 Lipschitz 界对真正的有符号距离函数有效，随距离变化更快的场需要更大的界，设置过低会丢弃包含表面的单元。CPU block 执行与 `warp.geometry` 相关 API 为实验性，API 可能无正式弃用周期即变更。
+
+### v1.17.0（2026-08-31）
+
+- **新增球体和胶囊体空间查询：** `wp.bvh_query_sphere()` 使用精确球体-AABB 测试查找与球体重叠的项边界，`wp.bvh_query_capsule()` 搜索与沿线段移动球体扫过的体积重叠的项边界。胶囊体查询是保守的，不会遗漏请求半径内的边界，但可能返回 AABB 角附近的额外候选。`wp.mesh_get_bvh()` 暴露网格内部 BVH，使 BVH 专用操作可直接使用通用 `wp.bvh_query_*()` API。对碰撞检测、邻近搜索和仿真场景，这消除了将搜索区域转换为 AABB 的额外步骤，提升查询精度和效率。
+
+- **Tile 矩阵行索引和求解器重启：** Tile 现支持矩阵行索引，包括读取、写入、负行索引和伴随（adjoint）操作，适用于一至四个逻辑维度的 tile。CG 和 CR 求解器可周期性重启，适用于批处理和矩阵无关的 CUDA 工作负载，重启路径支持 CUDA 图捕获。批处理 CUDA 求解器在子问题规模增大时获得更精确的点积。这些功能扩展了 tile 编程的表达能力，并为大规模迭代求解提供更稳健的收敛路径。
+
+- **CUDA 内核资源控制和实验性原生构建钩子：** CUDA 内核现支持寄存器分配和共享内存溢出控制，并可在启动前检查资源使用（如 `cuda_max_registers` 内核参数和 `wp.get_cuda_kernel_properties()`）。实验性原生构建钩子允许附加包将原生 C++ 或 CUDA 头文件附加到 Warp 模块，使头文件定义的类型和函数可用于 Warp 内核。迁移注意：Python 和 Warp 数值标量到复合类型的隐式转换已移除，需使用显式类型构造函数；原生构建钩子为实验性功能，API 可能无正式弃用周期即变更。
+
+### llvm-sdk-22.1.8-warp.1（2026-08-07）
+
+- **这是预构建的 LLVM/Clang SDK 归档，而非 Warp 功能版本。** 该 SDK 供 Warp 的 CPU-JIT 编译器（`warp-clang`）链接使用，基于 LLVM 22.1.8 源码构建，裁剪为 clang 和静态库，无外部依赖，面向主机后端和 NVPTX，按体积优化编译。从 PyPI 安装 Warp 的用户无需任何操作，从源码构建的用户也可通过 `build_lib.py --build-llvm` 自行编译（约需一小时）。
+
+- **平台兼容性细节明确：** Linux 归档在 manylinux 容器中构建，glibc 下限为 x86_64 2.28、aarch64 2.34。windows-x86_64 使用 v142 工具集构建，保持 VS2019 链接兼容性；windows-arm64 使用 v143，仍为实验性。这为从源码构建 Warp CPU-JIT 的团队提供了明确的平台基线。
+
+- **迁移与使用注意：** 该 SDK 不改变 Warp 的用户可见 API 或运行时行为。源码构建者可通过 `build_lib.py --llvm-path` 或 `WARP_LLVM_PATH` 环境变量直接使用解压后的 SDK 树。验证下载可使用 `sha256sum -c SHA256SUMS --ignore-missing`。此版本对产品规划无迁移影响。
+
+### v1.16.0（2026-08-03）
+
+- **新增固定容量 NanoVDB 体积原地重建：** 支持在 CUDA 图捕获期间重建稀疏网格拓扑，无需分配新体积。此前的 APIC 流体示例每步需重新分配体积，且无法在图回放中执行。现在可复用同一体积和依赖的 FEM 拓扑缓冲区，消除主机同步开销。对流体仿真和稀疏网格拓扑动态变化的场景，这是消除图回放瓶颈的关键能力。
+
+- **新增分组 HashGrid 查询和 NumPy 风格 tile 切片：** 分组 HashGrid 查询面向多环境工作负载，与 v1.11 引入的组感知 BVH/Mesh 查询形成互补。NumPy 风格 tile 切片降低了 tile 编程的认知负担，使熟悉 NumPy 的用户可以更直接地操作 tile 数据。这两项功能分别服务于多环境仿真和开发者体验。
+
+- **JAX FFI 包装器增加 CPU 支持，CPU 图和已保存 `.wrp` 图回放范围扩展：** 同一 JAX JIT 函数现在可在 CPU 和 CUDA 设备上运行，无需 Warp 设备参数，扩大了 JAX 集成在无 GPU 环境中的可用性。CPU 图和已保存 `.wrp` 图的回放操作范围继续扩展，延续 v1.13 以来的图序列化主线。CUDA profiler 范围控制新增，便于性能分析。迁移注意：NanoVDB 重建和分组 HashGrid 查询为新增能力，现有代码不受影响；实验性 API 可能无正式弃用周期即变更。
+
+### v1.15.0 (2026-07-08)
+
+- **引入确定性执行模式：** 新增 `wp.DeterministicMode.RUN_TO_RUN`（同一 GPU 架构上位精确）和 `GPU_TO_GPU`（跨 GPU 架构可复现）。支持三种原子模式：累加（add/sub/min/max）、槽分配（atomic_add 计数）、输出写回（atomic_assign）。不支持 `wp.atomic_cas()`、`wp.atomic_exch()` 和 tile 原子操作。确定性模式会改变执行算法并使用临时存储，性能影响因原子操作模式而异——高竞争累加可能更快，稀疏累加通常变慢。
+
+- **扩展图回放能力：** CPU 图捕获现在支持跨设备作用域，引用的数组必须在图生命周期内保持存活。扫描操作支持 `int32`、`float32`、`int64`、`float64` 标量和向量数组，但不支持负步长。已保存的 CUDA 图回放范围也得到扩展。
+
+- **新增 CUDA 托管内存分配和 Mipmapped 纹理：** 支持通过 CUDA 托管内存分配数组，简化 CPU/GPU 内存管理。新增 Mipmapped 纹理支持，纹理 API 仍为实验性，可能无正式弃用周期即变更。函数参数新增 `wp.ref[T]` 引用类型，允许就地修改调用者持有的值，消除返回-重新赋值的模式。
+
+### v1.14.0 (2026-06-01)
+
+- **API 图捕获覆盖更多工作流：** CPU 图捕获现在支持 `wp.Tape().backward()` 的反向传播、`wp.launch_tiled()` 内核、任意大小的标量参数。`.wrp` 序列化格式支持包含数组的 `@wp.struct` 参数和携带数据、梯度、索引缓冲区的 `wp.indexedarray` 参数。APIC 格式版本升级到 v10，v1.13 保存的文件需要重新捕获。C/C++ APIC 句柄声明改为显式指针（如 `APICState*`）。
+
+- **多环境 FEM 和可复用批处理线性求解器：** 新增多环境 FEM 支持，用于批处理仿真。线性求解器现在可复用和批处理，减少重复初始化开销。注意：`environment_first=True` 不支持不覆盖整个几何体的分区的 halo 节点。
+
+- **可插拔日志记录和便携式 tile FFT/求解器回退：** 新增可插拔日志系统，支持 `wp.LOG_WARNING` 等日志级别。tile FFT 和求解器在缺少 MathDx 库时提供便携式回退实现。JAX 集成 API 趋于稳定。HMM/ATS 系统上 CPU/GPU 数组访问限制放宽。
+
+### v1.13.0 (2026-05-04)
+
+- **实验性图捕获序列化和 CPU 回放：** 引入便携式序列化图格式（`.wrp` 文件），操作在 `wp.capture_begin(apic=True)` / `wp.capture_end()` 期间记录，可通过 `wp.capture_save()` 保存，并从 Python 或独立 C++ 通过 `wp.capture_load()` 回放。新增 `wp.handle`（`uint64` 别名）用于跨保存/加载携带 `wp.Mesh` 句柄。这是架构级变化，API 可能无正式弃用周期即变更。
+
+- **cuBQL BVH 后端：** 为 `wp.Mesh` 新增实验性 cuBQL BVH 构建器，对密集静态网格的射线查询通常更快。一个 RTX 4090 上的基准测试显示仿真时间从 1.41 秒降至 0.98 秒。速度提升高度依赖网格大小和查询模式，建议在自有场景上基准测试。
+
+- **`wp.bfloat16` 标量类型和可插拔 CUDA 分配器：** 新增 `wp.bfloat16` 类型，NumPy 不原生支持，Warp 以 `uint16` 存储。新增可插拔 CUDA 分配器接口，内置 RAPIDS Memory Manager（RMM）集成，允许 Warp 与 PyTorch、CuPy 共享内存池。新增作用域内存跟踪，支持按子系统（BVH、哈希网格、网格、体积、稀疏）标记分配。
+
+- **Tile 原语扩展和 API 清理：** 新增 `tile_dot`、`tile_axpy`、`tile_stack`、scatter 辅助函数。`wp.tile_fft()` 和 `wp.tile_ifft()` 现在接受秩 N >= 2 的 tile。`warp.fem` 获得端到端 `wp.float64` 支持。私有 API 转发 shim 被移除（v1.11 开始的弃用周期结束）。纹理 `copy_from_array()` / `copy_to_array()` 弃用，改用 `copy_from()` / `copy_to()`。
+
+### v1.12.1 (2026-04-06)
+
+- **Tile 正确性修复：** 修复了多个 tile 内核问题，包括跨设备使用错误 `block_dim` 的内核调度、`wp.tile_matmul()` 和 `wp.tile_fft()` 忽略模块级 `enable_backward`、以及 `@wp.func` 与共享内存 tile 参数编译失败。Tile 参数现在按引用传递，匹配 Python 的可变对象语义。
+
+- **静默正确性错误修复：** 修复了编译时常量传递给 64 位标量构造函数时静默精度丢失、`wp.HashGrid` 邻居查询对负坐标丢失结果、以及增强赋值（`s.field += expr`、`arr[i] *= expr`）双重求值目标表达式的问题。
+
+- **Omniverse Kit 扩展移除：** 从仓库中移除了 Omniverse Kit 扩展。Python 3.9 支持将在 v1.13 中移除。私有 API 弃用警告将在 v1.13 中移除。
+
+### v1.12.0 (2026-03-07)
+
+- **实验性硬件加速纹理采样：** 新增 `wp.Texture1D`、`wp.Texture2D`、`wp.Texture3D` 类，在 GPU 上利用 CUDA 纹理内存进行硬件加速插值。CPU 上提供软件回退。适用于渲染、体积采样、有符号距离场查询和仿真查找表。纹理 API 为实验性，可能无正式弃用周期即变更。
+
+- **Tile 编程扩展：** 新增逐元素算术运算符（`tile_mul`、`tile_div`）和可微 FFT。新增下标风格类型提示（如 `wp.array[dtype]`）以改善 IDE 集成。新增四元数和空间变换辅助函数。新增近似数学内置函数（`wp.fast_*`）。
+
+- **JAX 互操作性和弃用：** 新增 `jax.vmap` 支持。弃用 Python 3.9 支持（v1.13 移除）。弃用标量值到复合类型的隐式转换。从行向量构造矩阵的 `wp.matrix()` 被移除（v1.9 起弃用）。`warp.fem` 新增 B 样条形函数（1-3 阶）。
+
+### v1.11.1 (2026-02-04)
+
+- **Tile 和 CUDA 图修复：** 修复 `wp.tile_matmul()` 因读取未初始化输出内存产生 NaN 的问题。修复 tile 与标量常量的乘法问题。修复 CUDA 图中多个临时分配导致内存过度使用的问题（例如三个 1GB 顺序分配消耗 3GB 而非复用 1GB）。
+
+- **代码生成和开发者体验修复：** 修复 `wp.static()` 在静态循环展开中错误捕获同名的全局 Python 变量。修复条件表达式（三元 `if`/`else`）中一个分支访问数组元素时可能段错误。修复 `@wp.func` 装饰函数在 Pyright/Pylance 中显示泛型 `_Wrapped` 类型的问题。
+
+### v1.11.0 (2026-01-02)
+
+- **组感知空间查询：** 为 `wp.Bvh` 和 `wp.Mesh` 引入组感知构建和查询，支持在单个加速结构中包含多个独立环境（世界），并独立查询每个世界。通过 `groups` 参数为每个图元分配组 ID，Warp 在统一结构内构建隔离子树。
+
+- **JIT 编译管理新选项：** 新增 `wp.force_load()` 提供更底层的模块编译控制。新增预编译头支持以加速 CUDA 编译。新增并行模块编译和加载支持。新增分阶段图捕获模式，当输入/输出缓冲区地址变化时重新捕获图。
+
+- **API 清理和弃用：** 大幅重构公共与内部 API 边界。内部符号和命名空间访问现在发出弃用警告，将在 v1.13（2026 年 5 月）移除。新增 `wp.grad()` 扩展微分能力。新增 tile 线性代数就地变体以减少共享内存使用。新增内核中解包运算符支持。放弃 Python 3.8 支持。
+
+### v1.10.1 (2025-12-01)
+
+- **Bugfix 版本：** 修复 `@wp.kernel(module="unique")` 的模块复用问题。修复内核本地数组的多个问题（`.ptr` 访问、子数组索引、`shape` 参数接受单个整数）。修复自定义梯度函数的代码生成排序错误。修复 `wp.fem.TemporaryStore` 在磁带捕获期间的无效读取。
+
+- **弃用通知：** `jax_callable()` 中的 `graph_compatible` 参数弃用，改用 `graph_mode` 枚举（`GraphMode.JAX`、`GraphMode.WARP`、`GraphMode.NONE`）。Python 3.8 支持将在 v1.11 移除。CUDA Toolkit 默认构建将从 12.8 过渡到 12.9。
+
+### v1.10.0 (2025-11-02)
+
+- **`warp.sim` 模块正式移除：** 该模块自 v1.8 起弃用，由独立的 Newton 物理引擎替代。内部实现代码重组到 `warp._src` 子包，以清晰区分公共 API 和内部实现。
+
+- **JAX 自动微分（实验性）：** 支持通过 `jax.grad()` 计算 Warp 内核的梯度。支持单输出和多输出内核。标量输入自动视为静态（非可微）。支持 `jax.pmap()` 多设备兼容性。
+
+- **性能大幅提升：** Python 作用域调用内置函数（如 `wp.normalize()`）速度提升高达 70 倍，通过缓存已解析的重载和参数打包策略实现。BVH 操作支持 CUDA 图中的就地重建和可配置叶子大小。默认 `leaf_size` 从 4 改为 1（优化相交查询）。
+
+- **破坏性变更：** 不再支持向内置函数传递列表、元组等非 Warp 数组参数。必须使用显式类型构造函数（如 `wp.vec3(...)`）。Intel 版 macOS（x86_64）支持移除，Apple Silicon 继续支持。
+
+### v1.9.1 (2025-10-01)
+
+- **GPU 兼容性修复：** 恢复对 Maxwell、Pascal、Volta 等旧 NVIDIA GPU 架构的支持（v1.9.0 预构建 wheel 意外丢失）。修复共享 tile 的内存管理问题（双重释放和内存泄漏）。修复 ARM64 CPU 内核段错误问题（v1.10 计划修复）。
+
+- **文档和类型修复：** 修正 `wp.mesh_query_aabb()` 文档。修复空切片操作。修复 Python 3.9/3.10 上 `tuple[int, int]` 类型提示的 `TypeError`。修复 `wp.copy()` 和 `wp.where()` 与 tile 的梯度计算。
+
+### v1.9.0 (2025-09-05)
+
+- **可微 Marching Cubes：** 完全用 Warp 重写，替代原生 CUDA C++ 实现，支持 CPU 和 GPU 设备。修复了长期存在的 off-by-one 错误。新增 `wp.compile_aot_module()` 和 `wp.load_aot_module()` 用于提前编译工作流，支持 `strip_hash=True` 以分发预编译模块。
+
+- **CUDA 13 支持和图可捕获线性求解器：** 兼容 CUDA Toolkit 13.0。PyPI wheel 继续使用 CUDA 12.8 构建以提供过渡期。`warp.optim.linear` 中的迭代线性求解器（CG、BiCGSTAB、GMRES）现在完全兼容 CUDA 图捕获，支持设备端收敛检查。
+
+- **编程模型增强：** 更灵活的复合类型索引、直接 `IntEnum` 支持、内核中初始化本地数组的能力。弃用 `warp.sim` 模块（v1.10 移除）。弃用 Intel 版 macOS（x86_64）支持。
+
+### v1.9.0rc1 (2025-08-20)
+
+- **发布候选版本：** 用于 Isaac Lab 测试。包含 v1.9.0 的主要功能，无独立用户可见变更。
+
+### v1.8.1 (2025-08-02)
+
+- **最终支持 CUDA 11.x 的版本：** 从 v1.9.0 起要求 CUDA 12.x 或更新。修复了使用 matmul、Cholesky 和 FFT 求解器的内核的编译时间回归（升级到 libmathdx 0.2.2）。
+
+- **JAX 实验性模块增强：** 支持 `jax_callable()` 的输入-输出别名。新增 `graph_mode` 参数（`GraphMode.WARP`），支持捕获包含条件节点的图。弃用 `graph_compatible` 布尔标志。
+
+## 采用与规划提示
+
+- **评估 v1.18 的 `warp.geometry` 模块，如果您的管线需要从隐式场或稀疏体积提取网格。** `sparse_marching_cubes()` 允许采样器直接读取现有数据结构，避免稠密网格转换；官方示例中字段求值次数约为稠密采样的 2.4%。`swept_volume_mesh()` 适用于机器人间隙检查和运动可视化，但计算量随网格精度和位姿采样数增加。`delaunay_edge_flip()` 与 `tri_tri_adjacency()` 支持 CUDA 图捕获，适合纳入图回放工作流。注意这些 API 为实验性，且稀疏 marching cubes 的 Lipschitz 界需按场的性质调整。
+
+- **在升级到 v1.18 前确认驱动与 GPU 基线。** 默认 PyPI 与 nightly wheel 已切换到 CUDA Toolkit 13.4，CUDA 加速要求 NVIDIA R580 系列或更新驱动以及 Turing（`sm_75`）或更新 GPU。若现有环境无法满足，应改用 GitHub Releases 上带 `+cu12` 后缀的 CUDA 12 兼容 wheel。同时确认 Python 3.10+ 基线（v1.17 起要求）。
+
+- **如果您的团队需要可复现仿真或回归测试，立即评估 v1.15 的确定性执行模式。** 该功能是实验性的，但提供了明确的 API 和文档。注意性能权衡：高竞争累加可能更快，稀疏累加通常变慢。不支持 `wp.atomic_cas()` 和 tile 原子操作。建议在关键仿真路径上先做基准测试，再决定是否全局启用。
+
+- **关注图捕获序列化（`.wrp` 格式）的成熟度，规划跨进程/跨语言部署场景。** 该功能从 v1.13 的实验性阶段，到 v1.14 扩展操作范围，再到 v1.15 增加确定性执行，v1.16 继续扩展回放操作范围，v1.17 为求解器重启路径增加 CUDA 图捕获支持，v1.18 的几何三角剖分 API 同样支持图捕获，正在快速成熟。如果您的场景需要离线部署仿真图、跨语言（Python/C++）复用计算逻辑、或 CI/CD 中的确定性测试，建议在 v1.18 上开始原型验证。注意 APIC 格式版本可能随升级变化（v1.13 到 v1.14 格式不兼容）。
